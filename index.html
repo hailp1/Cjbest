@@ -250,252 +250,337 @@
       flex: 1;
       display: flex;
       position: relative;
+      height: calc(100vh - 86px);
       overflow: hidden;
     }
 
     #map {
       flex: 1;
-      width: 100%;
       height: 100%;
-      background: #0f172a;
+      background: #0b1120;
     }
 
     /* Sidebar Drawer */
     .sidebar {
-      width: 380px;
-      background: #ffffff;
-      border-left: 1px solid #e2e8f0;
+      width: 330px;
+      background: #1e293b;
+      border-left: 1px solid #334155;
       display: flex;
       flex-direction: column;
       z-index: 1000;
-      flex-shrink: 0;
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      flex-shrink: 0;
     }
     .sidebar-header {
-      padding: 0.75rem 1rem;
-      background: #f8fafc;
-      border-bottom: 1px solid #e2e8f0;
+      padding: 8px 12px;
+      background: #0f172a;
+      border-bottom: 1px solid #334155;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .sidebar-title {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 800;
-      color: #0f172a;
+      color: #f1f5f9;
       display: flex;
       align-items: center;
       gap: 5px;
     }
-    .btn-close-sidebar {
-      display: none;
-      background: #e2e8f0;
-      border: none;
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      color: #475569;
-      font-weight: bold;
-      cursor: pointer;
-    }
     .sidebar-content {
       flex: 1;
       overflow-y: auto;
-      padding: 0.6rem;
+      padding: 6px;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 6px;
     }
 
-    /* Card NPP trong Sidebar */
+    /* NPP Card in Sidebar */
     .npp-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
+      background: #0f172a;
+      border: 1px solid #334155;
       border-radius: 8px;
-      padding: 0.65rem 0.8rem;
+      padding: 8px 10px;
       cursor: pointer;
-      transition: all 0.15s ease-in-out;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      transition: all 0.2s;
     }
-    .npp-card:hover {
-      border-color: #3b82f6;
-      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.12);
-      transform: translateY(-1px);
+    .npp-card:hover, .npp-card.selected {
+      border-color: #2563eb;
+      background: #1e293b;
     }
     .npp-card.selected {
-      border-color: #2563eb;
-      background: #eff6ff;
-      border-left: 4px solid #2563eb;
+      box-shadow: 0 0 0 1px #2563eb;
     }
     .npp-header-row {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 0.3rem;
+      margin-bottom: 3px;
     }
     .npp-code {
-      font-size: 0.68rem;
+      font-size: 0.75rem;
       font-weight: 800;
-      color: #2563eb;
-      background: #dbeafe;
-      padding: 1px 5px;
-      border-radius: 4px;
-    }
-    .npp-title {
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: #0f172a;
-      margin-bottom: 0.25rem;
-      line-height: 1.25;
+      color: #60a5fa;
     }
     .badge-status {
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       font-weight: 700;
-      padding: 2px 5px;
+      padding: 1px 6px;
       border-radius: 4px;
-      white-space: nowrap;
     }
-    .badge-active { background: #dcfce7; color: #15803d; }
-    .badge-inactive { background: #fee2e2; color: #b91c1c; }
+    .badge-active { background: rgba(5, 150, 105, 0.2); color: #34d399; border: 1px solid rgba(5, 150, 105, 0.4); }
+    .badge-inactive { background: rgba(220, 38, 38, 0.2); color: #f87171; border: 1px solid rgba(220, 38, 38, 0.4); }
 
+    .npp-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
     .npp-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.3rem;
+      gap: 6px;
       font-size: 0.68rem;
-      color: #475569;
-      margin-bottom: 0.25rem;
+      color: #94a3b8;
     }
     .npp-meta-item {
-      background: #f1f5f9;
-      padding: 2px 5px;
-      border-radius: 4px;
       display: flex;
       align-items: center;
       gap: 3px;
     }
     .badge-remote-danger {
-      background: #fee2e2;
-      color: #b91c1c;
-      font-weight: 800;
-      padding: 2px 5px;
-      border-radius: 4px;
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
+      background: rgba(220, 38, 38, 0.15);
+      color: #ef4444;
+      border: 1px solid rgba(220, 38, 38, 0.3);
+      padding: 0 4px;
+      border-radius: 3px;
+      font-weight: 700;
     }
 
-    /* Floating Quick Controls */
+    /* Map Controls Floating */
     .map-quick-controls {
       position: absolute;
       top: 10px;
-      left: 55px;
-      z-index: 800;
+      left: 60px;
+      z-index: 900;
       display: flex;
-      gap: 4px;
+      gap: 5px;
       background: rgba(15, 23, 42, 0.88);
-      backdrop-filter: blur(8px);
-      padding: 4px;
+      padding: 4px 6px;
       border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      border: 1px solid #334155;
+      backdrop-filter: blur(4px);
+      flex-wrap: wrap;
+      max-width: calc(100vw - 120px);
     }
     .quick-btn {
       background: #1e293b;
       border: 1px solid #334155;
-      color: #e2e8f0;
+      color: #cbd5e1;
+      padding: 4px 8px;
+      border-radius: 5px;
       font-size: 0.7rem;
       font-weight: 700;
-      padding: 4px 7px;
-      border-radius: 5px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
+      transition: all 0.2s;
     }
-    .quick-btn:hover { background: #334155; color: white; }
-    .quick-btn.active { background: #2563eb; color: white; border-color: #60a5fa; }
-    .quick-btn.active-inactive-btn { background: #dc2626 !important; color: white !important; border-color: #ef4444 !important; }
-
-    /* Floating Mobile Toggle Drawer Button */
-    .btn-mobile-drawer {
-      display: none;
-      position: absolute;
-      bottom: 24px;
-      right: 14px;
-      z-index: 900;
-      background: #2563eb;
-      color: white;
-      border: 2px solid white;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-      padding: 8px 14px;
-      border-radius: 25px;
-      font-size: 0.78rem;
-      font-weight: 800;
-      cursor: pointer;
-      align-items: center;
-      gap: 6px;
+    .quick-btn:hover {
+      background: #334155;
+      color: #ffffff;
+    }
+    .quick-btn.active {
+      background: rgba(37, 99, 235, 0.25);
+      border-color: #2563eb;
+      color: #60a5fa;
+    }
+    .quick-btn.active-inactive-btn {
+      background: rgba(220, 38, 38, 0.25) !important;
+      border-color: #ef4444 !important;
+      color: #fca5a5 !important;
+    }
+    .quick-btn.active-quick-outlet {
+      background: rgba(245, 158, 11, 0.25) !important;
+      border-color: #f59e0b !important;
+      color: #fef08a !important;
     }
 
     /* Map Legend */
     .map-legend {
       position: absolute;
-      bottom: 20px;
-      left: 10px;
-      z-index: 800;
-      background: rgba(15, 23, 42, 0.94);
-      backdrop-filter: blur(8px);
-      color: #e2e8f0;
+      bottom: 18px;
+      left: 12px;
+      z-index: 900;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid #334155;
       padding: 8px 12px;
       border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
       font-size: 0.68rem;
+      color: #cbd5e1;
       display: flex;
       flex-direction: column;
       gap: 4px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.35);
-      max-width: 250px;
+      pointer-events: auto;
+      backdrop-filter: blur(4px);
     }
-    .legend-item { display: flex; align-items: center; gap: 6px; }
-    .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .legend-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
 
-    /* Custom Leaflet Marker */
+    /* Marker Custom */
     .custom-npp-icon {
       display: flex;
       align-items: center;
       justify-content: center;
       border-radius: 50%;
-      border: 2px solid #ffffff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-      cursor: pointer;
+      border: 2px solid white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+      transition: transform 0.2s;
     }
-    .npp-icon-active { background: #059669; }
-    .npp-icon-inactive { background: #dc2626; }
-    .npp-icon-inner { color: #ffffff; font-size: 11px; }
+    .custom-npp-icon:hover {
+      transform: scale(1.25);
+      z-index: 1000 !important;
+    }
+    .npp-icon-active {
+      background: #059669;
+    }
+    .npp-icon-inactive {
+      background: #dc2626;
+      border-color: #fca5a5;
+    }
+    .npp-icon-inner {
+      color: white;
+      font-size: 10px;
+    }
 
     /* Popup Styling */
     .leaflet-popup-content-wrapper {
+      background: #0f172a;
+      color: #f8fafc;
+      border: 1px solid #334155;
       border-radius: 10px;
       padding: 0;
-      overflow: hidden;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
-    .leaflet-popup-content { margin: 0; line-height: 1.4; }
-    .popup-card { display: flex; flex-direction: column; }
-    .popup-header { background: #0f172a; color: white; padding: 0.65rem 0.9rem; border-bottom: 2px solid #2563eb; }
-    .popup-tag { display: inline-block; font-size: 0.62rem; font-weight: 800; padding: 2px 5px; border-radius: 3px; margin-bottom: 3px; }
-    .popup-title { font-size: 0.84rem; font-weight: 800; color: #ffffff; }
-    .popup-body { padding: 0.65rem 0.9rem; background: #ffffff; font-size: 0.72rem; color: #334155; display: flex; flex-direction: column; gap: 4px; }
-    .popup-row { display: flex; align-items: flex-start; gap: 6px; }
-    .popup-row i { color: #64748b; margin-top: 2px; font-size: 0.72rem; width: 13px; text-align: center; }
-    .popup-actions { padding: 0.45rem 0.9rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; gap: 0.35rem; }
+    .leaflet-popup-content {
+      margin: 0;
+      line-height: 1.4;
+      font-family: inherit;
+      width: 290px !important;
+    }
+    .leaflet-popup-tip {
+      background: #0f172a;
+    }
+    .popup-card {
+      padding: 10px 12px;
+    }
+    .popup-header {
+      border-bottom: 1px solid #334155;
+      padding-bottom: 6px;
+      margin-bottom: 6px;
+    }
+    .popup-tag {
+      display: inline-block;
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 3px;
+      margin-bottom: 3px;
+      text-transform: uppercase;
+    }
+    .popup-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #f1f5f9;
+    }
+    .popup-body {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .popup-row {
+      display: flex;
+      gap: 6px;
+      align-items: flex-start;
+    }
+    .popup-row i {
+      margin-top: 2px;
+      width: 14px;
+      flex-shrink: 0;
+    }
+    .popup-row span {
+      color: #cbd5e1;
+    }
+    .popup-actions {
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px solid #334155;
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
     .btn-action {
-      flex: 1; padding: 5px; border-radius: 5px; font-size: 0.7rem; font-weight: 700;
-      text-align: center; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 3px;
+      flex: 1;
+      padding: 5px;
+      border-radius: 5px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      transition: all 0.2s;
     }
     .btn-action.btn-primary { background: #2563eb; color: white; }
-    .btn-action.btn-secondary { background: #e2e8f0; color: #334155; }
     .btn-action.btn-spider { background: #8b5cf6; color: white; }
+    .btn-action.btn-outlet { background: #f59e0b; color: #0f172a; font-weight: 800; }
+    .btn-action:hover { filter: brightness(1.15); }
+
+    /* Mobile toggle drawer button */
+    .btn-mobile-drawer {
+      display: none;
+      position: absolute;
+      bottom: 20px;
+      right: 15px;
+      z-index: 950;
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 25px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+      cursor: pointer;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-close-sidebar {
+      display: none;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 1rem;
+      cursor: pointer;
+    }
 
     /* Loading Pill */
     #loadingIndicator {
@@ -516,6 +601,31 @@
       gap: 6px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.4);
       transition: opacity 0.5s ease;
+    }
+
+    /* Floating Outlet Banner */
+    #nppOutletBanner {
+      display: none;
+      position: absolute;
+      top: 55px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid #f59e0b;
+      color: #fde68a;
+      padding: 6px 14px;
+      border-radius: 25px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      z-index: 1100;
+      align-items: center;
+      gap: 9px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      animation: bannerSlideDown 0.25s ease;
+    }
+    @keyframes bannerSlideDown {
+      from { transform: translate(-50%, -15px); opacity: 0; }
+      to { transform: translate(-50%, 0); opacity: 1; }
     }
 
     /* ==========================================================================
@@ -543,7 +653,7 @@
       border: 1px solid #334155;
       border-radius: 14px;
       width: 100%;
-      max-width: 1180px;
+      max-width: 1220px;
       max-height: 94vh;
       display: flex;
       flex-direction: column;
@@ -601,7 +711,7 @@
     }
     .modal-kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 10px;
       flex-shrink: 0;
     }
@@ -623,7 +733,7 @@
       gap: 5px;
     }
     .modal-kpi-num {
-      font-size: 1.35rem;
+      font-size: 1.32rem;
       font-weight: 900;
       color: #f1f5f9;
     }
@@ -886,11 +996,26 @@
   <div class="main-container">
     <div id="map"></div>
 
-    <!-- Quick Buttons -->
+    <!-- Floating Outlet Banner when viewing single NPP outlets -->
+    <div id="nppOutletBanner">
+      <i class="fa-solid fa-store" style="color:#f59e0b;"></i>
+      <span id="nppOutletBannerText">Đang xem điểm bán của NPP</span>
+      <button onclick="resetOutletView()" style="background:#f59e0b; color:#0f172a; border:none; padding:3px 9px; border-radius:12px; font-size:0.7rem; font-weight:800; cursor:pointer;">
+        <i class="fa-solid fa-rotate-left"></i> Hiện Tất Cả
+      </button>
+    </div>
+
+    <!-- Quick Buttons (Bản đồ) -->
     <div class="map-quick-controls">
       <button class="quick-btn" onclick="zoomToPreset('ALL')"><i class="fa-solid fa-arrows-to-eye"></i> Toàn Quốc</button>
       <button class="quick-btn" onclick="zoomToPreset('MB')"><i class="fa-solid fa-location-dot"></i> Bắc</button>
       <button class="quick-btn" onclick="zoomToPreset('MN')"><i class="fa-solid fa-location-dot"></i> Nam</button>
+      
+      <!-- NÚT HIỆN / ẨN OUTLET TRỰC TIẾP TRÊN BẢN ĐỒ -->
+      <button class="quick-btn active-quick-outlet" id="btnQuickToggleOutlet" onclick="toggleOutletQuick()" style="border-color: rgba(245, 158, 11, 0.6);">
+        <i class="fa-solid fa-store" style="color:#f59e0b;"></i> <span id="btnQuickOutletText">Ẩn Điểm Bán</span>
+      </button>
+
       <button class="quick-btn" id="btnQuickHideInactive" onclick="toggleHideInactiveQuick()" style="border-color: rgba(239, 68, 68, 0.6);"><i class="fa-solid fa-ban" style="color:#ef4444;"></i> Bỏ NPP Ngưng</button>
       <button class="quick-btn" onclick="openAnalyticsModal()" style="border-color:#a78bfa; color:#c4b5fd;"><i class="fa-solid fa-chart-pie"></i> Báo Cáo Cự Ly</button>
       <button class="quick-btn" id="btnToggleRadius" onclick="toggleRadius()"><i class="fa-solid fa-circle-notch"></i> Bán kính 45km</button>
@@ -941,50 +1066,63 @@
       </div>
 
       <div class="modal-body">
-        <!-- KPI Summary Cards -->
+        <!-- KPI Summary Cards (Cập nhật động theo Vùng / Bộ lọc) -->
         <div class="modal-kpi-grid">
           <div class="modal-kpi-card">
             <span class="modal-kpi-title"><i class="fa-solid fa-arrows-left-right" style="color:#38bdf8;"></i> Cự Ly Trung Bình</span>
-            <span class="modal-kpi-num">13.9 <span style="font-size:0.85rem; font-weight:600; color:#94a3b8;">km</span></span>
-            <span class="modal-kpi-desc">72.8% khách trong bán kính 15km lý tưởng</span>
+            <span class="modal-kpi-num" id="modalKpiAvgDist">13.9 <span style="font-size:0.85rem; font-weight:600; color:#94a3b8;">km</span></span>
+            <span class="modal-kpi-desc" id="modalKpiAvgDesc">Bình quân cự ly phục vụ theo vùng được chọn</span>
           </div>
 
           <div class="modal-kpi-card">
             <span class="modal-kpi-title"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;"></i> Điểm Nóng > 45km</span>
-            <span class="modal-kpi-num" style="color:#f87171;">2,454 <span style="font-size:0.85rem; font-weight:600; color:#94a3b8;">điểm bán</span></span>
-            <span class="modal-kpi-desc">Cần mở trạm trung chuyển để giảm cước</span>
+            <span class="modal-kpi-num" id="modalKpiRemote" style="color:#f87171;">2,454 <span style="font-size:0.85rem; font-weight:600; color:#94a3b8;">điểm bán</span></span>
+            <span class="modal-kpi-desc" id="modalKpiRemoteDesc">Cần mở trạm trung chuyển để giảm cước</span>
           </div>
 
           <div class="modal-kpi-card">
             <span class="modal-kpi-title"><i class="fa-solid fa-snowflake" style="color:#38bdf8;"></i> Hàng Đông Cự Ly Xa</span>
-            <span class="modal-kpi-num" style="color:#38bdf8;">854 <span style="font-size:0.85rem; font-weight:600; color:#94a3b8;">điểm (34.8%)</span></span>
-            <span class="modal-kpi-desc">Rủi ro rã đông & hư hỏng nhiệt độ cao nhất</span>
+            <span class="modal-kpi-num" id="modalKpiCold" style="color:#38bdf8;">854 <span style="font-size:0.85rem; font-weight:600; color:#94a3b8;">điểm</span></span>
+            <span class="modal-kpi-desc" id="modalKpiColdDesc">Rủi ro rã đông & hư hỏng nhiệt độ cao nhất</span>
           </div>
 
           <div class="modal-kpi-card">
             <span class="modal-kpi-title"><i class="fa-solid fa-box-open" style="color:#f59e0b;"></i> Hàng Khô Cự Ly Xa</span>
-            <span class="modal-kpi-num" style="color:#fbbf24;">1,600 <span style="font-size:0.85rem; font-weight:600; color:#94a3b8;">điểm (65.2%)</span></span>
-            <span class="modal-kpi-desc">Có thể gom tuyến hoặc chuyển tải linh hoạt</span>
+            <span class="modal-kpi-num" id="modalKpiDry" style="color:#fbbf24;">1,600 <span style="font-size:0.85rem; font-weight:600; color:#94a3b8;">điểm</span></span>
+            <span class="modal-kpi-desc" id="modalKpiDryDesc">Có thể gom tuyến hoặc chuyển tải linh hoạt</span>
           </div>
         </div>
 
-        <!-- Filter & Search Controls in Modal -->
+        <!-- Filter & Search Controls in Modal (Đầy đủ lọc Miền, Vùng, Trạng thái, Sắp xếp) -->
         <div class="modal-filter-row">
           <span style="color:#94a3b8; font-size:0.72rem; font-weight:700;"><i class="fa-solid fa-filter"></i> Lọc:</span>
+          
+          <!-- LỌC MIỀN TRONG MODAL -->
+          <select id="modalFilterMien" class="filter-select" onchange="onModalMienChange()">
+            <option value="ALL">Tất cả Miền</option>
+            <option value="MIỀN NAM">MIỀN NAM (199 NPP)</option>
+            <option value="MIỀN BẮC">MIỀN BẮC (192 NPP)</option>
+          </select>
+
+          <!-- LỌC THEO VÙNG (AREA) TRONG MODAL -->
+          <select id="modalFilterVung" class="filter-select" onchange="filterAnalyticsTable()">
+            <option value="ALL">Tất cả Vùng (6 Vùng)</option>
+          </select>
+
           <select id="modalFilterStatus" class="filter-select" onchange="filterAnalyticsTable()">
-            <option value="ACTIVE" selected>🟢 Chỉ NPP Đang Hoạt Động (212)</option>
+            <option value="ACTIVE" selected>🟢 Chỉ NPP Đang Hoạt Động</option>
             <option value="REMOTE_ONLY">⚠️ Chỉ NPP có khách >45km</option>
-            <option value="ALL">Tất cả 388 NPP</option>
+            <option value="ALL">Tất cả NPP</option>
           </select>
 
           <select id="modalSortCriteria" class="filter-select" onchange="filterAnalyticsTable()">
+            <option value="REMOTE_COUNT" selected>Sắp xếp: Số khách >45km giảm dần</option>
             <option value="MAX_DIST">Sắp xếp: Cự ly Max giảm dần</option>
             <option value="AVG_DIST">Sắp xếp: Cự ly TB giảm dần</option>
-            <option value="REMOTE_COUNT" selected>Sắp xếp: Số khách >45km giảm dần</option>
             <option value="TOTAL_OUTLETS">Sắp xếp: Tổng khách giảm dần</option>
           </select>
 
-          <input type="text" id="modalSearch" class="filter-search" placeholder="🔍 Tìm NPP, Tỉnh..." oninput="filterAnalyticsTable()" style="flex:1; min-width:160px;">
+          <input type="text" id="modalSearch" class="filter-search" placeholder="🔍 Tìm NPP, Tỉnh, Khách xa nhất..." oninput="filterAnalyticsTable()" style="flex:1; min-width:140px;">
           
           <span style="font-size:0.7rem; color:#94a3b8; margin-left:auto;">Hiển thị: <b id="modalTableCount" style="color:#38bdf8;">0</b> NPP</span>
         </div>
@@ -996,7 +1134,7 @@
               <tr>
                 <th>MÃ & TÊN NPP</th>
                 <th>TRẠNG THÁI</th>
-                <th>TỈNH / MIỀN</th>
+                <th>VÙNG / TỈNH</th>
                 <th>TỔNG KH</th>
                 <th>CỰ LY TB</th>
                 <th>CỰ LY XA NHẤT</th>
@@ -1081,18 +1219,12 @@
       populateVungOptions();
       populateTinhOptions();
       applyFilters();
+
+      // Check mobile size to auto-adjust
+      if (window.innerWidth <= 768) {
+        map.setZoom(5);
+      }
     });
-
-    function onMienChange() {
-      populateVungOptions();
-      populateTinhOptions();
-      applyFilters();
-    }
-
-    function onVungChange() {
-      populateTinhOptions();
-      applyFilters();
-    }
 
     function populateVungOptions() {
       const mienVal = document.getElementById('filterMien').value;
@@ -1143,6 +1275,17 @@
       });
     }
 
+    function onMienChange() {
+      populateVungOptions();
+      populateTinhOptions();
+      applyFilters();
+    }
+
+    function onVungChange() {
+      populateTinhOptions();
+      applyFilters();
+    }
+
     function toggleNPPVisibility() {
       const chk = document.getElementById('chkToggleNPP');
       const lbl = document.getElementById('lblChkNpp');
@@ -1150,22 +1293,21 @@
       if (showNPP) {
         lbl.classList.add('active-npp');
         markersLayer.addTo(map);
-        if (showRadius) radiusLayer.addTo(map);
       } else {
         lbl.classList.remove('active-npp');
         map.removeLayer(markersLayer);
-        map.removeLayer(radiusLayer);
       }
     }
 
     function toggleHideInactive() {
       const chk = document.getElementById('chkHideInactive');
-      const isHide = chk ? chk.checked : false;
       const statusSelect = document.getElementById('filterStatus');
-      if (isHide) {
-        if (statusSelect) statusSelect.value = 'ACTIVE';
-      } else {
-        if (statusSelect && statusSelect.value === 'ACTIVE') statusSelect.value = 'ALL';
+      if (statusSelect) {
+        if (chk.checked) {
+          statusSelect.value = 'ACTIVE';
+        } else {
+          statusSelect.value = 'ALL';
+        }
       }
       applyFilters();
     }
@@ -1190,14 +1332,28 @@
     function toggleOutletVisibility() {
       const chk = document.getElementById('chkToggleOutlet');
       const lbl = document.getElementById('lblChkOutlet');
+      const quickBtn = document.getElementById('btnQuickToggleOutlet');
+      const quickText = document.getElementById('btnQuickOutletText');
       showOutlets = chk.checked;
       if (showOutlets) {
-        lbl.classList.add('active-outlet');
+        if (lbl) lbl.classList.add('active-outlet');
+        if (quickBtn) quickBtn.classList.add('active-quick-outlet');
+        if (quickText) quickText.textContent = 'Ẩn Điểm Bán';
         renderOutlets();
         outletsLayer.addTo(map);
       } else {
-        lbl.classList.remove('active-outlet');
+        if (lbl) lbl.classList.remove('active-outlet');
+        if (quickBtn) quickBtn.classList.remove('active-quick-outlet');
+        if (quickText) quickText.textContent = 'Hiện Điểm Bán';
         map.removeLayer(outletsLayer);
+      }
+    }
+
+    function toggleOutletQuick() {
+      const chk = document.getElementById('chkToggleOutlet');
+      if (chk) {
+        chk.checked = !chk.checked;
+        toggleOutletVisibility();
       }
     }
 
@@ -1366,6 +1522,9 @@
             <div class="popup-actions">
               <button class="btn-action btn-spider" onclick="focusNPPAndSpider('${n.code}')"><i class="fa-solid fa-share-nodes"></i> Tia nối</button>
               <button class="btn-action btn-primary" onclick="zoomToNPP('${n.code}')"><i class="fa-solid fa-crosshairs"></i> Phóng to</button>
+              <button class="btn-action btn-outlet" onclick="showNPPOutlets('${n.code}')">
+                <i class="fa-solid fa-store"></i> Hiện Điểm Bán (${outletCnt})
+              </button>
             </div>
           </div>
         `;
@@ -1387,7 +1546,7 @@
         radiusLayer.addLayer(circle);
       });
 
-      if (bounds.length > 0 && filteredNPPs.length < ALL_NPPS.length && !selectedNPP) {
+      if (bounds.length > 0 && bounds.length <= 15) {
         map.fitBounds(bounds, { padding: [30, 30], maxZoom: 12 });
       }
     }
@@ -1442,31 +1601,23 @@
       spiderLayer.clearLayers();
       if (!showSpiderLines) return;
 
-      const nppCoordMap = {};
-      filteredNPPs.forEach(n => {
-        if (n.lat && n.lng) nppCoordMap[String(n.code)] = [n.lat, n.lng];
+      const nppMap = new Map();
+      ALL_NPPS.forEach(n => {
+        if (n.lat && n.lng) nppMap.set(String(n.code), [n.lat, n.lng]);
       });
 
-      const maxLines = 4000;
-      let count = 0;
-
-      for (let i = 0; i < filteredOutlets.length && count < maxLines; i++) {
-        const o = filteredOutlets[i];
-        const nppCode = String(o[4]);
-        const nppPos = nppCoordMap[nppCode];
-
+      filteredOutlets.slice(0, 1500).forEach(o => {
+        const nppPos = nppMap.get(String(o[4]));
         if (nppPos && o[0] && o[1]) {
           const isRemote = o[10] >= 45;
           const polyline = L.polyline([nppPos, [o[0], o[1]]], {
             color: isRemote ? '#ef4444' : '#8b5cf6',
-            weight: isRemote ? 1.4 : 0.8,
-            opacity: isRemote ? 0.8 : 0.45,
-            dashArray: isRemote ? '4, 4' : null
+            weight: isRemote ? 1.5 : 0.8,
+            opacity: isRemote ? 0.8 : 0.4
           });
           spiderLayer.addLayer(polyline);
-          count++;
         }
-      }
+      });
     }
 
     // Render Sidebar List
@@ -1493,6 +1644,14 @@
             <span class="npp-meta-item"><i class="fa-solid fa-arrows-left-right"></i> Max: ${n.max_dist || 0}km</span>
             ${n.remote_count > 0 ? `<span class="badge-remote-danger"><i class="fa-solid fa-triangle-exclamation"></i> ${n.remote_count} >45km</span>` : ''}
           </div>
+          <div style="margin-top:6px; display:flex; gap:5px;">
+            <button class="btn-nav" style="padding:2px 6px; font-size:0.65rem; background:#2563eb; color:white; border:none; border-radius:4px;" onclick="event.stopPropagation(); focusNPPAndSpider('${n.code}')">
+              <i class="fa-solid fa-share-nodes"></i> Tia Nối
+            </button>
+            <button class="btn-nav" style="padding:2px 6px; font-size:0.65rem; background:#d97706; color:white; border:none; border-radius:4px;" onclick="event.stopPropagation(); showNPPOutlets('${n.code}')">
+              <i class="fa-solid fa-store"></i> Hiện Điểm Bán (${n.outlet_count || 0})
+            </button>
+          </div>
         `;
         container.appendChild(card);
       });
@@ -1502,31 +1661,33 @@
         moreNotice.style.textAlign = 'center';
         moreNotice.style.padding = '8px';
         moreNotice.style.fontSize = '0.7rem';
-        moreNotice.style.color = '#64748b';
-        moreNotice.textContent = `...và ${filteredNPPs.length - 150} NPP khác (dùng ô tìm kiếm để xem)`;
+        moreNotice.style.color = '#94a3b8';
+        moreNotice.textContent = `Và ${filteredNPPs.length - 150} NPP khác... (Dùng ô tìm kiếm để lọc)`;
         container.appendChild(moreNotice);
       }
     }
 
-    function selectNPP(code, panToMap = true) {
+    function selectNPP(code, zoom = false) {
       selectedNPP = code;
       const npp = ALL_NPPS.find(n => n.code === code);
-      if (!npp) return;
-
-      document.querySelectorAll('.npp-card').forEach(c => c.classList.remove('selected'));
-
-      if (panToMap && npp.lat && npp.lng) {
-        map.setView([npp.lat, npp.lng], 13);
-        if (window.innerWidth <= 768) {
-          toggleMobileSidebar(false);
-        }
+      if (npp && zoom && npp.lat && npp.lng) {
+        map.setView([npp.lat, npp.lng], 11);
+      }
+      document.querySelectorAll('.npp-card').forEach(el => {
+        el.classList.toggle('selected', el.querySelector('.npp-code').textContent === code);
+      });
+      if (window.innerWidth <= 768 && zoom) {
+        toggleMobileSidebar(false);
       }
     }
 
     function zoomToNPP(code) {
       const npp = ALL_NPPS.find(n => n.code === code);
       if (npp && npp.lat && npp.lng) {
-        map.setView([npp.lat, npp.lng], 13);
+        map.setView([npp.lat, npp.lng], 12);
+      }
+      if (window.innerWidth <= 768) {
+        toggleMobileSidebar(false);
       }
     }
 
@@ -1553,6 +1714,70 @@
       });
     }
 
+    // NÚT HIỆN TOÀN BỘ ĐIỂM BÁN CỦA MỘT NPP
+    function showNPPOutlets(nppCode) {
+      // 1. Đảm bảo bật layer Outlets
+      showOutlets = true;
+      const chk = document.getElementById('chkToggleOutlet');
+      if (chk) chk.checked = true;
+      const lbl = document.getElementById('lblChkOutlet');
+      if (lbl) lbl.classList.add('active-outlet');
+      const quickBtn = document.getElementById('btnQuickToggleOutlet');
+      if (quickBtn) quickBtn.classList.add('active-quick-outlet');
+      const quickText = document.getElementById('btnQuickOutletText');
+      if (quickText) quickText.textContent = 'Ẩn Điểm Bán';
+      if (!map.hasLayer(outletsLayer)) outletsLayer.addTo(map);
+
+      // 2. Điền mã NPP vào ô tìm kiếm để chỉ hiển thị NPP và Điểm bán của NPP đó
+      const searchInput = document.getElementById('filterSearch');
+      if (searchInput) searchInput.value = nppCode;
+      applyFilters();
+
+      // 3. Vẽ tia nối liên kết
+      focusNPPAndSpider(nppCode);
+
+      // 4. Zoom vừa vặn bao quát NPP và tất cả outlets trực thuộc
+      const npp = ALL_NPPS.find(n => String(n.code) === String(nppCode));
+      const outlets = ALL_OUTLETS.filter(o => String(o[4]) === String(nppCode));
+      const latlngs = [];
+      if (npp && npp.lat && npp.lng) latlngs.push([npp.lat, npp.lng]);
+      outlets.forEach(o => {
+        if (o[0] && o[1]) latlngs.push([o[0], o[1]]);
+      });
+      if (latlngs.length > 0) {
+        map.fitBounds(latlngs, { padding: [50, 50], maxZoom: 13 });
+      }
+
+      // 5. Hiển thị banner thông báo nổi
+      const banner = document.getElementById('nppOutletBanner');
+      const bannerText = document.getElementById('nppOutletBannerText');
+      if (banner && bannerText) {
+        const nppName = npp ? npp.name : nppCode;
+        bannerText.innerHTML = `Đang xem <b>${outlets.length} Điểm bán</b> của NPP <b>${nppCode}</b> (${nppName})`;
+        banner.style.display = 'flex';
+      }
+
+      if (window.innerWidth <= 768) {
+        toggleMobileSidebar(false);
+      }
+    }
+
+    function resetOutletView() {
+      const banner = document.getElementById('nppOutletBanner');
+      if (banner) banner.style.display = 'none';
+
+      const searchInput = document.getElementById('filterSearch');
+      if (searchInput) searchInput.value = '';
+      spiderLayer.clearLayers();
+      applyFilters();
+      zoomToPreset('ALL');
+    }
+
+    function showNPPOutletsFromModal(nppCode) {
+      closeAnalyticsModal();
+      showNPPOutlets(nppCode);
+    }
+
     function toggleRadius() {
       const btn = document.getElementById('btnToggleRadius');
       showRadius = !showRadius;
@@ -1562,20 +1787,26 @@
     }
 
     function zoomToPreset(preset) {
-      if (preset === 'ALL') map.setView([14.0583, 108.2772], 6);
-      else if (preset === 'MB') map.setView([21.0285, 105.8542], 8);
-      else if (preset === 'MN') map.setView([10.8231, 106.6297], 8);
-      else if (preset === 'CTO') map.setView([10.0452, 105.7469], 9);
+      if (preset === 'ALL') {
+        map.setView([14.0583, 108.2772], window.innerWidth <= 768 ? 5 : 6);
+      } else if (preset === 'MB') {
+        map.setView([21.0285, 105.8542], 7);
+      } else if (preset === 'MN') {
+        map.setView([10.8231, 106.6297], 7);
+      }
     }
 
     function toggleMobileSidebar(open) {
       const sidebar = document.getElementById('sidebar');
-      if (open) sidebar.classList.add('open');
-      else sidebar.classList.remove('open');
+      if (open) {
+        sidebar.classList.add('open');
+      } else {
+        sidebar.classList.remove('open');
+      }
     }
 
     function exportFilteredCSV() {
-      let csv = 'Mã NPP,Tên NPP,Trạng thái,Miền,Vùng,Tỉnh/Thành,Địa chỉ,Vĩ độ,Kinh độ,Tổng Điểm Bán,Cự ly Max km,Số điểm >45km,Số điểm hàng đông\n';
+      let csv = 'Mã NPP,Tên NPP,Trạng thái,Miền,Vùng,Tỉnh/Thành,Địa chỉ,Lat,Lng,Tổng KH,Cự ly Max (km),KH >45km,KH Hàng Đông\n';
       filteredNPPs.forEach(n => {
         csv += `"${n.code}","${n.name}","${n.status}","${n.region}","${n.area}","${n.province}","${n.address || ''}",${n.lat},${n.lng},${n.outlet_count||0},${n.max_dist||0},${n.remote_count||0},${n.dong_count||0}\n`;
       });
@@ -1592,7 +1823,53 @@
     // =========================================================================
     // ANALYTICS MODAL FUNCTIONS (BÁO CÁO CỰ LY & ĐỀ XUẤT TRẠM TRUNG CHUYỂN)
     // =========================================================================
+    function populateModalVungOptions() {
+      const mienVal = document.getElementById('modalFilterMien') ? document.getElementById('modalFilterMien').value : 'ALL';
+      const vungSelect = document.getElementById('modalFilterVung');
+      if (!vungSelect) return;
+
+      const currentVal = vungSelect.value;
+      vungSelect.innerHTML = '<option value="ALL">Tất cả Vùng (6 Vùng)</option>';
+
+      const areas = ['Cần Thơ', 'HCM', 'Nha Trang', 'Hà Nội', 'Hải Phòng', 'Đà Nẵng'];
+      areas.forEach(a => {
+        const sample = NPP_ANALYTICS.find(d => d.area === a);
+        if (sample && (mienVal === 'ALL' || sample.region === mienVal)) {
+          const count = NPP_ANALYTICS.filter(d => (mienVal === 'ALL' || d.region === mienVal) && d.area === a).length;
+          const opt = document.createElement('option');
+          opt.value = a;
+          opt.textContent = `${a} (${count} NPP)`;
+          vungSelect.appendChild(opt);
+        }
+      });
+
+      if (currentVal && Array.from(vungSelect.options).some(o => o.value === currentVal)) {
+        vungSelect.value = currentVal;
+      } else {
+        vungSelect.value = 'ALL';
+      }
+    }
+
+    function onModalMienChange() {
+      populateModalVungOptions();
+      filterAnalyticsTable();
+    }
+
     function openAnalyticsModal() {
+      // Đồng bộ theo bộ lọc Miền & Vùng hiện tại trên thanh công cụ bản đồ
+      const mainMien = document.getElementById('filterMien') ? document.getElementById('filterMien').value : 'ALL';
+      const mainVung = document.getElementById('filterVung') ? document.getElementById('filterVung').value : 'ALL';
+
+      const modalMien = document.getElementById('modalFilterMien');
+      if (modalMien && mainMien) modalMien.value = mainMien;
+
+      populateModalVungOptions();
+
+      const modalVung = document.getElementById('modalFilterVung');
+      if (modalVung && mainVung && mainVung !== 'ALL') {
+        modalVung.value = mainVung;
+      }
+
       document.getElementById('analyticsModal').classList.add('open');
       filterAnalyticsTable();
     }
@@ -1601,33 +1878,84 @@
       document.getElementById('analyticsModal').classList.remove('open');
     }
 
+    function updateModalKPIs(list) {
+      let totalOutlets = 0;
+      let weightedDistSum = 0;
+      let totalRemote = 0;
+
+      list.forEach(d => {
+        const outCnt = (d.total_outlets || 0);
+        totalOutlets += outCnt;
+        weightedDistSum += (d.avg_dist || 0) * outCnt;
+        totalRemote += (d.remote_outlets_45km || 0);
+      });
+
+      const avgDist = totalOutlets > 0 ? (weightedDistSum / totalOutlets).toFixed(1) : '0.0';
+      const remotePct = totalOutlets > 0 ? (totalRemote / totalOutlets * 100).toFixed(1) : 0;
+
+      let estimatedColdRemote = 0;
+      let estimatedDryRemote = 0;
+      list.forEach(d => {
+        if (d.remote_outlets_45km > 0) {
+          const coldRem = Math.round(d.remote_outlets_45km * (d.cold_pct / 100));
+          estimatedColdRemote += coldRem;
+          estimatedDryRemote += (d.remote_outlets_45km - coldRem);
+        }
+      });
+
+      const kpiAvg = document.getElementById('modalKpiAvgDist');
+      if (kpiAvg) kpiAvg.innerHTML = `${avgDist} <span style="font-size:0.85rem; font-weight:600; color:#94a3b8;">km</span>`;
+
+      const kpiRemote = document.getElementById('modalKpiRemote');
+      if (kpiRemote) kpiRemote.innerHTML = `${totalRemote.toLocaleString('vi-VN')} <span style="font-size:0.85rem; font-weight:600; color:#94a3b8;">điểm (${remotePct}%)</span>`;
+
+      const kpiCold = document.getElementById('modalKpiCold');
+      if (kpiCold) kpiCold.innerHTML = `${estimatedColdRemote.toLocaleString('vi-VN')} <span style="font-size:0.85rem; font-weight:600; color:#94a3b8;">điểm</span>`;
+
+      const kpiDry = document.getElementById('modalKpiDry');
+      if (kpiDry) kpiDry.innerHTML = `${estimatedDryRemote.toLocaleString('vi-VN')} <span style="font-size:0.85rem; font-weight:600; color:#94a3b8;">điểm</span>`;
+    }
+
     function filterAnalyticsTable() {
       if (!NPP_ANALYTICS || NPP_ANALYTICS.length === 0) return;
 
+      const mienFilter = document.getElementById('modalFilterMien') ? document.getElementById('modalFilterMien').value : 'ALL';
+      const vungFilter = document.getElementById('modalFilterVung') ? document.getElementById('modalFilterVung').value : 'ALL';
       const statusFilter = document.getElementById('modalFilterStatus').value;
       const sortCriteria = document.getElementById('modalSortCriteria').value;
       const searchVal = document.getElementById('modalSearch').value.toLowerCase().trim();
 
       let list = [...NPP_ANALYTICS];
 
-      // Filter Status
+      // 1. Lọc theo Miền
+      if (mienFilter !== 'ALL') {
+        list = list.filter(d => d.region === mienFilter);
+      }
+
+      // 2. Lọc theo Vùng (Area)
+      if (vungFilter !== 'ALL') {
+        list = list.filter(d => d.area === vungFilter);
+      }
+
+      // 3. Lọc theo Trạng thái
       if (statusFilter === 'ACTIVE') {
         list = list.filter(d => d.is_active);
       } else if (statusFilter === 'REMOTE_ONLY') {
         list = list.filter(d => d.remote_outlets_45km > 0);
       }
 
-      // Filter Search
+      // 4. Tìm kiếm từ khóa
       if (searchVal) {
         list = list.filter(d => 
           d.npp_name.toLowerCase().includes(searchVal) ||
           d.npp_code.toLowerCase().includes(searchVal) ||
           d.province.toLowerCase().includes(searchVal) ||
+          (d.area && d.area.toLowerCase().includes(searchVal)) ||
           (d.farthest_outlet && d.farthest_outlet.name.toLowerCase().includes(searchVal))
         );
       }
 
-      // Sort
+      // 5. Sắp xếp
       if (sortCriteria === 'MAX_DIST') {
         list.sort((a, b) => b.max_dist - a.max_dist);
       } else if (sortCriteria === 'AVG_DIST') {
@@ -1639,6 +1967,7 @@
       }
 
       document.getElementById('modalTableCount').textContent = list.length;
+      updateModalKPIs(list);
       renderAnalyticsTable(list);
     }
 
@@ -1647,7 +1976,7 @@
       tbody.innerHTML = '';
 
       if (list.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:20px; color:#94a3b8;">Không tìm thấy NPP nào phù hợp điều kiện lọc.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:20px; color:#94a3b8;">Không tìm thấy NPP nào phù hợp điều kiện lọc vùng / trạng thái này.</td></tr>';
         return;
       }
 
@@ -1675,8 +2004,8 @@
             <span class="badge-status ${item.is_active ? 'badge-active' : 'badge-inactive'}">${item.status}</span>
           </td>
           <td>
-            <b>${item.province}</b><br>
-            <span style="color:#64748b; font-size:0.65rem;">${item.region}</span>
+            <b style="color:#e2e8f0;">${item.province}</b><br>
+            <span style="color:#60a5fa; font-weight:700; font-size:0.68rem;"><i class="fa-solid fa-network-wired"></i> ${item.area || item.region}</span>
           </td>
           <td>
             <b style="color:#f1f5f9;">${item.total_outlets.toLocaleString('vi-VN')}</b> KH<br>
@@ -1699,9 +2028,14 @@
           </td>
           <td>${hubTag}</td>
           <td>
-            <button class="btn-nav" style="padding:3px 7px; font-size:0.65rem; background:#2563eb; color:white; border:none;" onclick="zoomToNPPAndFarthest('${item.npp_code}')">
-              <i class="fa-solid fa-map-location-dot"></i> Xem
-            </button>
+            <div style="display:flex; gap:4px; flex-wrap:nowrap;">
+              <button class="btn-nav" style="padding:4px 7px; font-size:0.65rem; background:#2563eb; color:white; border:none;" onclick="zoomToNPPAndFarthest('${item.npp_code}')" title="Xem vị trí NPP và khách xa nhất">
+                <i class="fa-solid fa-crosshairs"></i> Xem
+              </button>
+              <button class="btn-nav" style="padding:4px 7px; font-size:0.65rem; background:#d97706; color:white; border:none;" onclick="showNPPOutletsFromModal('${item.npp_code}')" title="Hiện toàn bộ điểm bán của NPP này">
+                <i class="fa-solid fa-store"></i> Hiện Outlet
+              </button>
+            </div>
           </td>
         `;
 

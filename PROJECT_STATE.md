@@ -99,9 +99,16 @@ d:\SE_Project\RTM_Model/
    - **Nút bấm 1 chạm trên bản đồ:** Nút nổi `🚫 Bỏ NPP Ngưng` rất tiện cho ngón tay cái khi lướt điện thoại.
 3. **Thẻ / Bảng Tổng Thể Phân Tích Cự Ly & Hub (`📊 Cự Ly & Hub`):**
    - Nút bấm tím trên Header và nút nổi `📊 Báo Cáo Cự Ly` trên bản đồ.
-   - Hiển thị bảng tổng hợp: Cự ly trung bình, Cự ly xa nhất, Tên và địa chỉ khách hàng xa nhất, Loại hàng (Đông/Khô), Đề xuất trạm Hub (Đông/Khô/Ổn định).
-   - Nút **"Xem"** trên từng dòng: Tự động zoom đến NPP và vẽ tia nối đến khách hàng xa nhất.
-4. **Bộ dấu tick hiển thị lớp (Layer Visibility Toggles):**
+   - **Bộ lọc theo Vùng & Miền tích hợp trực tiếp:** Tự động đồng bộ với bộ lọc chính của bản đồ (ví dụ: đang xem Vùng Cần Thơ trên bản đồ thì mở bảng sẽ lập tức lọc các NPP Vùng Cần Thơ). Có thể chuyển đổi các Vùng (Cần Thơ, HCM, Hà Nội, Hải Phòng, Nha Trang, Đà Nẵng) ngay trong modal.
+   - **4 Thẻ KPI động theo vùng:** Tự động tính toán lại cự ly trung bình, tổng điểm nóng >45km, số điểm hàng đông/khô cự ly xa của vùng được lọc.
+   - Nút **"Xem"**: Tự động zoom đến NPP và vẽ tia nối đến khách hàng xa nhất.
+   - Nút **"Hiện Outlet"**: Tự động đóng modal, bay đến NPP và bật hiển thị toàn bộ mạng lưới điểm bán trực thuộc.
+4. **Nút Hiện Outlet & Quản lý hiển thị điểm bán đa tầng:**
+   - **Nút nổi trên bản đồ:** `[🏪 Hiện/Ẩn Điểm Bán]` trên thanh điều khiển nhanh `map-quick-controls`, bấm 1 chạm để bật/tắt toàn bộ điểm bán toàn quốc (đồng bộ checkbox thanh lọc).
+   - **Nút trên Popup NPP:** `[🏪 Hiện Điểm Bán (X)]` cho phép lọc nhanh chỉ hiển thị các điểm bán của NPP đó, vẽ tia nối và zoom vừa vặn cụm outlets.
+   - **Thanh Banner nổi khôi phục:** Khi đang xem riêng điểm bán của 1 NPP, xuất hiện thanh thông báo nổi trên đầu bản đồ với nút `[Hiện Tất Cả]` để quay lại góc nhìn tổng thể.
+   - **Nút trên từng thẻ NPP ở Sidebar & Mobile Drawer:** Xem nhanh tia nối hoặc bật các điểm bán trực thuộc.
+5. **Bộ dấu tick hiển thị lớp (Layer Visibility Toggles):**
    - `☑️ NPP (391)`: Bật/tắt hiển thị NPP.
    - `☑️ Điểm Bán (59.4k)`: Bật/tắt hiển thị khách hàng.
    - `☑️ Tia Nối`: Vẽ mạng lưới liên kết NPP -> Khách hàng.
@@ -114,13 +121,13 @@ d:\SE_Project\RTM_Model/
 
 Khi restart lại Antigravity, **KHÔNG CẦN ĐỌC LẠI TOÀN BỘ CODE**, chỉ cần làm theo các bước sau:
 
-1. **Để chỉnh sửa giao diện bản đồ:**
-   - Sửa template trong script: `C:\Users\IT-Backup\.gemini\antigravity-ide\brain\05b5759a-74ee-4579-a357-dad63829fe76\scratch\build_complete_app_with_analytics.py`
-   - Chạy: `python "C:\Users\IT-Backup\.gemini\antigravity-ide\brain\05b5759a-74ee-4579-a357-dad63829fe76\scratch\build_complete_app_with_analytics.py"` (Script sẽ ghi đè vào `index.html` và `ban_do_khong_gian_rtm_mekong.html`).
+1. **Để chỉnh sửa hoặc biên dịch lại bản đồ:**
+   - Script build chính thức đặt trực tiếp tại: `d:\SE_Project\RTM_Model\build_app.py`
+   - Chạy: `python d:\SE_Project\RTM_Model\build_app.py` (Script tự động ghi đè chuẩn xác vào cả `index.html` và `ban_do_khong_gian_rtm_mekong.html`).
 2. **Để commit và deploy lên Vercel:**
    ```powershell
-   git add ban_do_khong_gian_rtm_mekong.html index.html vercel.json npp_analytics_data.js
-   git commit -m "feat: mô tả thay đổi"
+   git add ban_do_khong_gian_rtm_mekong.html index.html vercel.json npp_analytics_data.js build_app.py PROJECT_STATE.md README.md
+   git commit -m "feat: filter cu ly hub theo vung va lay lai nut hien outlet"
    git push origin main
    ```
    *(Lưu ý trên Windows PowerShell dùng `;` để phân tách lệnh, không dùng `&&`)*.

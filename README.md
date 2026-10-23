@@ -19,6 +19,10 @@ Hệ thống quản lý, phân tích cự ly giao hàng và trực quan hóa kh�
 * **Nút tích lọc bỏ NPP ngưng hoạt động (`[x] 🚫 Bỏ NPP Ngưng`):**
   - Tích chọn để lập tức ẩn toàn bộ **176 NPP đã ngưng hoạt động** (chấm đỏ), chỉ giữ lại **215 NPP đang hoạt động** (chấm xanh).
   - Nút bấm nhanh 1 chạm trực tiếp trên bản đồ.
+* **Quản lý & Hiển thị Điểm Bán (Outlets Controls):**
+  - **Nút nổi trực tiếp trên bản đồ `[🏪 Điểm Bán]`**: Bật/tắt nhanh 59.4k điểm bán ngay trên màn hình.
+  - **Nút `[🏪 Hiện Điểm Bán]` trên Popup NPP**: Nhấp vào bất kỳ NPP nào để hiển thị mạng lưới điểm bán trực thuộc, vẽ tia nối và tự động zoom vừa vặn cụm điểm bán.
+  - **Thanh banner nổi:** Báo hiệu đang xem điểm bán của NPP và có nút `[Hiện Tất Cả]` tiện lợi.
 * **Bộ điều khiển hiển thị lớp (Layer Visibility Toggles):**
   - `☑️ NPP (391)`: Bật/tắt mạng lưới NPP.
   - `☑️ Điểm Bán (59.4k)`: Bật/tắt điểm bán lẻ.
@@ -28,12 +32,16 @@ Hệ thống quản lý, phân tích cự ly giao hàng và trực quan hóa kh�
 
 ### 2. Thẻ / Bảng Tổng Thể Phân Tích Cự Ly & Đề Xuất Trạm Hub (`📊 Cự Ly & Hub`)
 * Bấm nút **`📊 Cự Ly & Hub`** trên Header hoặc nút **`📊 Báo Cáo Cự Ly`** trên bản đồ.
-* Xem chi tiết:
+* **Bộ lọc Đa Tầng theo Miền & Vùng:**
+  - Tự động đồng bộ với vùng đang chọn ngoài bản đồ hoặc chọn trực tiếp từng Vùng (Cần Thơ, HCM, Hà Nội, Hải Phòng, Nha Trang, Đà Nẵng).
+  - 4 Thẻ KPI động: Tự động tính toán lại cự ly trung bình, tổng điểm nóng >45km, số điểm hàng đông/khô xa của riêng vùng được chọn.
+* Xem chi tiết từng NPP:
   - Cự ly giao hàng trung bình của từng NPP.
   - Cự ly xa nhất và danh tính khách hàng xa nhất (Tên, cự ly km, phân loại hàng, địa chỉ).
   - Số lượng điểm bán >45km và tỷ lệ %.
   - Đề xuất mở trạm trung chuyển vệ tinh: ❄️ **Hub Đông Lạnh** hay 🌾 **Hub Hàng Khô**.
-  - Nút **"Xem"** tự động điều hướng bản đồ đến NPP và vẽ mạng lưới giao hàng.
+  - Nút **"Xem"**: Tự động điều hướng bản đồ đến NPP và vẽ mạng lưới giao hàng.
+  - Nút **"Hiện Outlet"**: Lập tức mở toàn bộ các điểm bán của NPP đó trên bản đồ.
 
 ---
 
