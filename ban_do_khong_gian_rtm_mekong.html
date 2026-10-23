@@ -201,6 +201,7 @@
       background: #1e293b;
     }
     .toggle-checkbox-label.npp-label input[type="checkbox"]:checked { background: #059669; border-color: #10b981; }
+    .toggle-checkbox-label.inactive-label input[type="checkbox"]:checked { background: #dc2626; border-color: #ef4444; }
     .toggle-checkbox-label.outlet-label input[type="checkbox"]:checked { background: #f59e0b; border-color: #fbbf24; }
     .toggle-checkbox-label.cold-label input[type="checkbox"]:checked { background: #0284c7; border-color: #38bdf8; }
     .toggle-checkbox-label.dry-label input[type="checkbox"]:checked { background: #d97706; border-color: #f59e0b; }
@@ -219,6 +220,7 @@
       transform: translate(-50%, -50%);
     }
     .active-npp { background: rgba(5, 150, 105, 0.18); border-color: rgba(16, 185, 129, 0.4); color: #a7f3d0; }
+    .active-hide-inactive { background: rgba(220, 38, 38, 0.25) !important; border-color: rgba(239, 68, 68, 0.6) !important; color: #fecaca !important; }
     .active-outlet { background: rgba(245, 158, 11, 0.18); border-color: rgba(245, 158, 11, 0.4); color: #fde68a; }
     .active-cold { background: rgba(14, 165, 233, 0.18); border-color: rgba(14, 165, 233, 0.4); color: #bae6fd; }
     .active-dry { background: rgba(217, 119, 6, 0.18); border-color: rgba(217, 119, 6, 0.4); color: #fed7aa; }
@@ -413,6 +415,7 @@
     }
     .quick-btn:hover { background: #334155; color: white; }
     .quick-btn.active { background: #2563eb; color: white; border-color: #60a5fa; }
+    .quick-btn.active-inactive-btn { background: #dc2626 !important; color: white !important; border-color: #ef4444 !important; }
 
     /* Floating Mobile Toggle Drawer Button */
     .btn-mobile-drawer {
@@ -618,7 +621,7 @@
     <!-- BỘ LỌC TRẠNG THÁI NPP: ĐANG HOẠT ĐỘNG / NGƯNG / TẤT CẢ -->
     <div class="filter-group">
       <span class="filter-label"><i class="fa-solid fa-toggle-on"></i> Trạng thái NPP:</span>
-      <select id="filterStatus" class="filter-select" onchange="applyFilters()">
+      <select id="filterStatus" class="filter-select" onchange="onStatusSelectChange()">
         <option value="ALL">Tất cả Trạng thái (391 NPP)</option>
         <option value="ACTIVE">🟢 Đang Hoạt Động (215 NPP)</option>
         <option value="INACTIVE">🔴 Ngưng Hoạt Động (176 NPP)</option>
@@ -631,6 +634,13 @@
         <input type="checkbox" id="chkToggleNPP" checked onchange="toggleNPPVisibility()">
         <i class="fa-solid fa-warehouse" style="color:#10b981;"></i>
         <span>NPP (<span id="chkNppCount">391</span>)</span>
+      </label>
+
+      <!-- DẤU TICK BỎ CÁC NPP NGƯNG HOẠT ĐỘNG -->
+      <label class="toggle-checkbox-label inactive-label" id="lblChkHideInactive" title="Tích chọn để BỎ TOÀN BỘ các NPP đã ngưng hoạt động">
+        <input type="checkbox" id="chkHideInactive" onchange="toggleHideInactive()">
+        <i class="fa-solid fa-ban" style="color:#ef4444;"></i>
+        <span>Bỏ NPP Ngưng (<span id="countInactiveNpp">176</span>)</span>
       </label>
 
       <label class="toggle-checkbox-label outlet-label active-outlet" id="lblChkOutlet" title="Bật/Tắt hiển thị Điểm Bán">
@@ -692,7 +702,7 @@
       <button class="quick-btn" onclick="zoomToPreset('ALL')"><i class="fa-solid fa-arrows-to-eye"></i> Toàn Quốc</button>
       <button class="quick-btn" onclick="zoomToPreset('MB')"><i class="fa-solid fa-location-dot"></i> Bắc</button>
       <button class="quick-btn" onclick="zoomToPreset('MN')"><i class="fa-solid fa-location-dot"></i> Nam</button>
-      <button class="quick-btn" onclick="zoomToPreset('CTO')"><i class="fa-solid fa-water"></i> Cần Thơ</button>
+      <button class="quick-btn" id="btnQuickHideInactive" onclick="toggleHideInactiveQuick()" style="border-color: rgba(239, 68, 68, 0.6);"><i class="fa-solid fa-ban" style="color:#ef4444;"></i> Bỏ NPP Ngưng</button>
       <button class="quick-btn" id="btnToggleRadius" onclick="toggleRadius()"><i class="fa-solid fa-circle-notch"></i> Bán kính 45km</button>
     </div>
 
@@ -958,26 +968,69 @@
       }
     }
 
+    function toggleHideInactive() {
+      const chk = document.getElementById('chkHideInactive');
+      const isHide = chk ? chk.checked : false;
+      const statusSelect = document.getElementById('filterStatus');
+      if (isHide) {
+        if (statusSelect) statusSelect.value = 'ACTIVE';
+      } else {
+        if (statusSelect && statusSelect.value === 'ACTIVE') statusSelect.value = 'ALL';
+      }
+      applyFilters();
+    }
+
+    function toggleHideInactiveQuick() {
+      const chk = document.getElementById('chkHideInactive');
+      if (chk) {
+        chk.checked = !chk.checked;
+        toggleHideInactive();
+      }
+    }
+
+    function onStatusSelectChange() {
+      const statusSelect = document.getElementById('filterStatus');
+      const chk = document.getElementById('chkHideInactive');
+      if (chk && statusSelect) {
+        chk.checked = (statusSelect.value === 'ACTIVE');
+      }
+      applyFilters();
+    }
+
     function applyFilters() {
       const mienVal = document.getElementById('filterMien').value;
       const vungVal = document.getElementById('filterVung').value;
       const tinhVal = document.getElementById('filterTinh').value;
       const statusVal = document.getElementById('filterStatus') ? document.getElementById('filterStatus').value : 'ALL';
+      const hideInactive = document.getElementById('chkHideInactive') ? document.getElementById('chkHideInactive').checked : false;
       const searchVal = document.getElementById('filterSearch').value.toLowerCase().trim();
 
       const allowCold = document.getElementById('chkToggleCold').checked;
       const allowDry = document.getElementById('chkToggleDry').checked;
       const remoteOnly = document.getElementById('chkToggleRemoteOnly').checked;
 
+      // Update toggle visual active states
       document.getElementById('lblChkCold').classList.toggle('active-cold', allowCold);
       document.getElementById('lblChkDry').classList.toggle('active-dry', allowDry);
       document.getElementById('lblChkRemoteOnly').classList.toggle('active-remote', remoteOnly);
+
+      const lblInactive = document.getElementById('lblChkHideInactive');
+      if (lblInactive) lblInactive.classList.toggle('active-hide-inactive', hideInactive);
+
+      const btnQuickInactive = document.getElementById('btnQuickHideInactive');
+      if (btnQuickInactive) {
+        btnQuickInactive.classList.toggle('active-inactive-btn', hideInactive);
+      }
 
       // 1. Filter NPPs
       filteredNPPs = ALL_NPPS.filter(n => {
         const matchMien = (mienVal === 'ALL' || n.region === mienVal);
         const matchVung = (vungVal === 'ALL' || n.area === vungVal);
         const matchTinh = (tinhVal === 'ALL' || n.province === tinhVal);
+
+        // Bỏ NPP ngưng hoạt động khi nút tích Bỏ NPP Ngưng được chọn
+        if (hideInactive && !n.status.includes('Đang')) return false;
+
         const matchStatus = (statusVal === 'ALL') || 
                             (statusVal === 'ACTIVE' && n.status.includes('Đang')) || 
                             (statusVal === 'INACTIVE' && !n.status.includes('Đang'));
@@ -999,7 +1052,8 @@
         if (vungVal !== 'ALL' && o[6] !== vungVal) return false;
         if (tinhVal !== 'ALL' && o[5] !== tinhVal) return false;
 
-        if (statusVal !== 'ALL' && !matchingNppCodeSet.has(String(o[4]))) return false;
+        // Nếu bỏ NPP ngưng hoặc lọc theo trạng thái, ẩn luôn các outlet thuộc NPP bị loại bỏ
+        if ((hideInactive || statusVal !== 'ALL') && !matchingNppCodeSet.has(String(o[4]))) return false;
         if (remoteOnly && o[10] < 45) return false;
 
         const ptype = o[11];
