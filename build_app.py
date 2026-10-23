@@ -142,21 +142,33 @@ html_template = f'''<!DOCTYPE html>
       color: #ffffff;
     }}
 
-    /* Filter Bar - Cuộn ngang mượt mà trên mobile */
+    /* Filter Bar - Được chia làm 2 dòng trực quan, dễ bấm, tiện lọc */
     .filter-bar {{
       background: #1e293b;
-      padding: 0.4rem 0.7rem;
+      padding: 0.4rem 0.75rem;
       border-bottom: 1px solid #334155;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      z-index: 999;
+      flex-shrink: 0;
+    }}
+    .filter-row {{
       display: flex;
       align-items: center;
       gap: 0.5rem;
       overflow-x: auto;
       white-space: nowrap;
-      z-index: 999;
-      flex-shrink: 0;
       scrollbar-width: none;
     }}
-    .filter-bar::-webkit-scrollbar {{ display: none; }}
+    .filter-row::-webkit-scrollbar {{ display: none; }}
+    .filter-row-primary {{
+      padding-bottom: 3px;
+    }}
+    .filter-row-secondary {{
+      padding-top: 3px;
+      border-top: 1px dashed rgba(51, 65, 85, 0.75);
+    }}
 
     .filter-group {{
       display: flex;
@@ -277,9 +289,9 @@ html_template = f'''<!DOCTYPE html>
     /* Layout Main */
     .main-container {{
       flex: 1;
+      min-height: 0;
       display: flex;
       position: relative;
-      height: calc(100vh - 86px);
       overflow: hidden;
     }}
 
@@ -852,8 +864,17 @@ html_template = f'''<!DOCTYPE html>
       .header-badge.outlets-badge, .header-badge.cold-badge {{ display: none; }}
       .btn-nav {{ padding: 4px 7px; font-size: 0.68rem; }}
       
+      .filter-bar {{
+        padding: 0.35rem 0.5rem;
+        gap: 0.35rem;
+      }}
+      .filter-row {{
+        gap: 0.35rem;
+      }}
       .main-container {{
-        height: calc(100vh - 82px);
+        flex: 1;
+        min-height: 0;
+        height: auto;
       }}
 
       /* Drawer trượt từ dưới lên */
@@ -921,103 +942,109 @@ html_template = f'''<!DOCTYPE html>
     </div>
   </header>
 
-  <!-- Cascading Filter Bar (Cuộn ngang 1 chạm trên mobile) -->
+  <!-- Cascading Filter Bar (Được chia làm 2 dòng rõ ràng, dễ chọn & không bị che khuất) -->
   <div class="filter-bar">
-    <div class="filter-group">
-      <span class="filter-label"><i class="fa-solid fa-globe"></i> Miền:</span>
-      <select id="filterMien" class="filter-select" onchange="onMienChange()">
-        <option value="ALL">Tất cả Miền</option>
-        <option value="MIỀN NAM">MIỀN NAM (199 NPP)</option>
-        <option value="MIỀN BẮC">MIỀN BẮC (192 NPP)</option>
-      </select>
+    <!-- DÒNG 1: BỘ LỌC ĐỊA BÀN (MIỀN, VÙNG, TỈNH), TRẠNG THÁI NPP & TÌM KIẾM -->
+    <div class="filter-row filter-row-primary">
+      <div class="filter-group">
+        <span class="filter-label"><i class="fa-solid fa-globe"></i> Miền:</span>
+        <select id="filterMien" class="filter-select" onchange="onMienChange()">
+          <option value="ALL">Tất cả Miền</option>
+          <option value="MIỀN NAM">MIỀN NAM (199 NPP)</option>
+          <option value="MIỀN BẮC">MIỀN BẮC (192 NPP)</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-label"><i class="fa-solid fa-network-wired"></i> Vùng:</span>
+        <select id="filterVung" class="filter-select" onchange="onVungChange()">
+          <option value="ALL">Tất cả Vùng</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-label"><i class="fa-solid fa-city"></i> Tỉnh/Thành:</span>
+        <select id="filterTinh" class="filter-select" onchange="applyFilters()">
+          <option value="ALL">Tất cả Tỉnh/Thành</option>
+        </select>
+      </div>
+
+      <!-- BỘ LỌC TRẠNG THÁI NPP: ĐANG HOẠT ĐỘNG / NGƯNG / TẤT CẢ -->
+      <div class="filter-group">
+        <span class="filter-label"><i class="fa-solid fa-toggle-on"></i> Trạng thái NPP:</span>
+        <select id="filterStatus" class="filter-select" onchange="onStatusSelectChange()">
+          <option value="ALL">Tất cả Trạng thái (391 NPP)</option>
+          <option value="ACTIVE">🟢 Đang Hoạt Động (215 NPP)</option>
+          <option value="INACTIVE">🔴 Ngưng Hoạt Động (176 NPP)</option>
+        </select>
+      </div>
+
+      <div class="filter-group" style="flex: 1; min-width: 160px;">
+        <input type="text" id="filterSearch" class="filter-search" placeholder="🔍 Tìm NPP, Điểm bán, Tỉnh..." oninput="applyFilters()" style="width: 100%;">
+      </div>
     </div>
 
-    <div class="filter-group">
-      <span class="filter-label"><i class="fa-solid fa-network-wired"></i> Vùng:</span>
-      <select id="filterVung" class="filter-select" onchange="onVungChange()">
-        <option value="ALL">Tất cả Vùng</option>
-      </select>
-    </div>
+    <!-- DÒNG 2: BỘ BẬT/TẮT LỚP HIỂN THỊ (TOGGLES) & THÔNG SỐ KPI TỔNG QUAN -->
+    <div class="filter-row filter-row-secondary">
+      <!-- DẤU TICK HIỂN THỊ LỚP (LAYER TOGGLES) -->
+      <div class="layer-toggle-container">
+        <label class="toggle-checkbox-label npp-label active-npp" id="lblChkNpp" title="Bật/Tắt hiển thị Nhà Phân Phối">
+          <input type="checkbox" id="chkToggleNPP" checked onchange="toggleNPPVisibility()">
+          <i class="fa-solid fa-warehouse" style="color:#10b981;"></i>
+          <span>NPP (<span id="chkNppCount">391</span>)</span>
+        </label>
 
-    <div class="filter-group">
-      <span class="filter-label"><i class="fa-solid fa-city"></i> Tỉnh/Thành:</span>
-      <select id="filterTinh" class="filter-select" onchange="applyFilters()">
-        <option value="ALL">Tất cả Tỉnh/Thành</option>
-      </select>
-    </div>
+        <!-- DẤU TICK BỎ CÁC NPP NGƯNG HOẠT ĐỘNG -->
+        <label class="toggle-checkbox-label inactive-label" id="lblChkHideInactive" title="Tích chọn để BỎ TOÀN BỘ các NPP đã ngưng hoạt động">
+          <input type="checkbox" id="chkHideInactive" onchange="toggleHideInactive()">
+          <i class="fa-solid fa-ban" style="color:#ef4444;"></i>
+          <span>Bỏ NPP Ngưng (<span id="countInactiveNpp">176</span>)</span>
+        </label>
 
-    <!-- BỘ LỌC TRẠNG THÁI NPP: ĐANG HOẠT ĐỘNG / NGƯNG / TẤT CẢ -->
-    <div class="filter-group">
-      <span class="filter-label"><i class="fa-solid fa-toggle-on"></i> Trạng thái NPP:</span>
-      <select id="filterStatus" class="filter-select" onchange="onStatusSelectChange()">
-        <option value="ALL">Tất cả Trạng thái (391 NPP)</option>
-        <option value="ACTIVE">🟢 Đang Hoạt Động (215 NPP)</option>
-        <option value="INACTIVE">🔴 Ngưng Hoạt Động (176 NPP)</option>
-      </select>
-    </div>
+        <label class="toggle-checkbox-label outlet-label active-outlet" id="lblChkOutlet" title="Bật/Tắt hiển thị Điểm Bán">
+          <input type="checkbox" id="chkToggleOutlet" checked onchange="toggleOutletVisibility()">
+          <i class="fa-solid fa-store" style="color:#f59e0b;"></i>
+          <span>Điểm Bán (<span id="chkOutletCount">59.4k</span>)</span>
+        </label>
 
-    <!-- DẤU TICK HIỂN THỊ LỚP (LAYER TOGGLES) -->
-    <div class="layer-toggle-container">
-      <label class="toggle-checkbox-label npp-label active-npp" id="lblChkNpp" title="Bật/Tắt hiển thị Nhà Phân Phối">
-        <input type="checkbox" id="chkToggleNPP" checked onchange="toggleNPPVisibility()">
-        <i class="fa-solid fa-warehouse" style="color:#10b981;"></i>
-        <span>NPP (<span id="chkNppCount">391</span>)</span>
-      </label>
+        <label class="toggle-checkbox-label spider-label" id="lblChkSpider" title="Vẽ tia nối liên kết từ NPP đến Điểm Bán">
+          <input type="checkbox" id="chkToggleSpider" onchange="toggleSpiderVisibility()">
+          <i class="fa-solid fa-share-nodes" style="color:#a78bfa;"></i>
+          <span>Tia Nối</span>
+        </label>
+      </div>
 
-      <!-- DẤU TICK BỎ CÁC NPP NGƯNG HOẠT ĐỘNG -->
-      <label class="toggle-checkbox-label inactive-label" id="lblChkHideInactive" title="Tích chọn để BỎ TOÀN BỘ các NPP đã ngưng hoạt động">
-        <input type="checkbox" id="chkHideInactive" onchange="toggleHideInactive()">
-        <i class="fa-solid fa-ban" style="color:#ef4444;"></i>
-        <span>Bỏ NPP Ngưng (<span id="countInactiveNpp">176</span>)</span>
-      </label>
+      <!-- DẤU TICK PHÂN LOẠI HÀNG ĐÔNG / HÀNG KHÔ -->
+      <div class="layer-toggle-container">
+        <label class="toggle-checkbox-label cold-label active-cold" id="lblChkCold" title="Điểm bán có mua Hàng Đông">
+          <input type="checkbox" id="chkToggleCold" checked onchange="applyFilters()">
+          <i class="fa-solid fa-snowflake" style="color:#38bdf8;"></i>
+          <span>Hàng Đông</span>
+        </label>
 
-      <label class="toggle-checkbox-label outlet-label active-outlet" id="lblChkOutlet" title="Bật/Tắt hiển thị Điểm Bán">
-        <input type="checkbox" id="chkToggleOutlet" checked onchange="toggleOutletVisibility()">
-        <i class="fa-solid fa-store" style="color:#f59e0b;"></i>
-        <span>Điểm Bán (<span id="chkOutletCount">59.4k</span>)</span>
-      </label>
+        <label class="toggle-checkbox-label dry-label active-dry" id="lblChkDry" title="Điểm bán mua Hàng Khô">
+          <input type="checkbox" id="chkToggleDry" checked onchange="applyFilters()">
+          <i class="fa-solid fa-box-open" style="color:#f59e0b;"></i>
+          <span>Hàng Khô</span>
+        </label>
+      </div>
 
-      <label class="toggle-checkbox-label spider-label" id="lblChkSpider" title="Vẽ tia nối liên kết từ NPP đến Điểm Bán">
-        <input type="checkbox" id="chkToggleSpider" onchange="toggleSpiderVisibility()">
-        <i class="fa-solid fa-share-nodes" style="color:#a78bfa;"></i>
-        <span>Tia Nối</span>
-      </label>
-    </div>
+      <!-- DẤU TICK CỰ LY > 45KM (MỞ ĐẠI LÝ CHUYỂN TIẾP) -->
+      <div class="layer-toggle-container">
+        <label class="toggle-checkbox-label remote-label" id="lblChkRemoteOnly" title="Chỉ xem điểm bán cự ly > 45km">
+          <input type="checkbox" id="chkToggleRemoteOnly" onchange="applyFilters()">
+          <i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;"></i>
+          <span>Cự ly > 45km</span>
+        </label>
+      </div>
 
-    <!-- DẤU TICK PHÂN LOẠI HÀNG ĐÔNG / HÀNG KHÔ -->
-    <div class="layer-toggle-container">
-      <label class="toggle-checkbox-label cold-label active-cold" id="lblChkCold" title="Điểm bán có mua Hàng Đông">
-        <input type="checkbox" id="chkToggleCold" checked onchange="applyFilters()">
-        <i class="fa-solid fa-snowflake" style="color:#38bdf8;"></i>
-        <span>Hàng Đông</span>
-      </label>
-
-      <label class="toggle-checkbox-label dry-label active-dry" id="lblChkDry" title="Điểm bán mua Hàng Khô">
-        <input type="checkbox" id="chkToggleDry" checked onchange="applyFilters()">
-        <i class="fa-solid fa-box-open" style="color:#f59e0b;"></i>
-        <span>Hàng Khô</span>
-      </label>
-    </div>
-
-    <!-- DẤU TICK CỰ LY > 45KM (MỞ ĐẠI LÝ CHUYỂN TIẾP) -->
-    <div class="layer-toggle-container">
-      <label class="toggle-checkbox-label remote-label" id="lblChkRemoteOnly" title="Chỉ xem điểm bán cự ly > 45km">
-        <input type="checkbox" id="chkToggleRemoteOnly" onchange="applyFilters()">
-        <i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;"></i>
-        <span>Cự ly > 45km</span>
-      </label>
-    </div>
-
-    <div class="filter-group" style="flex: 1; min-width: 140px;">
-      <input type="text" id="filterSearch" class="filter-search" placeholder="🔍 Tìm NPP, Điểm bán..." oninput="applyFilters()" style="width: 100%;">
-    </div>
-
-    <div class="kpi-pill">
-      <span>Xem:</span>
-      <span id="kpiCount" class="kpi-val">391</span> NPP
-      (<span id="kpiActive" class="kpi-active">215 Chạy</span>/<span id="kpiInactive" class="kpi-inactive">176 Ngưng</span>)
-      &bull; <span id="kpiOutlets" class="kpi-outlets">59.4k</span> Điểm Bán
-      (<span id="kpiRemote" class="kpi-remote">2,456</span> >45km)
+      <div class="kpi-pill">
+        <span>Xem:</span>
+        <span id="kpiCount" class="kpi-val">391</span> NPP
+        (<span id="kpiActive" class="kpi-active">215 Chạy</span>/<span id="kpiInactive" class="kpi-inactive">176 Ngưng</span>)
+        &bull; <span id="kpiOutlets" class="kpi-outlets">59.4k</span> Điểm Bán
+        (<span id="kpiRemote" class="kpi-remote">2,456</span> >45km)
+      </div>
     </div>
   </div>
 
