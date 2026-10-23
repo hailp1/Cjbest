@@ -1157,6 +1157,7 @@ html_template = f'''<!DOCTYPE html>
     <div class="header-right">
       <!-- NÚT BẬT BÁO CÁO ĐÁNH GIÁ 6 VÙNG & CHI TIẾT CỰ LY HUB -->
       <button class="btn-nav" style="background:#0284c7; border-color:#38bdf8;" onclick="openStrategicModal()"><i class="fa-solid fa-compass-drafting"></i> Đánh Giá 6 Vùng</button>
+      <a href="rtm_analytics_dashboard.html" class="btn-nav" style="background: linear-gradient(135deg, #f59e0b, #d97706); border-color: #fbbf24; text-decoration: none; color: white;" title="Xem báo cáo biểu đồ trực quan & bản đồ vùng trắng C1"><i class="fa-solid fa-chart-pie"></i> Báo Cáo Biểu Đồ & Vùng Trắng C1</a>
       <button class="btn-nav" style="background:#7c3aed; border-color:#8b5cf6;" onclick="openAnalyticsModal()"><i class="fa-solid fa-chart-pie"></i> Cự Ly & Hub</button>
       <button class="btn-nav" onclick="exportFilteredCSV()"><i class="fa-solid fa-file-excel"></i> Xuất Excel</button>
       <a href="rtm_dashboard_mien_tay.html" class="btn-nav"><i class="fa-solid fa-chart-line"></i> Dashboard</a>

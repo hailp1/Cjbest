@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CJ Foods RTM — Báo Cáo Phân Tích Chuyên Sâu 6 Vùng, Vùng Trắng & Đề Xuất Đại Lý C1</title>
+  
+  <!-- Google Fonts & Font Awesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  
+  <!-- Chart.js 4.5.1 (Local + CDN fallback) -->
+  <script src="chart.min.js"></script>
+  <script>
+    if (typeof Chart === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>');
+    }
+  </script>
+
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-card: #111827;
+      --bg-card-hover: #1e293b;
+      --bg-glass: rgba(17, 24, 39, 0.75);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(56, 189, 248, 0.3);
+      --primary: #38bdf8;
+      --primary-glow: rgba(56, 189, 248, 0.25);
+      --indigo: #6366f1;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at 15% 15%, #131d36 0%, #090d16 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: 3rem;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #090d16; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    /* Top Navigation Header */
+    .top-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(9, 13, 22, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .brand-logo-badge {
+      background: linear-gradient(135deg, #ef4444, #f97316);
+      color: white;
+      font-weight: 800;
+      font-size: 1rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      letter-spacing: 0.05em;
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+    }
+    .brand-title h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #ffffff, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.01em;
+    }
+    .brand-title p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.825rem;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid transparent;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #38bdf8);
+      color: white;
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+    }
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--border-color);
+      color: var(--text-main);
+    }
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Container */
+    .dashboard-container {
+      max-width: 1440px;
+      margin: 1.5rem auto;
+      padding: 0 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.25rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-accent);
+      box-shadow: 0 12px 30px rgba(56, 189, 248, 0.15);
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--kpi-color, #38bdf8), transparent);
+    }
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.5rem;
+    }
+    .kpi-title {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .kpi-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      color: var(--kpi-color, #38bdf8);
+    }
+    .kpi-value {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.2;
+      margin-bottom: 0.25rem;
+    }
+    .kpi-sub {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    /* Section Header */
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: #f1f5f9;
+    }
+    .section-title i {
+      color: var(--primary);
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      background: rgba(17, 24, 39, 0.6);
+      padding: 0.5rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+    }
+    .filter-chip {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 0.4rem 0.85rem;
+      border-radius: 7px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-chip:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+    }
+    .filter-chip.active {
+      background: #2563eb;
+      color: white;
+      border-color: #38bdf8;
+      box-shadow: 0 2px 10px rgba(37, 99, 235, 0.4);
+    }
+    .search-input-wrap {
+      margin-left: auto;
+      position: relative;
+    }
+    .search-input {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.4rem 0.75rem 0.4rem 2rem;
+      color: white;
+      font-size: 0.8rem;
+      outline: none;
+      width: 220px;
+      transition: all 0.2s;
+    }
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 10px var(--primary-glow);
+      width: 260px;
+    }
+    .search-input-wrap i {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      font-size: 0.75rem;
+    }
+
+    /* Chart Grid */
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1.25rem;
+    }
+    .chart-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.25rem;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+    .chart-card.col-8 { grid-column: span 8; }
+    .chart-card.col-4 { grid-column: span 4; }
+    .chart-card.col-6 { grid-column: span 6; }
+    .chart-card.col-12 { grid-column: span 12; }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    .chart-title-main {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .chart-desc {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 0.15rem;
+    }
+    .chart-container {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      min-height: 280px;
+    }
+
+    /* Table Styling */
+    .table-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+    }
+    .table-responsive {
+      overflow-x: auto;
+      width: 100%;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.825rem;
+    }
+    th {
+      background: #1e293b;
+      color: #94a3b8;
+      font-weight: 700;
+      padding: 0.85rem 1rem;
+      text-transform: uppercase;
+      font-size: 0.725rem;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #cbd5e1;
+      vertical-align: middle;
+    }
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.025);
+      color: #ffffff;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.725rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .badge-danger { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .badge-warning { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-success { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-info { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .badge-purple { background: rgba(139, 92, 246, 0.15); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.3); }
+
+    /* C1 Proposal Card Grid */
+    .c1-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+    .c1-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      transition: all 0.25s ease;
+    }
+    .c1-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-accent);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+    .c1-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 0.65rem;
+    }
+    .c1-code {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: 0.05em;
+    }
+    .c1-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-top: 0.2rem;
+    }
+    .c1-location {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .c1-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 0.65rem;
+      border-radius: 8px;
+    }
+    .c1-metric-item .val {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #38bdf8;
+    }
+    .c1-metric-item .lbl {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+    }
+    .c1-action-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 0.5rem;
+    }
+
+    /* Roadmap Timeline */
+    .roadmap-timeline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      position: relative;
+    }
+    .roadmap-phase {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      position: relative;
+      border-top: 4px solid var(--phase-color, #38bdf8);
+    }
+    .phase-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--phase-color, #38bdf8);
+      margin-bottom: 0.35rem;
+    }
+    .phase-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 0.65rem;
+    }
+    .phase-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .phase-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .phase-list li i {
+      color: var(--phase-color, #38bdf8);
+      margin-top: 0.2rem;
+      font-size: 0.75rem;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+    }
+    .modal-backdrop.active { display: flex; }
+    .modal-box {
+      background: #111827;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 650px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 1.75rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .chart-card.col-8, .chart-card.col-4, .chart-card.col-6 {
+        grid-column: span 12;
+      }
+      .search-input { width: 100%; }
+      .search-input-wrap { width: 100%; margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="top-navbar">
+    <div class="brand-section">
+      <div class="brand-logo-badge">CJ RTM</div>
+      <div class="brand-title">
+        <h1>BÁO CÁO PHÂN TÍCH CHIẾN LƯỢC RTM & BẢN ĐỒ VÙNG TRẮNG</h1>
+        <p><i class="fa-solid fa-layer-group"></i> Dữ liệu 6 Vùng • 391 NPP • 59,366 Outlets • 9,038 Shop A&B Tiềm Năng</p>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <a href="index.html" class="btn btn-primary">
+        <i class="fa-solid fa-map-location-dot"></i> Bản Đồ GIS Không Gian
+      </a>
+      <button class="btn btn-outline" onclick="exportC1ToCSV()">
+        <i class="fa-solid fa-file-excel"></i> Xuất Danh Mục C1 (CSV)
+      </button>
+      <button class="btn btn-outline" onclick="window.print()">
+        <i class="fa-solid fa-print"></i> In Báo Cáo
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="dashboard-container">
+
+    <!-- KPI Summary Grid -->
+    <section class="kpi-grid">
+      <div class="kpi-card" style="--kpi-color: #38bdf8;">
+        <div class="kpi-header">
+          <span class="kpi-title">Tổng NPP Toàn Quốc</span>
+          <div class="kpi-icon"><i class="fa-solid fa-warehouse"></i></div>
+        </div>
+        <div class="kpi-value">391</div>
+        <div class="kpi-sub"><span style="color:#10b981;font-weight:700;">215 Active</span> • 176 Tạm Ngưng</div>
+      </div>
+
+      <div class="kpi-card" style="--kpi-color: #6366f1;">
+        <div class="kpi-header">
+          <span class="kpi-title">Điểm Bán CJ Đang Phục Vụ</span>
+          <div class="kpi-icon"><i class="fa-solid fa-store"></i></div>
+        </div>
+        <div class="kpi-value">59,366</div>
+        <div class="kpi-sub"><span style="color:#38bdf8;font-weight:700;">24.8%</span> Hàng Lạnh (Cool/Frozen)</div>
+      </div>
+
+      <div class="kpi-card" style="--kpi-color: #ef4444;">
+        <div class="kpi-header">
+          <span class="kpi-title">Cự Ly Bình Quân & Điểm Nóng</span>
+          <div class="kpi-icon"><i class="fa-solid fa-route"></i></div>
+        </div>
+        <div class="kpi-value">13.3 <span style="font-size:1rem;font-weight:600;">km</span></div>
+        <div class="kpi-sub"><span style="color:#ef4444;font-weight:700;">2,452</span> điểm rủi ro cự ly &gt;45km</div>
+      </div>
+
+      <div class="kpi-card" style="--kpi-color: #10b981;">
+        <div class="kpi-header">
+          <span class="kpi-title">Shop A & B Tiềm Năng (GT)</span>
+          <div class="kpi-icon"><i class="fa-solid fa-chart-line"></i></div>
+        </div>
+        <div class="kpi-value">9,038</div>
+        <div class="kpi-sub"><span style="color:#10b981;font-weight:700;">4,706 Grade A</span> • 4,332 Grade B</div>
+      </div>
+
+      <div class="kpi-card" style="--kpi-color: #f59e0b;">
+        <div class="kpi-header">
+          <span class="kpi-title">Cơ Hội Doanh Số Mới</span>
+          <div class="kpi-icon"><i class="fa-solid fa-sack-dollar"></i></div>
+        </div>
+        <div class="kpi-value">100.3 <span style="font-size:1rem;font-weight:600;">Tỷ/th</span></div>
+        <div class="kpi-sub"><span style="color:#f59e0b;font-weight:700;">~1.20 Nghìn Tỷ</span> Sellout/Năm</div>
+      </div>
+
+      <div class="kpi-card" style="--kpi-color: #a855f7;">
+        <div class="kpi-header">
+          <span class="kpi-title">Đại Lý C1 / Sub-Hub Đề Xuất</span>
+          <div class="kpi-icon"><i class="fa-solid fa-network-wired"></i></div>
+        </div>
+        <div class="kpi-value">13 <span style="font-size:1rem;font-weight:600;">Vị Trí</span></div>
+        <div class="kpi-sub">5 Tái Kích Hoạt • 8 Mở Mới Vùng Sâu</div>
+      </div>
+    </section>
+
+    <!-- Visual Charts Grid -->
+    <section>
+      <div class="section-head">
+        <div class="section-title">
+          <i class="fa-solid fa-chart-simple"></i> Biểu Đồ Trực Quan Hóa Mạng Lưới RTM & Vùng Trắng
+        </div>
+        <div style="font-size:0.75rem;color:var(--text-dim);">Cập nhật dữ liệu không gian thời gian thực</div>
+      </div>
+
+      <div class="chart-grid">
+        <!-- Chart 1: Bar & Line Combo: Distance vs Hotspots -->
+        <div class="chart-card col-8">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title-main">So Sánh Logistics Cự Ly Bình Quân & Điểm Nóng &gt;45km Theo 6 Vùng</div>
+              <div class="chart-desc">Cảnh báo rủi ro chi phí giao nhận & nguy cơ đứt gãy bảo quản hàng lạnh</div>
+            </div>
+            <span class="badge badge-danger"><i class="fa-solid fa-triangle-exclamation"></i> 2 Vùng Báo Động Đỏ</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="chartDistanceHotspots"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Doughnut: Feasibility Tiers of 9,038 Shops -->
+        <div class="chart-card col-4">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title-main">Cơ Cấu Khả Thi Tiếp Cận 9,038 Shop A & B</div>
+              <div class="chart-desc">Phân loại theo cự ly tới NPP Đang Hoạt Động</div>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="chartFeasibilityDoughnut"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 3: Horizontal Stacked Bar: Revenue by Region -->
+        <div class="chart-card col-6">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title-main">Dung Lượng Doanh Số Tiềm Năng Nhóm A & B Theo 6 Vùng (Tỷ VNĐ/Tháng)</div>
+              <div class="chart-desc">Hà Nội & Hải Phòng chiếm hơn 79% tổng dung lượng toàn quốc</div>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="chartRevenueByRegion"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 4: Radar Risk Matrix -->
+        <div class="chart-card col-6">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title-main">Ma Trận Đánh Giá Rủi Ro Logistics & Áp Lực Vận Hành 6 Vùng</div>
+              <div class="chart-desc">So sánh đa chiều: Cự ly, Điểm xa, Hàng lạnh, Dung lượng & Nhu cầu mở C1</div>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="chartRadarRisk"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Table 1: Regional Comparison Matrix -->
+    <section>
+      <div class="section-head">
+        <div class="section-title">
+          <i class="fa-solid fa-table-cells-large"></i> Bảng 1: Ma Trận Tổng Hợp Hiện Trạng 6 Vùng & Lời Khuyên RTM
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Vùng Kinh Doanh</th>
+                <th>Số NPP (Active / Tắt)</th>
+                <th>Điểm Bán Hiện Hữu</th>
+                <th>Hàng Lạnh (%)</th>
+                <th>Cự Ly TB</th>
+                <th>Điểm &gt;45km</th>
+                <th>Shop A & B Tiềm Năng</th>
+                <th>Doanh Số Tiềm Năng</th>
+                <th>Rủi Ro Logistics</th>
+                <th>Định Hướng Chiến Lược</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyRegions">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Filter & Search Bar -->
+    <section>
+      <div class="filter-bar">
+        <span style="font-size:0.8rem;font-weight:700;color:var(--text-muted);margin-right:0.5rem;"><i class="fa-solid fa-filter"></i> LỌC VÙNG:</span>
+        <button class="filter-chip active" onclick="filterByRegion('ALL', this)">Tất Cả 6 Vùng</button>
+        <button class="filter-chip" onclick="filterByRegion('Hải Phòng', this)">Hải Phòng</button>
+        <button class="filter-chip" onclick="filterByRegion('Cần Thơ', this)">Cần Thơ (Miền Tây)</button>
+        <button class="filter-chip" onclick="filterByRegion('Hà Nội', this)">Hà Nội</button>
+        <button class="filter-chip" onclick="filterByRegion('Nha Trang', this)">Nha Trang & ĐNB</button>
+        <button class="filter-chip" onclick="filterByRegion('Đà Nẵng', this)">Đà Nẵng</button>
+        <button class="filter-chip" onclick="filterByRegion('HCM', this)">TP. Hồ Chí Minh</button>
+        
+        <div class="search-input-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" class="search-input" placeholder="Tìm huyện, tỉnh, C1..." oninput="handleSearch(this.value)">
+        </div>
+      </div>
+    </section>
+
+    <!-- Table 2: 13 C1 Recommendations Grid & Table -->
+    <section>
+      <div class="section-head">
+        <div class="section-title">
+          <i class="fa-solid fa-building-circle-check"></i> Bảng 2: Danh Mục 13 Vị Trí Đề Xuất Thiết Lập Đại Lý Cấp 1 (C1 / Sub-Hub)
+        </div>
+        <span class="badge badge-info" id="c1CountBadge">Hiển thị 13 đề xuất</span>
+      </div>
+
+      <div class="table-card">
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã Đề Xuất</th>
+                <th>Vùng Phụ Trách</th>
+                <th>Vị Trí Đặt Kho Đề Xuất</th>
+                <th>Địa Bàn Phụ Trách</th>
+                <th>Số Shop A&B</th>
+                <th>Doanh Số Tiềm Năng</th>
+                <th>Cự Ly Hiện Tại vs Mới</th>
+                <th>Phương Án Nguồn Lực</th>
+                <th>Thao Tác</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyC1">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Table 3: Top 25 White Space Districts -->
+    <section>
+      <div class="section-head">
+        <div class="section-title">
+          <i class="fa-solid fa-map-pin"></i> Bảng 3: Chi Tiết Top 20 Huyện Vùng Trắng Tiềm Năng Nhóm A & B (Cự Ly &gt;25km)
+        </div>
+        <span class="badge badge-warning">Cần ưu tiên kết nối</span>
+      </div>
+
+      <div class="table-card">
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Vùng CJ</th>
+                <th>Tỉnh Thành</th>
+                <th>Quận / Huyện Vùng Trắng</th>
+                <th>Tổng Shop A & B</th>
+                <th>Grade A</th>
+                <th>Grade B</th>
+                <th>Cự Ly Tới NPP Hiện Tại</th>
+                <th>Doanh Số Tháng</th>
+                <th>Giải Pháp Đề Xuất</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyWhiteDistricts">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Action Roadmap Timeline -->
+    <section>
+      <div class="section-head">
+        <div class="section-title">
+          <i class="fa-solid fa-timeline"></i> Lộ Trình Hành Động 3 Giai Đoạn (Implementation Roadmap)
+        </div>
+      </div>
+
+      <div class="roadmap-timeline">
+        <div class="roadmap-phase" style="--phase-color: #10b981;">
+          <div class="phase-badge">GIAI ĐOẠN 1 (0 – 2 THÁNG)</div>
+          <div class="phase-title">Khai Thác Quick-Wins (≤ 15km)</div>
+          <ul class="phase-list">
+            <li><i class="fa-solid fa-check-circle"></i> Kết nạp ngay <strong>6,744 shop A & B</strong> nằm trong bán kính 15km của 215 NPP Active.</li>
+            <li><i class="fa-solid fa-check-circle"></i> Bổ sung tuyến viếng thăm cho DSR (DMS Beat Expansion), tăng <strong>74.96 Tỷ/tháng</strong> doanh số.</li>
+            <li><i class="fa-solid fa-check-circle"></i> Ban hành chuẩn đơn hàng MOQ 500k tại khu vực đô thị nội thành.</li>
+          </ul>
+        </div>
+
+        <div class="roadmap-phase" style="--phase-color: #f59e0b;">
+          <div class="phase-badge">GIAI ĐOẠN 2 (3 – 4 THÁNG)</div>
+          <div class="phase-title">Tái Kích Hoạt NPP Ngưng Hoạt Động</div>
+          <ul class="phase-list">
+            <li><i class="fa-solid fa-check-circle"></i> Thẩm định 176 NPP đang tạm ngưng, ưu tiên tái kích hoạt <strong>5 Đại lý C1</strong> tại: Cà Mau, Buôn Hồ (Đắk Lắk), Ayun Pa (Gia Lai), Bắc Ninh, Ninh Bình.</li>
+            <li><i class="fa-solid fa-check-circle"></i> Xóa bỏ tuyến giao cực đoan 70km của NPP Hưng Lộc Phát (Sóc Trăng) xuống Cà Mau.</li>
+            <li><i class="fa-solid fa-check-circle"></i> Thiết lập kho đệm lạnh vệ tinh (Cold Hub) cho Nam Định & Thái Bình.</li>
+          </ul>
+        </div>
+
+        <div class="roadmap-phase" style="--phase-color: #38bdf8;">
+          <div class="phase-badge">GIAI ĐOẠN 3 (5 – 6 THÁNG)</div>
+          <div class="phase-title">Tuyển Mới C1 Vùng Sâu & Chuỗi Lạnh</div>
+          <ul class="phase-list">
+            <li><i class="fa-solid fa-check-circle"></i> Tuyển mới các C1 tại vùng cô lập: <strong>TP. Lào Cai (86.2km)</strong>, <strong>Lục Ngạn Bắc Giang (78 shop A/B)</strong>, <strong>Phước Long Bình Phước</strong>.</li>
+            <li><i class="fa-solid fa-check-circle"></i> Ký gửi tủ đông bảo quản cho các Đại lý C1 mới mở nhóm hàng mát/đông.</li>
+            <li><i class="fa-solid fa-check-circle"></i> Áp dụng phần mềm định tuyến động, giảm chi phí logistics toàn quốc về dưới 6.5%.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Detail Modal -->
+  <div id="detailModal" class="modal-backdrop" onclick="closeModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:0.75rem;">
+        <h3 id="modalTitle" style="color:white;font-size:1.1rem;font-weight:700;">Chi Tiết Đề Xuất C1</h3>
+        <button style="background:none;border:none;color:#94a3b8;font-size:1.2rem;cursor:pointer;" onclick="closeModal()">&times;</button>
+      </div>
+      <div id="modalBody" style="color:#cbd5e1;font-size:0.85rem;line-height:1.6;">
+        <!-- Dynamic content -->
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1.5rem;">
+        <button class="btn btn-outline" onclick="closeModal()">Đóng</button>
+        <a id="modalMapBtn" href="index.html" class="btn btn-primary"><i class="fa-solid fa-map-location-dot"></i> Thị Sát Trên Bản Đồ</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Data structures
+    const REGIONS_DATA = [
+      {
+        name: "Hải Phòng",
+        npp_total: 78, npp_act: 39, npp_inact: 39,
+        outlets: 13028, cold_pct: 28.4,
+        avg_dist: 21.3, remote_count: 1118, remote_pct: 8.6,
+        pot_shops: 2738, pot_rev: 35.38,
+        risk: "danger", risk_lbl: "🔴 Rất Cao",
+        action: "Lập Cold Hub Nam Định/Thái Bình; Mở C1 Lục Ngạn & Diễn Châu"
+      },
+      {
+        name: "Cần Thơ",
+        npp_total: 62, npp_act: 34, npp_inact: 28,
+        outlets: 8271, cold_pct: 12.6,
+        avg_dist: 19.4, remote_count: 831, remote_pct: 10.0,
+        pot_shops: 405, pot_rev: 1.49,
+        risk: "danger", risk_lbl: "🔴 Rất Cao",
+        action: "Tái kích hoạt C1 Cà Mau; Lập Sub-hub Giá Rai & Kiên Lương; Áp MOQ 1.2M"
+      },
+      {
+        name: "Hà Nội",
+        npp_total: 70, npp_act: 35, npp_inact: 35,
+        outlets: 11021, cold_pct: 36.1,
+        avg_dist: 10.8, remote_count: 242, remote_pct: 2.2,
+        pot_shops: 3259, pot_rev: 44.32,
+        risk: "warning", risk_lbl: "🟡 Trung Bình",
+        action: "Mở C1 TP. Lào Cai (86km); Mở C1 Tây Bắc Phú Thọ (50 shop A/B)"
+      },
+      {
+        name: "Nha Trang",
+        npp_total: 90, npp_act: 45, npp_inact: 45,
+        outlets: 13718, cold_pct: 18.9,
+        avg_dist: 11.3, remote_count: 158, remote_pct: 1.2,
+        pot_shops: 1135, pot_rev: 8.17,
+        risk: "success", risk_lbl: "🟢 Ổn Định",
+        action: "Tái kích hoạt C1 Buôn Hồ (Đắk Lắk); Mở C1 Phước Long & Krông Pa"
+      },
+      {
+        name: "Đà Nẵng",
+        npp_total: 44, npp_act: 27, npp_inact: 17,
+        outlets: 6224, cold_pct: 30.7,
+        avg_dist: 10.7, remote_count: 103, remote_pct: 1.7,
+        pot_shops: 810, pot_rev: 5.93,
+        risk: "success", risk_lbl: "🟢 Ổn Định",
+        action: "Mở C1 Lệ Thủy / Đồng Hới; Chuyển giao Lăng Cô về Đà Nẵng qua hầm"
+      },
+      {
+        name: "TP. Hồ Chí Minh",
+        npp_total: 47, npp_act: 35, npp_inact: 12,
+        outlets: 7104, cold_pct: 11.5,
+        avg_dist: 6.2, remote_count: 0, remote_pct: 0.0,
+        pot_shops: 691, pot_rev: 4.75,
+        risk: "success", risk_lbl: "🟢 Xuất Sắc",
+        action: "KHÔNG mở thêm C1; Phân bổ 674 shop A&B vào tuyến xe máy 35 NPP hiện có"
+      }
+    ];
+
+    const C1_PROPOSALS = [
+      {
+        code: "C1-HP-01",
+        region: "Hải Phòng",
+        name: "Đại Lý C1 Lục Ngạn & Sơn Động",
+        hub_location: "Thị trấn Chũ, Huyện Lục Ngạn, Bắc Giang",
+        service_areas: "Huyện Lục Ngạn, Sơn Động, Lục Nam",
+        ab_count: 78,
+        sellout_mil: 1042,
+        dist_old: "38.9 km",
+        dist_new: "≤ 8 km",
+        resource_plan: "Tuyển mới 01 NPP có sẵn xe tải thùng kín hoặc hợp tác Tổng thầu Chũ",
+        lat: 21.3712, lon: 106.5621,
+        desc: "Tiếp nhận 59 shop A&B tại Lục Ngạn và 19 shop tại Sơn Động. Giải quyết dứt điểm tình trạng giao hàng xa từ TP. Bắc Giang sang khu vực miền núi đồi vải thiều."
+      },
+      {
+        code: "C1-HP-02",
+        region: "Hải Phòng",
+        name: "Đại Lý C1 Diễn Châu & Quỳnh Lưu",
+        hub_location: "Thị trấn Diễn Châu, Huyện Diễn Châu, Nghệ An",
+        service_areas: "Huyện Diễn Châu, Quỳnh Lưu, Thị xã Hoàng Mai",
+        ab_count: 35,
+        sellout_mil: 195,
+        dist_old: "34.5 km",
+        dist_new: "≤ 10 km",
+        resource_plan: "Tái kích hoạt kho trung chuyển tại Diễn Châu",
+        lat: 18.9812, lon: 105.5891,
+        desc: "Tiếp nhận 23 shop A và 12 shop B tại khu vực ven biển Bắc Nghệ An, cắt giảm tải cho NPP TP. Vinh."
+      },
+      {
+        code: "C1-HP-03",
+        region: "Hải Phòng",
+        name: "Đại Lý C1 / Cold Hub Nam Định - Thái Bình",
+        hub_location: "Khu vực giáp ranh TP. Nam Định và Huyện Vũ Thư",
+        service_areas: "Toàn bộ tỉnh Thái Bình và Nam Định",
+        ab_count: 443,
+        sellout_mil: 7880,
+        dist_old: "60.8 km (Hà Hải)",
+        dist_new: "≤ 12 km",
+        resource_plan: "Thiết lập Cold Hub vệ tinh hoặc tuyển mới C1 độc quyền tỉnh",
+        lat: 20.4312, lon: 106.1821,
+        desc: "Cắt đứt tuyến giao 78.3km của NPP Hà Hải từ Hải Phòng. Tiếp quản hơn 400 outlet hiện hữu và mở mới mạng lưới shop A/B."
+      },
+      {
+        code: "C1-CT-01",
+        region: "Cần Thơ",
+        name: "Tái Kích Hoạt Đại Lý C1 Cà Mau",
+        hub_location: "Phường 8 / Phường 9, TP. Cà Mau",
+        service_areas: "TP. Cà Mau, Cái Nước, Trần Văn Thời, Năm Căn, Đầm Dơi",
+        ab_count: 42,
+        sellout_mil: 185,
+        dist_old: "70.6 km (Hưng Lộc Phát)",
+        dist_new: "≤ 15 km",
+        resource_plan: "Tái kích hoạt từ 1 trong 6 NPP đang ngưng hoạt động tại Tỉnh Cà Mau",
+        lat: 9.1762, lon: 105.1524,
+        desc: "Xóa bỏ tình trạng NPP Sóc Trăng phải chạy xe 70km xuống Cà Mau. Tiết kiệm 35% chi phí logistics Miền Tây."
+      },
+      {
+        code: "C1-CT-02",
+        region: "Cần Thơ",
+        name: "Đại Lý C1 Giá Rai / Bạc Liêu",
+        hub_location: "Thị xã Giá Rai, Tỉnh Bạc Liêu",
+        service_areas: "TX. Giá Rai, Huyện Phước Long, Đông Hải và giáp ranh",
+        ab_count: 28,
+        sellout_mil: 140,
+        dist_old: "48.2 km",
+        dist_new: "≤ 10 km",
+        resource_plan: "Nâng cấp đại lý cấp 2 địa phương thành C1",
+        lat: 9.2241, lon: 105.3215,
+        desc: "Phụ trách hành lang kinh tế Bạc Liêu - Cà Mau, xử lý triệt để 28 điểm cự ly xa của Bạc Liêu."
+      },
+      {
+        code: "C1-CT-03",
+        region: "Cần Thơ",
+        name: "Đại Lý C1 Kiên Lương & Hà Tiên",
+        hub_location: "Thị trấn Kiên Lương, Huyện Kiên Lương, Kiên Giang",
+        service_areas: "Kiên Lương, TP. Hà Tiên, Huyện Giang Thành",
+        ab_count: 24,
+        sellout_mil: 110,
+        dist_old: "85.0 km (từ Rạch Giá)",
+        dist_new: "≤ 15 km",
+        resource_plan: "Hợp tác tổng kho hải sản / tạp hóa Kiên Lương",
+        lat: 10.2512, lon: 104.5912,
+        desc: "Cắt giảm cung đường biển hơn 85km từ TP. Rạch Giá ra Hà Tiên."
+      },
+      {
+        code: "C1-HN-01",
+        region: "Hà Nội",
+        name: "Đại Lý C1 Cửa Khẩu TP. Lào Cai",
+        hub_location: "Phường Duyên Hải / Kim Tân, TP. Lào Cai",
+        service_areas: "TP. Lào Cai, Huyện Sa Pa, Bát Xát, Bảo Thắng",
+        ab_count: 38,
+        sellout_mil: 498,
+        dist_old: "86.2 km (từ Yên Bái)",
+        dist_new: "≤ 10 km",
+        resource_plan: "Tuyển mới NPP C1 thương mại cửa khẩu",
+        lat: 22.4856, lon: 103.9707,
+        desc: "Tiếp nhận 19 shop A và 19 shop B tại Lào Cai, mở toang cửa ngõ thị trường biên mậu Tây Bắc."
+      },
+      {
+        code: "C1-HN-02",
+        region: "Hà Nội",
+        name: "Đại Lý C1 Tây Bắc Phú Thọ",
+        hub_location: "Thị trấn Cẩm Khê, Huyện Cẩm Khê, Phú Thọ",
+        service_areas: "Huyện Cẩm Khê, Thanh Ba, Hạ Hòa, Yên Lập",
+        ab_count: 50,
+        sellout_mil: 727,
+        dist_old: "32.5 km",
+        dist_new: "≤ 8 km",
+        resource_plan: "Mở mới C1 kết hợp bảo quản lạnh",
+        lat: 21.4124, lon: 105.1524,
+        desc: "Tiếp nhận 18 shop Thanh Ba, 18 shop Cẩm Khê, 14 shop Yên Lập. Rút ngắn cự ly giao từ Việt Trì lên miền đồi."
+      },
+      {
+        code: "C1-HN-03",
+        region: "Hà Nội",
+        name: "Đại Lý C1 Sơn Dương (Tuyên Quang)",
+        hub_location: "Thị trấn Sơn Dương, Huyện Sơn Dương, Tuyên Quang",
+        service_areas: "Huyện Sơn Dương và giáp ranh Tam Đảo",
+        ab_count: 15,
+        sellout_mil: 207,
+        dist_old: "26.3 km",
+        dist_new: "≤ 7 km",
+        resource_plan: "Phát triển từ đại lý phân phối Vĩnh Phúc",
+        lat: 21.7124, lon: 105.3214,
+        desc: "Kết nối trục công nghiệp - nông nghiệp Vĩnh Phúc - Tuyên Quang."
+      },
+      {
+        code: "C1-NT-01",
+        region: "Nha Trang",
+        name: "Đại Lý C1 Bắc Đắk Lắk (Buôn Hồ)",
+        hub_location: "Phường An Lạc, Thị xã Buôn Hồ, Đắk Lắk",
+        service_areas: "TX. Buôn Hồ, Huyện Krông Năng, Ea H'leo, Ea Kar",
+        ab_count: 54,
+        sellout_mil: 491,
+        dist_old: "52.4 km (từ Buôn Ma Thuột)",
+        dist_new: "≤ 15 km",
+        resource_plan: "Tái thẩm định và kích hoạt lại 1 trong 7 NPP ngưng hoạt động tại Đắk Lắk",
+        lat: 12.9241, lon: 108.2715,
+        desc: "Tiếp nhận 17 shop Krông Năng, 16 shop Ea H'leo, 11 shop Buôn Hồ, 10 shop Ea Kar. Giảm cự ly QL14 từ 60km xuống 15km."
+      },
+      {
+        code: "C1-NT-02",
+        region: "Nha Trang",
+        name: "Đại Lý C1 Phước Long & Bù Gia Mập",
+        hub_location: "Thị xã Phước Long, Tỉnh Bình Phước",
+        service_areas: "TX. Phước Long, Huyện Bù Gia Mập, Bù Đăng",
+        ab_count: 48,
+        sellout_mil: 411,
+        dist_old: "35.2 km",
+        dist_new: "≤ 10 km",
+        resource_plan: "Tuyển mới NPP chuyên vùng cao su Bình Phước",
+        lat: 11.8312, lon: 106.9912,
+        desc: "Tiếp nhận 21 shop Phước Long, 15 shop Bù Gia Mập, 12 shop Bù Đăng. Bao quát toàn diện Đông Bắc Bình Phước."
+      },
+      {
+        code: "C1-NT-03",
+        region: "Nha Trang",
+        name: "Đại Lý C1 Krông Pa / Ayun Pa (Gia Lai)",
+        hub_location: "Thị xã Ayun Pa, Tỉnh Gia Lai",
+        service_areas: "TX. Ayun Pa, Huyện Krông Pa, Phú Thiện, Ia Pa",
+        ab_count: 14,
+        sellout_mil: 156,
+        dist_old: "70.4 km (từ Pleiku)",
+        dist_new: "≤ 12 km",
+        resource_plan: "Tái kích hoạt 1 trong 7 NPP ngưng hoạt động tại Gia Lai",
+        lat: 13.3854, lon: 108.4312,
+        desc: "Xóa bỏ tình trạng cô lập 70km trên đèo từ Pleiku xuống lòng chảo Ayun Pa."
+      },
+      {
+        code: "C1-DN-01",
+        region: "Đà Nẵng",
+        name: "Đại Lý C1 Lệ Thủy & Đồng Hới (Quảng Bình)",
+        hub_location: "Thị trấn Kiến Giang, Huyện Lệ Thủy, Quảng Bình",
+        service_areas: "Huyện Lệ Thủy, TP. Đồng Hới, Huyện Quảng Ninh",
+        ab_count: 22,
+        sellout_mil: 245,
+        dist_old: "30.8 km",
+        dist_new: "≤ 10 km",
+        resource_plan: "Mở mới C1 hoặc hợp tác đại lý đồ nguội Quảng Bình",
+        lat: 17.2152, lon: 106.7845,
+        desc: "Tiếp nhận toàn bộ cụm Nam Quảng Bình, rút ngắn cung đường từ Đông Hà / Huế ra."
+      }
+    ];
+
+    const TOP_WHITE_DISTRICTS = [
+      { stt: 1, area: "Hải Phòng", prov: "Bắc Giang", dist: "Lục Ngạn", tot: 59, a: 33, b: 26, km: 38.9, rev: 687, c1: "C1-HP-01 (Lục Ngạn)" },
+      { stt: 2, area: "Hà Nội", prov: "Lào Cai", dist: "TP. Lào Cai", tot: 38, a: 19, b: 19, km: 86.2, rev: 498, c1: "C1-HN-01 (Lào Cai)" },
+      { stt: 3, area: "Hải Phòng", prov: "Nghệ An", dist: "Diễn Châu", tot: 23, a: 23, b: 0, km: 32.2, rev: 104, c1: "C1-HP-02 (Diễn Châu)" },
+      { stt: 4, area: "Hải Phòng", prov: "Hòa Bình", dist: "Yên Thủy", tot: 22, a: 16, b: 6, km: 33.6, rev: 275, c1: "NPP Ninh Bình tiếp nhận" },
+      { stt: 5, area: "Nha Trang", prov: "Bình Phước", dist: "Phước Long", tot: 21, a: 16, b: 5, km: 33.4, rev: 160, c1: "C1-NT-02 (Phước Long)" },
+      { stt: 6, area: "Hải Phòng", prov: "Bắc Giang", dist: "Sơn Động", tot: 19, a: 8, b: 11, km: 36.4, rev: 355, c1: "C1-HP-01 (Lục Ngạn)" },
+      { stt: 7, area: "Hà Nội", prov: "Phú Thọ", dist: "Thanh Ba", tot: 18, a: 12, b: 6, km: 30.1, rev: 292, c1: "C1-HN-02 (Phú Thọ)" },
+      { stt: 8, area: "Hà Nội", prov: "Phú Thọ", dist: "Cẩm Khê", tot: 18, a: 6, b: 12, km: 29.2, rev: 262, c1: "C1-HN-02 (Phú Thọ)" },
+      { stt: 9, area: "Nha Trang", prov: "Đắk Lắk", dist: "Krông Năng", tot: 17, a: 9, b: 8, km: 46.2, rev: 183, c1: "C1-NT-01 (Buôn Hồ)" },
+      { stt: 10, area: "Nha Trang", prov: "Đắk Lắk", dist: "Ea H'leo", tot: 16, a: 7, b: 9, km: 61.0, rev: 135, c1: "C1-NT-01 (Buôn Hồ)" },
+      { stt: 11, area: "Hải Phòng", prov: "Thanh Hóa", dist: "Thọ Xuân", tot: 16, a: 5, b: 11, km: 29.4, rev: 336, c1: "NPP Triệu Sơn mở beat" },
+      { stt: 12, area: "Nha Trang", prov: "Bình Phước", dist: "Bù Gia Mập", tot: 15, a: 3, b: 12, km: 36.5, rev: 152, c1: "C1-NT-02 (Phước Long)" },
+      { stt: 13, area: "Hà Nội", prov: "Tuyên Quang", dist: "Sơn Dương", tot: 15, a: 6, b: 9, km: 26.3, rev: 207, c1: "C1-HN-03 (Sơn Dương)" },
+      { stt: 14, area: "Hải Phòng", prov: "Thanh Hóa", dist: "Yên Định", tot: 14, a: 6, b: 8, km: 27.4, rev: 271, c1: "NPP Vĩnh Lộc tiếp quản" },
+      { stt: 15, area: "Nha Trang", prov: "Đắk Lắk", dist: "Krông Pắc", tot: 14, a: 8, b: 6, km: 31.0, rev: 91, c1: "NPP Buôn Ma Thuột" },
+      { stt: 16, area: "Hà Nội", prov: "Phú Thọ", dist: "Yên Lập", tot: 14, a: 5, b: 9, km: 33.8, rev: 173, c1: "C1-HN-02 (Phú Thọ)" },
+      { stt: 17, area: "Hà Nội", prov: "Phú Thọ", dist: "Tân Sơn", tot: 13, a: 5, b: 8, km: 40.2, rev: 103, c1: "C1-HN-02 (Phú Thọ)" },
+      { stt: 18, area: "Đà Nẵng", prov: "Quảng Bình", dist: "Lệ Thủy", tot: 13, a: 9, b: 4, km: 30.8, rev: 145, c1: "C1-DN-01 (Quảng Bình)" },
+      { stt: 19, area: "Đà Nẵng", prov: "Thừa Thiên Huế", dist: "Phú Lộc", tot: 13, a: 2, b: 11, km: 32.8, rev: 61, c1: "Chuyển giao Đà Nẵng" },
+      { stt: 20, area: "Nha Trang", prov: "Bình Phước", dist: "Bù Đăng", tot: 12, a: 5, b: 7, km: 36.0, rev: 99, c1: "C1-NT-02 (Phước Long)" }
+    ];
+
+    let currentRegion = 'ALL';
+    let searchQuery = '';
+
+    // Render Table 1: Regions
+    function renderRegionsTable() {
+      const tbody = document.getElementById('tbodyRegions');
+      tbody.innerHTML = REGIONS_DATA.map(r => {
+        const badgeClass = r.risk === 'danger' ? 'badge-danger' : (r.risk === 'warning' ? 'badge-warning' : 'badge-success');
+        return `
+          <tr>
+            <td style="font-weight:700;color:white;"><i class="fa-solid fa-location-dot" style="color:var(--primary);margin-right:6px;"></i> ${r.name}</td>
+            <td><strong>${r.npp_total}</strong> <span style="font-size:0.75rem;color:var(--text-dim);">(${r.npp_act} Active / ${r.npp_inact} Tắt)</span></td>
+            <td>${r.outlets.toLocaleString()}</td>
+            <td><span style="font-weight:700;color:${r.cold_pct > 30 ? '#38bdf8' : '#94a3b8'}">${r.cold_pct}%</span></td>
+            <td><strong style="color:${r.avg_dist > 15 ? '#f87171' : '#f8fafc'}">${r.avg_dist} km</strong></td>
+            <td><span class="badge ${r.remote_count > 500 ? 'badge-danger' : (r.remote_count > 150 ? 'badge-warning' : 'badge-success')}">${r.remote_count.toLocaleString()} (${r.remote_pct}%)</span></td>
+            <td><strong style="color:#38bdf8;">${r.pot_shops.toLocaleString()}</strong></td>
+            <td><strong style="color:#f59e0b;">${r.pot_rev.toFixed(2)} Tỷ</strong></td>
+            <td><span class="badge ${badgeClass}">${r.risk_lbl}</span></td>
+            <td style="font-size:0.78rem;max-width:280px;color:#cbd5e1;">${r.action}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Render Table 2: C1 Proposals
+    function renderC1Table() {
+      const tbody = document.getElementById('tbodyC1');
+      const filtered = C1_PROPOSALS.filter(item => {
+        const matchReg = currentRegion === 'ALL' || item.region.toLowerCase().includes(currentRegion.toLowerCase());
+        const matchSearch = searchQuery === '' || 
+          item.code.toLowerCase().includes(searchQuery) ||
+          item.name.toLowerCase().includes(searchQuery) ||
+          item.hub_location.toLowerCase().includes(searchQuery) ||
+          item.service_areas.toLowerCase().includes(searchQuery);
+        return matchReg && matchSearch;
+      });
+
+      document.getElementById('c1CountBadge').textContent = `Hiển thị ${filtered.length} / 13 đề xuất`;
+
+      tbody.innerHTML = filtered.map(c1 => {
+        const isReactivate = c1.resource_plan.includes("Tái");
+        const planBadge = isReactivate 
+          ? '<span class="badge badge-success"><i class="fa-solid fa-arrows-rotate"></i> Tái Kích Hoạt</span>'
+          : '<span class="badge badge-info"><i class="fa-solid fa-plus-circle"></i> Mở Mới Vùng Sâu</span>';
+
+        return `
+          <tr>
+            <td style="font-weight:800;color:var(--primary);font-family:monospace;">${c1.code}</td>
+            <td><span class="badge badge-purple">${c1.region}</span></td>
+            <td style="font-weight:700;color:white;">${c1.name}<br><span style="font-size:0.75rem;font-weight:400;color:var(--text-muted);"><i class="fa-solid fa-map-pin"></i> ${c1.hub_location}</span></td>
+            <td style="font-size:0.8rem;color:#cbd5e1;">${c1.service_areas}</td>
+            <td><strong style="color:#38bdf8;font-size:0.95rem;">${c1.ab_count}</strong> shop</td>
+            <td><strong style="color:#f59e0b;font-size:0.95rem;">${c1.sellout_mil.toLocaleString()}</strong> Tr</td>
+            <td><span style="color:#f87171;text-decoration:line-through;font-size:0.75rem;">${c1.dist_old}</span> &rarr; <strong style="color:#34d399;">${c1.dist_new}</strong></td>
+            <td>${planBadge}<br><span style="font-size:0.72rem;color:var(--text-dim);">${c1.resource_plan}</span></td>
+            <td>
+              <button class="btn btn-outline" style="padding:0.35rem 0.65rem;font-size:0.75rem;" onclick="openC1Modal('${c1.code}')">
+                <i class="fa-solid fa-eye"></i> Chi tiết
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Render Table 3: White Space Districts
+    function renderWhiteDistrictsTable() {
+      const tbody = document.getElementById('tbodyWhiteDistricts');
+      const filtered = TOP_WHITE_DISTRICTS.filter(item => {
+        const matchReg = currentRegion === 'ALL' || item.area.toLowerCase().includes(currentRegion.toLowerCase());
+        const matchSearch = searchQuery === '' ||
+          item.dist.toLowerCase().includes(searchQuery) ||
+          item.prov.toLowerCase().includes(searchQuery) ||
+          item.c1.toLowerCase().includes(searchQuery);
+        return matchReg && matchSearch;
+      });
+
+      tbody.innerHTML = filtered.map(d => {
+        return `
+          <tr>
+            <td style="color:var(--text-dim);font-weight:700;">#${d.stt}</td>
+            <td><span class="badge badge-purple">${d.area}</span></td>
+            <td style="font-weight:600;color:white;">${d.prov}</td>
+            <td style="font-weight:700;color:#38bdf8;">${d.dist}</td>
+            <td><strong style="font-size:0.95rem;color:white;">${d.tot}</strong></td>
+            <td style="color:#34d399;">${d.a}</td>
+            <td style="color:#60a5fa;">${d.b}</td>
+            <td><strong style="color:#f87171;">${d.km.toFixed(1)} km</strong></td>
+            <td><strong style="color:#f59e0b;">${d.rev} Tr</strong></td>
+            <td><span class="badge badge-info">${d.c1}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Filtering
+    function filterByRegion(region, btn) {
+      currentRegion = region;
+      document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderC1Table();
+      renderWhiteDistrictsTable();
+    }
+
+    function handleSearch(val) {
+      searchQuery = val.trim().toLowerCase();
+      renderC1Table();
+      renderWhiteDistrictsTable();
+    }
+
+    // Modal
+    function openC1Modal(code) {
+      const c1 = C1_PROPOSALS.find(x => x.code === code);
+      if (!c1) return;
+
+      document.getElementById('modalTitle').textContent = `[${c1.code}] ${c1.name}`;
+      document.getElementById('modalBody').innerHTML = `
+        <div style="background:rgba(0,0,0,0.3);padding:1rem;border-radius:10px;margin-bottom:1rem;border:1px solid rgba(255,255,255,0.06);">
+          <div style="font-size:0.8rem;color:var(--primary);font-weight:700;text-transform:uppercase;">Vị trí kho trung tâm đề xuất:</div>
+          <div style="font-size:1rem;font-weight:700;color:white;margin:0.25rem 0 0.5rem 0;">${c1.hub_location}</div>
+          <div style="font-size:0.8rem;color:var(--text-muted);"><i class="fa-solid fa-map"></i> <strong>Địa bàn phụ trách:</strong> ${c1.service_areas}</div>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1rem;">
+          <div style="background:rgba(255,255,255,0.03);padding:0.75rem;border-radius:8px;text-align:center;">
+            <div style="font-size:0.7rem;color:var(--text-dim);">Shop A&B Tiếp Nhận</div>
+            <div style="font-size:1.25rem;font-weight:800;color:#38bdf8;">${c1.ab_count}</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);padding:0.75rem;border-radius:8px;text-align:center;">
+            <div style="font-size:0.7rem;color:var(--text-dim);">Doanh Số Tiềm Năng</div>
+            <div style="font-size:1.25rem;font-weight:800;color:#f59e0b;">${c1.sellout_mil.toLocaleString()} Tr</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);padding:0.75rem;border-radius:8px;text-align:center;">
+            <div style="font-size:0.7rem;color:var(--text-dim);">Cự Ly Sau Tối Ưu</div>
+            <div style="font-size:1.25rem;font-weight:800;color:#10b981;">${c1.dist_new}</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:0.75rem;">
+          <strong style="color:white;"><i class="fa-solid fa-lightbulb" style="color:#f59e0b;margin-right:6px;"></i> Phương Án Triển Khai:</strong>
+          <p style="margin-top:0.35rem;color:#cbd5e1;">${c1.resource_plan}</p>
+        </div>
+
+        <div>
+          <strong style="color:white;"><i class="fa-solid fa-circle-info" style="color:#38bdf8;margin-right:6px;"></i> Phân Tích Ý Nghĩa Chiến Lược:</strong>
+          <p style="margin-top:0.35rem;color:#cbd5e1;">${c1.desc}</p>
+        </div>
+      `;
+
+      document.getElementById('modalMapBtn').href = `index.html?lat=${c1.lat}&lon=${c1.lon}&zoom=11`;
+      document.getElementById('detailModal').classList.add('active');
+    }
+
+    function closeModal(e) {
+      if (!e || e.target === document.getElementById('detailModal')) {
+        document.getElementById('detailModal').classList.remove('active');
+      }
+    }
+
+    // Export CSV
+    function exportC1ToCSV() {
+      let csvContent = "\uFEFFMã Đề Xuất,Vùng,Tên C1 Đề Xuất,Vị Trí Kho,Địa Bàn Phụ Trách,Số Shop AB,Doanh Số Triệu Tháng,Cự Ly Cũ,Cự Ly Mới,Phương Án Nguồn Lực\n";
+      C1_PROPOSALS.forEach(c => {
+        csvContent += `"${c.code}","${c.region}","${c.name}","${c.hub_location}","${c.service_areas}",${c.ab_count},${c.sellout_mil},"${c.dist_old}","${c.dist_new}","${c.resource_plan}"\n`;
+      });
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "CJ_RTM_Danh_Muc_De_Xuat_Dai_Ly_C1.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Chart.js Visualizations
+    function initCharts() {
+      // Common chart font styling
+      Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+      Chart.defaults.color = '#94a3b8';
+
+      // 1. Chart Distance vs Hotspots (Combo)
+      const ctx1 = document.getElementById('chartDistanceHotspots').getContext('2d');
+      new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: ['Hải Phòng', 'Cần Thơ', 'Hà Nội', 'Nha Trang', 'Đà Nẵng', 'TP.HCM'],
+          datasets: [
+            {
+              type: 'bar',
+              label: 'Cự Ly Bình Quân (km)',
+              data: [21.3, 19.4, 10.8, 11.3, 10.7, 6.2],
+              backgroundColor: [
+                'rgba(239, 68, 68, 0.75)',
+                'rgba(239, 68, 68, 0.75)',
+                'rgba(245, 158, 11, 0.75)',
+                'rgba(16, 185, 129, 0.75)',
+                'rgba(16, 185, 129, 0.75)',
+                'rgba(56, 189, 248, 0.75)'
+              ],
+              borderColor: [
+                '#ef4444', '#ef4444', '#f59e0b', '#10b981', '#10b981', '#38bdf8'
+              ],
+              borderWidth: 1.5,
+              borderRadius: 6,
+              yAxisID: 'y'
+            },
+            {
+              type: 'line',
+              label: 'Số Điểm Nóng >45km',
+              data: [1118, 831, 242, 158, 103, 0],
+              borderColor: '#f43f5e',
+              backgroundColor: 'rgba(244, 63, 94, 0.15)',
+              pointBackgroundColor: '#ffffff',
+              pointBorderColor: '#f43f5e',
+              pointRadius: 5,
+              borderWidth: 3,
+              fill: true,
+              tension: 0.35,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { position: 'top', labels: { boxWidth: 14, color: '#f8fafc', font: { weight: 600 } } },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              titleColor: '#38bdf8',
+              bodyColor: '#f8fafc',
+              borderColor: 'rgba(255,255,255,0.1)',
+              borderWidth: 1,
+              padding: 10
+            }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.05)' } },
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              title: { display: true, text: 'Cự ly (km)', color: '#94a3b8' },
+              grid: { color: 'rgba(255,255,255,0.05)' }
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              title: { display: true, text: 'Điểm >45km', color: '#f43f5e' },
+              grid: { drawOnChartArea: false }
+            }
+          }
+        }
+      });
+
+      // 2. Chart Feasibility Doughnut
+      const ctx2 = document.getElementById('chartFeasibilityDoughnut').getContext('2d');
+      new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+          labels: [
+            '≤ 15km (Phủ nhanh tuyến mới)',
+            '15-30km (Gom tuyến F2/F4 + MOQ)',
+            '30-45km (Cận biên rủi ro)',
+            '> 45km (Bắt buộc mở C1/Hub)'
+          ],
+          datasets: [{
+            data: [6744, 1555, 450, 289],
+            backgroundColor: [
+              '#10b981', // green
+              '#38bdf8', // blue
+              '#f59e0b', // amber
+              '#ef4444'  // red
+            ],
+            borderColor: '#111827',
+            borderWidth: 3,
+            hoverOffset: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10.5 }, color: '#cbd5e1', padding: 12 } },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  const val = ctx.raw;
+                  const pct = ((val / 9038) * 100).toFixed(1);
+                  return ` ${ctx.label}: ${val.toLocaleString()} shop (${pct}%)`;
+                }
+              }
+            }
+          },
+          cutout: '62%'
+        }
+      });
+
+      // 3. Chart Revenue By Region (Horizontal Stacked Bar)
+      const ctx3 = document.getElementById('chartRevenueByRegion').getContext('2d');
+      new Chart(ctx3, {
+        type: 'bar',
+        data: {
+          labels: ['Hà Nội', 'Hải Phòng', 'Nha Trang', 'Đà Nẵng', 'TP.HCM', 'Cần Thơ'],
+          datasets: [
+            {
+              label: 'Grade A (Tỷ VNĐ/tháng)',
+              data: [25.3, 11.4, 4.3, 2.0, 1.5, 1.2],
+              backgroundColor: '#10b981',
+              borderRadius: 4
+            },
+            {
+              label: 'Grade B (Tỷ VNĐ/tháng)',
+              data: [19.0, 10.0, 3.9, 2.5, 1.8, 0.3],
+              backgroundColor: '#38bdf8',
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { boxWidth: 12, color: '#cbd5e1' } },
+            tooltip: {
+              callbacks: {
+                footer: function(items) {
+                  let sum = 0;
+                  items.forEach(i => sum += i.raw);
+                  return `Tổng: ${sum.toFixed(2)} Tỷ VNĐ/tháng`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { stacked: true, grid: { color: 'rgba(255,255,255,0.05)' }, title: { display: true, text: 'Tỷ VNĐ/tháng', color: '#94a3b8' } },
+            y: { stacked: true, grid: { color: 'rgba(255,255,255,0.05)' } }
+          }
+        }
+      });
+
+      // 4. Radar Risk Matrix
+      const ctx4 = document.getElementById('chartRadarRisk').getContext('2d');
+      new Chart(ctx4, {
+        type: 'radar',
+        data: {
+          labels: [
+            'Cự Ly Giao Hàng',
+            'Tỷ Lệ Điểm >45km',
+            'Tỷ Trọng Hàng Lạnh',
+            'Dung Lượng Shop A&B',
+            'Nhu Cầu Mở C1/Hub'
+          ],
+          datasets: [
+            {
+              label: 'Hải Phòng',
+              data: [95, 86, 75, 85, 95],
+              borderColor: '#ef4444',
+              backgroundColor: 'rgba(239, 68, 68, 0.2)',
+              borderWidth: 2,
+              pointRadius: 3
+            },
+            {
+              label: 'Cần Thơ',
+              data: [90, 100, 35, 40, 90],
+              borderColor: '#f97316',
+              backgroundColor: 'rgba(249, 115, 22, 0.2)',
+              borderWidth: 2,
+              pointRadius: 3
+            },
+            {
+              label: 'Hà Nội',
+              data: [50, 22, 100, 100, 75],
+              borderColor: '#38bdf8',
+              backgroundColor: 'rgba(56, 189, 248, 0.2)',
+              borderWidth: 2,
+              pointRadius: 3
+            },
+            {
+              label: 'TP.HCM',
+              data: [20, 0, 30, 50, 10],
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.15)',
+              borderWidth: 1.5,
+              pointRadius: 3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 12, color: '#cbd5e1' } }
+          },
+          scales: {
+            r: {
+              angleLines: { color: 'rgba(255,255,255,0.08)' },
+              grid: { color: 'rgba(255,255,255,0.08)' },
+              pointLabels: { color: '#cbd5e1', font: { size: 10, weight: 600 } },
+              ticks: { display: false, max: 100, min: 0 }
+            }
+          }
+        }
+      });
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      renderRegionsTable();
+      renderC1Table();
+      renderWhiteDistrictsTable();
+      initCharts();
+    });
+  </script>
+</body>
+</html>
