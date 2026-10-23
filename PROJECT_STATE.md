@@ -97,18 +97,20 @@ d:\SE_Project\RTM_Model/
    - Dropdown chọn trạng thái: `Tất cả Trạng thái (391)` / `🟢 Đang Hoạt Động (215)` / `🔴 Ngưng Hoạt Động (176)`.
    - **Nút tích `[x] 🚫 Bỏ NPP Ngưng (176)`** trên thanh công cụ: Chạm vào là ẩn ngay lập tức 176 NPP ngưng và các điểm bán của họ.
    - **Nút bấm 1 chạm trên bản đồ:** Nút nổi `🚫 Bỏ NPP Ngưng` rất tiện cho ngón tay cái khi lướt điện thoại.
-3. **Thẻ / Bảng Tổng Thể Phân Tích Cự Ly & Hub (`📊 Cự Ly & Hub`):**
-   - Nút bấm tím trên Header và nút nổi `📊 Báo Cáo Cự Ly` trên bản đồ.
-   - **Bộ lọc theo Vùng & Miền tích hợp trực tiếp:** Tự động đồng bộ với bộ lọc chính của bản đồ (ví dụ: đang xem Vùng Cần Thơ trên bản đồ thì mở bảng sẽ lập tức lọc các NPP Vùng Cần Thơ). Có thể chuyển đổi các Vùng (Cần Thơ, HCM, Hà Nội, Hải Phòng, Nha Trang, Đà Nẵng) ngay trong modal.
-   - **4 Thẻ KPI động theo vùng:** Tự động tính toán lại cự ly trung bình, tổng điểm nóng >45km, số điểm hàng đông/khô cự ly xa của vùng được lọc.
-   - Nút **"Xem"**: Tự động zoom đến NPP và vẽ tia nối đến khách hàng xa nhất.
-   - Nút **"Hiện Outlet"**: Tự động đóng modal, bay đến NPP và bật hiển thị toàn bộ mạng lưới điểm bán trực thuộc.
-4. **Nút Hiện Outlet & Quản lý hiển thị điểm bán đa tầng:**
+3. **Giao Diện Đánh Giá Chiến Lược 6 Vùng & Khuyến Nghị RTM (`📋 Đánh Giá 6 Vùng`):**
+   - **Nút bấm trực tiếp trên Header (`📋 Đánh Giá 6 Vùng`) & Nút nổi trên bản đồ:** Mở ngay Tab 1 phân tích chiến lược.
+   - **Bảng Ma Trận So Sánh Toàn Diện 6 Vùng:** So sánh chi tiết Số NPP (Chạy/Ngưng), Tổng điểm bán, Tỷ lệ đông lạnh, Cự ly TB gia quyền, Cự ly Max, Điểm nóng >45km, Đánh giá rủi ro (🔴 Cực kỳ cao / 🟡 Trung bình / 🟢 An toàn) và nút bấm 1 chạm để lọc nhanh các NPP của từng vùng.
+   - **6 Thẻ Phân Tích Chuyên Sâu Từng Vùng (Regional Deep-dive Cards):** Chỉ rõ các điểm nghẽn nguy cấp (NPP Hà Hải ở Hải Phòng, NPP Hưng Lộc Phát & Trần Điền ở Miền Tây, NPP Duy Thúy ở Tuyên Quang) kèm lời khuyên RTM hành động thực tế (Mở Cold Hub, Mở Dry Hub, Thiết lập MOQ & Tần suất, Re-zoning ranh giới).
+   - **Lộ trình 3 Giai Đoạn Tái Cấu Trúc Toàn Quốc:** Giai đoạn 1 (Cấp bách chuỗi lạnh) -> Giai đoạn 2 (Tái cấu trúc cước Miền Tây) -> Giai đoạn 3 (Tối ưu hóa & Chống chồng lấn).
+4. **Bảng Phân Tích Cự Ly & Hub Chi Tiết 388 NPP (`📊 Cự Ly & Hub` - Tab 2):**
+   - Tích hợp hệ thống chuyển Tab mượt mà giữa Đánh giá chiến lược và Bảng chi tiết 388 NPP.
+   - Bộ lọc theo Vùng & Miền, 4 Thẻ KPI động, nút "Xem" khách xa nhất và nút "Hiện Outlet" mở nhanh toàn bộ điểm bán của NPP đó.
+5. **Nút Hiện Outlet & Quản lý hiển thị điểm bán đa tầng:**
    - **Nút nổi trên bản đồ:** `[🏪 Hiện/Ẩn Điểm Bán]` trên thanh điều khiển nhanh `map-quick-controls`, bấm 1 chạm để bật/tắt toàn bộ điểm bán toàn quốc (đồng bộ checkbox thanh lọc).
    - **Nút trên Popup NPP:** `[🏪 Hiện Điểm Bán (X)]` cho phép lọc nhanh chỉ hiển thị các điểm bán của NPP đó, vẽ tia nối và zoom vừa vặn cụm outlets.
    - **Thanh Banner nổi khôi phục:** Khi đang xem riêng điểm bán của 1 NPP, xuất hiện thanh thông báo nổi trên đầu bản đồ với nút `[Hiện Tất Cả]` để quay lại góc nhìn tổng thể.
    - **Nút trên từng thẻ NPP ở Sidebar & Mobile Drawer:** Xem nhanh tia nối hoặc bật các điểm bán trực thuộc.
-5. **Bộ dấu tick hiển thị lớp (Layer Visibility Toggles):**
+6. **Bộ dấu tick hiển thị lớp (Layer Visibility Toggles):**
    - `☑️ NPP (391)`: Bật/tắt hiển thị NPP.
    - `☑️ Điểm Bán (59.4k)`: Bật/tắt hiển thị khách hàng.
    - `☑️ Tia Nối`: Vẽ mạng lưới liên kết NPP -> Khách hàng.

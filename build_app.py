@@ -670,6 +670,226 @@ html_template = f'''<!DOCTYPE html>
     }}
 
     /* ==========================================================================
+       MODAL TABS & STRATEGIC ASSESSMENT STYLES
+       ========================================================================== */
+    .modal-tab-bar {{
+      display: flex;
+      background: #0f172a;
+      border-bottom: 1px solid #334155;
+      padding: 0 16px;
+      gap: 8px;
+      flex-shrink: 0;
+      overflow-x: auto;
+    }}
+    .modal-tab-btn {{
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: #94a3b8;
+      padding: 10px 14px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }}
+    .modal-tab-btn:hover {{
+      color: #f1f5f9;
+      background: rgba(255, 255, 255, 0.03);
+    }}
+    .modal-tab-btn.active {{
+      color: #38bdf8;
+      border-bottom-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.08);
+    }}
+
+    /* Tab Contents */
+    .tab-content {{
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }}
+
+    /* Strategic Tab Cards & Tables */
+    .strategic-summary-banner {{
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }}
+    .strategic-matrix-table {{
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.72rem;
+      color: #cbd5e1;
+    }}
+    .strategic-matrix-table th {{
+      background: #0f172a;
+      color: #94a3b8;
+      padding: 9px 10px;
+      text-align: left;
+      font-weight: 800;
+      border-bottom: 2px solid #334155;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }}
+    .strategic-matrix-table td {{
+      padding: 8px 10px;
+      border-bottom: 1px solid #334155;
+      vertical-align: middle;
+    }}
+    .strategic-matrix-table tr:hover {{
+      background: rgba(37, 99, 235, 0.12);
+    }}
+
+    .regional-card-grid {{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 12px;
+      margin-top: 4px;
+    }}
+    .regional-card {{
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.2s;
+    }}
+    .regional-card:hover {{
+      border-color: #38bdf8;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+    }}
+    .regional-card-header {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 6px;
+    }}
+    .regional-card-title {{
+      font-size: 0.86rem;
+      font-weight: 800;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }}
+    .risk-badge {{
+      font-size: 0.64rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }}
+    .risk-badge-danger {{
+      background: rgba(220, 38, 38, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      color: #f87171;
+    }}
+    .risk-badge-warning {{
+      background: rgba(217, 119, 6, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      color: #fbbf24;
+    }}
+    .risk-badge-success {{
+      background: rgba(5, 150, 105, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      color: #34d399;
+    }}
+
+    .regional-stats-row {{
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      background: #0f172a;
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 0.68rem;
+      text-align: center;
+    }}
+    .stat-box-title {{ color: #94a3b8; font-size: 0.62rem; font-weight: 700; }}
+    .stat-box-num {{ font-weight: 800; color: #f1f5f9; font-size: 0.78rem; margin-top: 2px; }}
+
+    .regional-bottleneck {{
+      font-size: 0.7rem;
+      color: #cbd5e1;
+      line-height: 1.35;
+    }}
+    .regional-bottleneck strong {{
+      color: #fca5a5;
+    }}
+
+    .regional-advice-box {{
+      background: rgba(37, 99, 235, 0.12);
+      border-left: 3px solid #38bdf8;
+      padding: 7px 10px;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.7rem;
+      line-height: 1.45;
+      color: #e2e8f0;
+    }}
+    .regional-advice-box strong {{
+      color: #93c5fd;
+    }}
+
+    .regional-card-footer {{
+      display: flex;
+      gap: 6px;
+      margin-top: auto;
+      padding-top: 6px;
+      border-top: 1px solid #334155;
+    }}
+
+    .roadmap-container {{
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-top: 4px;
+    }}
+    .roadmap-phase {{
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px dashed #334155;
+    }}
+    .roadmap-phase:last-child {{
+      border-bottom: none;
+      padding-bottom: 0;
+    }}
+    .roadmap-tag {{
+      background: #2563eb;
+      color: white;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      min-width: 145px;
+      text-align: center;
+    }}
+    .roadmap-desc {{
+      font-size: 0.72rem;
+      color: #cbd5e1;
+      line-height: 1.4;
+    }}
+
+    /* ==========================================================================
        ANALYTICS MODAL (TAG TỔNG THỂ PHÂN TÍCH CỰ LY & ĐỀ XUẤT TRẠM TRUNG CHUYỂN)
        ========================================================================== */
     .analytics-modal-backdrop {{
@@ -935,7 +1155,8 @@ html_template = f'''<!DOCTYPE html>
       <h1><i class="fa-solid fa-route" style="color:#10b981;"></i> RTM Spatial Model</h1>
     </div>
     <div class="header-right">
-      <!-- NÚT BẬT BẢNG TỔNG THỂ PHÂN TÍCH CỰ LY & HUB -->
+      <!-- NÚT BẬT BÁO CÁO ĐÁNH GIÁ 6 VÙNG & CHI TIẾT CỰ LY HUB -->
+      <button class="btn-nav" style="background:#0284c7; border-color:#38bdf8;" onclick="openStrategicModal()"><i class="fa-solid fa-compass-drafting"></i> Đánh Giá 6 Vùng</button>
       <button class="btn-nav" style="background:#7c3aed; border-color:#8b5cf6;" onclick="openAnalyticsModal()"><i class="fa-solid fa-chart-pie"></i> Cự Ly & Hub</button>
       <button class="btn-nav" onclick="exportFilteredCSV()"><i class="fa-solid fa-file-excel"></i> Xuất Excel</button>
       <a href="rtm_dashboard_mien_tay.html" class="btn-nav"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
@@ -1073,6 +1294,7 @@ html_template = f'''<!DOCTYPE html>
       </button>
 
       <button class="quick-btn" id="btnQuickHideInactive" onclick="toggleHideInactiveQuick()" style="border-color: rgba(239, 68, 68, 0.6);"><i class="fa-solid fa-ban" style="color:#ef4444;"></i> Bỏ NPP Ngưng</button>
+      <button class="quick-btn" onclick="openStrategicModal()" style="border-color:#38bdf8; color:#7dd3fc;"><i class="fa-solid fa-compass-drafting"></i> Đánh Giá 6 Vùng</button>
       <button class="quick-btn" onclick="openAnalyticsModal()" style="border-color:#a78bfa; color:#c4b5fd;"><i class="fa-solid fa-chart-pie"></i> Báo Cáo Cự Ly</button>
       <button class="quick-btn" id="btnToggleRadius" onclick="toggleRadius()"><i class="fa-solid fa-circle-notch"></i> Bán kính 45km</button>
     </div>
@@ -1116,13 +1338,378 @@ html_template = f'''<!DOCTYPE html>
       <div class="modal-head">
         <div class="modal-head-title">
           <i class="fa-solid fa-chart-line" style="color:#a78bfa;"></i>
-          <span>Báo Cáo Tổng Thể Cự Ly Giao Hàng & Đề Xuất Trạm Trung Chuyển (Hubs)</span>
+          <span>Trung Tâm Phân Tích Chuỗi Cung Ứng RTM & Đề Xuất Trạm Trung Chuyển (Hubs)</span>
         </div>
         <button class="btn-close-modal" onclick="closeAnalyticsModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
+      <!-- THANH CHUYỂN TAB TRỰC QUAN -->
+      <div class="modal-tab-bar">
+        <button class="modal-tab-btn active" id="tabBtnStrategic" onclick="switchModalTab('strategic')">
+          <i class="fa-solid fa-compass-drafting" style="color:#38bdf8;"></i> 1. Đánh Giá Hiện Trạng 6 Vùng & Lời Khuyên RTM
+        </button>
+        <button class="modal-tab-btn" id="tabBtnDetails" onclick="switchModalTab('details')">
+          <i class="fa-solid fa-table-list" style="color:#f59e0b;"></i> 2. Bảng Dữ Liệu 388 NPP & Đề Xuất Tuyến
+        </button>
+      </div>
+
       <div class="modal-body">
-        <!-- KPI Summary Cards (Cập nhật động theo Vùng / Bộ lọc) -->
+        <!-- ====================================================================
+             TAB 1: ĐÁNH GIÁ CHIẾN LƯỢC HIỆN TRẠNG 6 VÙNG & KHUYẾN NGHỊ RTM
+             ==================================================================== -->
+        <div class="tab-content" id="tabContentStrategic">
+          
+          <!-- Banner Tổng Quan -->
+          <div class="strategic-summary-banner">
+            <div>
+              <div style="font-size:0.92rem; font-weight:800; color:#f8fafc;">
+                <i class="fa-solid fa-chart-pie" style="color:#38bdf8;"></i> Bức Tranh Toàn Cảnh Mạng Lưới Phân Phối 6 Vùng
+              </div>
+              <div style="font-size:0.72rem; color:#cbd5e1; margin-top:2px;">
+                Đo đạc thực tế <b>391 NPP</b> và <b>59.366 Điểm bán lẻ</b> &bull; Cự ly TB: <b>13.9 km</b> &bull; Điểm nóng >45km: <b>2.460 điểm (4.1%)</b>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <span class="risk-badge risk-badge-danger"><i class="fa-solid fa-circle-exclamation"></i> 2 Vùng Điểm Nóng: Hải Phòng, Cần Thơ</span>
+              <span class="risk-badge risk-badge-success"><i class="fa-solid fa-shield-check"></i> HCM: 0 điểm nóng</span>
+            </div>
+          </div>
+
+          <!-- Bảng Ma Trận So Sánh 6 Vùng -->
+          <div class="strategic-table-wrap">
+            <table class="strategic-matrix-table">
+              <thead>
+                <tr>
+                  <th>VÙNG PHÂN PHỐI</th>
+                  <th>SỐ NPP (CHẠY/NGƯNG)</th>
+                  <th>TỔNG KHÁCH HÀNG</th>
+                  <th>TỶ LỆ ĐÔNG LẠNH</th>
+                  <th>CỰ LY TB</th>
+                  <th>CỰ LY XA NHẤT</th>
+                  <th>ĐIỂM NÓNG > 45KM</th>
+                  <th>MỨC ĐỘ RỦI RO</th>
+                  <th>THAO TÁC</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b style="color:#38bdf8;">Hải Phòng</b><br><span style="font-size:0.65rem; color:#64748b;">Duyên hải & Bắc Trung Bộ</span></td>
+                  <td><b>78</b> (39 Chạy / 39 Ngưng)</td>
+                  <td><b>13.028</b> KH</td>
+                  <td><b style="color:#38bdf8;">33.4%</b> (4.3k KH)</td>
+                  <td><b style="color:#ef4444;">21.3 km</b> <span style="font-size:0.65rem; color:#f87171;">(Cao nhất)</span></td>
+                  <td><b style="color:#ef4444;">78.3 km</b></td>
+                  <td><b style="color:#ef4444;">1.118 KH (8.6%)</b></td>
+                  <td><span class="risk-badge risk-badge-danger">🔴 CỰC KỲ CAO</span></td>
+                  <td>
+                    <button class="btn-nav" style="padding:3px 7px; font-size:0.65rem; background:#2563eb; color:white; border:none;" onclick="filterByRegionFromStrategic('Hải Phòng')">
+                      <i class="fa-solid fa-filter"></i> Xem 78 NPP
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><b style="color:#38bdf8;">Cần Thơ</b><br><span style="font-size:0.65rem; color:#64748b;">13 Tỉnh ĐBSCL (Miền Tây)</span></td>
+                  <td><b>62</b> (34 Chạy / 28 Ngưng)</td>
+                  <td><b>8.271</b> KH</td>
+                  <td><b>16.6%</b> (1.4k KH)</td>
+                  <td><b style="color:#ef4444;">19.4 km</b></td>
+                  <td><b style="color:#ef4444;">95.2 km</b></td>
+                  <td><b style="color:#ef4444;">835 KH (10.1%)</b> <span style="font-size:0.65rem; color:#f87171;">(Tỷ lệ cao nhất)</span></td>
+                  <td><span class="risk-badge risk-badge-danger">🔴 CỰC KỲ CAO</span></td>
+                  <td>
+                    <button class="btn-nav" style="padding:3px 7px; font-size:0.65rem; background:#2563eb; color:white; border:none;" onclick="filterByRegionFromStrategic('Cần Thơ')">
+                      <i class="fa-solid fa-filter"></i> Xem 62 NPP
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><b style="color:#38bdf8;">Hà Nội</b><br><span style="font-size:0.65rem; color:#64748b;">ĐB Sông Hồng & Tây Bắc</span></td>
+                  <td><b>70</b> (35 Chạy / 35 Ngưng)</td>
+                  <td><b>11.021</b> KH</td>
+                  <td><b style="color:#38bdf8;">40.0%</b> <span style="font-size:0.65rem; color:#38bdf8;">(Cao nhất nước)</span></td>
+                  <td><b style="color:#34d399;">10.8 km</b></td>
+                  <td><b style="color:#ef4444;">120.0 km</b></td>
+                  <td><b>244 KH (2.2%)</b></td>
+                  <td><span class="risk-badge risk-badge-warning">🟡 TRUNG BÌNH</span></td>
+                  <td>
+                    <button class="btn-nav" style="padding:3px 7px; font-size:0.65rem; background:#2563eb; color:white; border:none;" onclick="filterByRegionFromStrategic('Hà Nội')">
+                      <i class="fa-solid fa-filter"></i> Xem 70 NPP
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><b style="color:#38bdf8;">Nha Trang</b><br><span style="font-size:0.65rem; color:#64748b;">Đông Nam Bộ & Tây Nguyên</span></td>
+                  <td><b>90</b> (45 Chạy / 45 Ngưng)</td>
+                  <td><b>13.718</b> KH</td>
+                  <td><b>22.0%</b> (3.0k KH)</td>
+                  <td><b style="color:#34d399;">11.3 km</b></td>
+                  <td>188.6 km</td>
+                  <td><b>160 KH (1.2%)</b></td>
+                  <td><span class="risk-badge risk-badge-success">🟢 AN TOÀN - THẤP</span></td>
+                  <td>
+                    <button class="btn-nav" style="padding:3px 7px; font-size:0.65rem; background:#2563eb; color:white; border:none;" onclick="filterByRegionFromStrategic('Nha Trang')">
+                      <i class="fa-solid fa-filter"></i> Xem 90 NPP
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><b style="color:#38bdf8;">Đà Nẵng</b><br><span style="font-size:0.65rem; color:#64748b;">Bắc & Nam Trung Bộ</span></td>
+                  <td><b>44</b> (27 Chạy / 17 Ngưng)</td>
+                  <td><b>6.224</b> KH</td>
+                  <td><b>33.8%</b> (2.1k KH)</td>
+                  <td><b style="color:#34d399;">10.7 km</b></td>
+                  <td>78.2 km</td>
+                  <td><b>103 KH (1.7%)</b></td>
+                  <td><span class="risk-badge risk-badge-success">🟢 AN TOÀN - THẤP</span></td>
+                  <td>
+                    <button class="btn-nav" style="padding:3px 7px; font-size:0.65rem; background:#2563eb; color:white; border:none;" onclick="filterByRegionFromStrategic('Đà Nẵng')">
+                      <i class="fa-solid fa-filter"></i> Xem 44 NPP
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><b style="color:#38bdf8;">TP. Hồ Chí Minh</b><br><span style="font-size:0.65rem; color:#64748b;">Đô thị hạt nhân</span></td>
+                  <td><b>47</b> (35 Chạy / 12 Ngưng)</td>
+                  <td><b>7.104</b> KH</td>
+                  <td><b>13.8%</b> (979 KH)</td>
+                  <td><b style="color:#34d399;">6.2 km</b> <span style="font-size:0.65rem; color:#34d399;">(Tốt nhất)</span></td>
+                  <td>42.9 km</td>
+                  <td><b style="color:#34d399;">0 KH (0.0%)</b></td>
+                  <td><span class="risk-badge risk-badge-success">🟢 TỐI ƯU CỰ LY</span></td>
+                  <td>
+                    <button class="btn-nav" style="padding:3px 7px; font-size:0.65rem; background:#2563eb; color:white; border:none;" onclick="filterByRegionFromStrategic('HCM')">
+                      <i class="fa-solid fa-filter"></i> Xem 47 NPP
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Lời khuyên chi tiết cho từng Vùng (Deep-dive Cards) -->
+          <div style="font-size:0.86rem; font-weight:800; color:#f8fafc; margin-top:6px;">
+            <i class="fa-solid fa-lightbulb" style="color:#fbbf24;"></i> Đánh Giá Hiện Trạng & Khuyến Nghị Chiến Lược RTM Cho Từng Vùng:
+          </div>
+
+          <div class="regional-card-grid">
+            
+            <!-- VÙNG 1: HẢI PHÒNG -->
+            <div class="regional-card" style="border-top: 3px solid #ef4444;">
+              <div class="regional-card-header">
+                <span class="regional-card-title"><i class="fa-solid fa-anchor" style="color:#38bdf8;"></i> Vùng Hải Phòng</span>
+                <span class="risk-badge risk-badge-danger">🔴 RỦI RO SỐ 1</span>
+              </div>
+              <div class="regional-stats-row">
+                <div><div class="stat-box-title">NPP Đang Chạy</div><div class="stat-box-num">39 / 78</div></div>
+                <div><div class="stat-box-title">Điểm Bán</div><div class="stat-box-num">13,028</div></div>
+                <div><div class="stat-box-title">Cự Ly TB</div><div class="stat-box-num" style="color:#ef4444;">21.3 km</div></div>
+                <div><div class="stat-box-title">Khách >45km</div><div class="stat-box-num" style="color:#ef4444;">1,118 (8.6%)</div></div>
+              </div>
+              <div class="regional-bottleneck">
+                <strong>Điểm nghẽn nguy cấp:</strong> NPP Thực Phẩm Hà Hải (1057559) có tới <b>438/440 khách >45km (99.5%)</b>, cự ly Max 78.3 km, trong đó <b>61.4% là HÀNG ĐÔNG</b> giao vượt ngưỡng an toàn.
+              </div>
+              <div class="regional-advice-box">
+                💡 <strong>Khuyến nghị RTM:</strong><br>
+                1. ❄️ <b>Bắt buộc mở Sub-depot Hàng Đông (Cold Hub):</b> Đặt trạm trung chuyển tủ đông đệm tại duyên hải phía Nam Hải Phòng hoặc giáp ranh Thái Bình để phục vụ 438 khách này.<br>
+                2. <b>Bàn giao tuyến liên tỉnh:</b> Tách các tuyến Hải Dương, Thái Bình bàn giao lại cho NPP nội tỉnh phụ trách.
+              </div>
+              <div class="regional-card-footer">
+                <button class="btn-nav" style="flex:1; justify-content:center; background:#2563eb; color:white; border:none;" onclick="filterByRegionFromStrategic('Hải Phòng')">
+                  <i class="fa-solid fa-list-check"></i> Xem 78 NPP
+                </button>
+                <button class="btn-nav" style="background:#0284c7; color:white; border:none;" onclick="viewRegionOnMap('Hải Phòng')">
+                  <i class="fa-solid fa-map"></i> Bản Đồ
+                </button>
+              </div>
+            </div>
+
+            <!-- VÙNG 2: CẦN THƠ (MIỀN TÂY) -->
+            <div class="regional-card" style="border-top: 3px solid #ef4444;">
+              <div class="regional-card-header">
+                <span class="regional-card-title"><i class="fa-solid fa-water" style="color:#38bdf8;"></i> Vùng Cần Thơ (Miền Tây)</span>
+                <span class="risk-badge risk-badge-danger">🔴 TỶ LỆ XA CAO NHẤT</span>
+              </div>
+              <div class="regional-stats-row">
+                <div><div class="stat-box-title">NPP Đang Chạy</div><div class="stat-box-num">34 / 62</div></div>
+                <div><div class="stat-box-title">Điểm Bán</div><div class="stat-box-num">8,271</div></div>
+                <div><div class="stat-box-title">Cự Ly TB</div><div class="stat-box-num" style="color:#ef4444;">19.4 km</div></div>
+                <div><div class="stat-box-title">Khách >45km</div><div class="stat-box-num" style="color:#ef4444;">835 (10.1%)</div></div>
+              </div>
+              <div class="regional-bottleneck">
+                <strong>Điểm nghẽn nguy cấp:</strong> Kênh rạch chia cắt kéo giãn tuyến xe máy gấp 1.5 lần. NPP Hưng Lộc Phát (350 khách >45km, Max 85.8km) & NPP Trần Điền - Cà Mau (298 khách >45km, Max 95.2km). Hàng khô chiếm tới <b>83.4%</b>.
+              </div>
+              <div class="regional-advice-box">
+                💡 <strong>Khuyến nghị RTM:</strong><br>
+                1. 🌾 <b>Mở Đại lý Chuyển tiếp Hàng Khô (Dry Hub):</b> Chọn đại lý lớn tại Thị trấn Cái Nước/Đầm Dơi (Cà Mau) và Thốt Nốt/Vĩnh Thạnh (Cần Thơ) nhận hàng xe tải lớn 1 chuyến/tuần.<br>
+                2. <b>Thiết lập MOQ & Tần suất:</b> Nâng đơn hàng tối thiểu lên <b>&ge; 1.2M</b> và chuyển sang giao hàng <b>2 tuần/lần (F4)</b> cho các cụm cự ly >30km.
+              </div>
+              <div class="regional-card-footer">
+                <button class="btn-nav" style="flex:1; justify-content:center; background:#2563eb; color:white; border:none;" onclick="filterByRegionFromStrategic('Cần Thơ')">
+                  <i class="fa-solid fa-list-check"></i> Xem 62 NPP
+                </button>
+                <button class="btn-nav" style="background:#0284c7; color:white; border:none;" onclick="viewRegionOnMap('Cần Thơ')">
+                  <i class="fa-solid fa-map"></i> Bản Đồ
+                </button>
+              </div>
+            </div>
+
+            <!-- VÙNG 3: HÀ NỘI -->
+            <div class="regional-card" style="border-top: 3px solid #f59e0b;">
+              <div class="regional-card-header">
+                <span class="regional-card-title"><i class="fa-solid fa-landmark" style="color:#38bdf8;"></i> Vùng Hà Nội (Miền Bắc)</span>
+                <span class="risk-badge risk-badge-warning">🟡 RỦI RO VÙNG CAO</span>
+              </div>
+              <div class="regional-stats-row">
+                <div><div class="stat-box-title">NPP Đang Chạy</div><div class="stat-box-num">35 / 70</div></div>
+                <div><div class="stat-box-title">Điểm Bán</div><div class="stat-box-num">11,021</div></div>
+                <div><div class="stat-box-title">Hàng Đông %</div><div class="stat-box-num" style="color:#38bdf8;">40.0%</div></div>
+                <div><div class="stat-box-title">Khách >45km</div><div class="stat-box-num">244 (2.2%)</div></div>
+              </div>
+              <div class="regional-bottleneck">
+                <strong>Điểm nghẽn vùng cao:</strong> Nội đô Hà Nội rất tốt, nhưng cụm Tuyên Quang đèo dốc hiểm trở: NPP Duy Thúy (1065021) có <b>100 khách >45km</b> (Max 111.9 km), đặc biệt có tới <b>84.8% HÀNG ĐÔNG</b>.
+              </div>
+              <div class="regional-advice-box">
+                💡 <strong>Khuyến nghị RTM:</strong><br>
+                1. ❄️ <b>Tủ đông đệm vệ tinh (Buffer Cold Storage):</b> Trang bị tủ đông đệm tại các thị trấn huyện lỵ (Chiêm Hóa, Hàm Yên) để tiếp tế cho nhân viên giao hàng vùng cao.<br>
+                2. <b>Nội đô Hà Nội:</b> Chuyển dịch dần sang xe van điện / xe bán tải nhỏ tránh khung giờ cấm tải.
+              </div>
+              <div class="regional-card-footer">
+                <button class="btn-nav" style="flex:1; justify-content:center; background:#2563eb; color:white; border:none;" onclick="filterByRegionFromStrategic('Hà Nội')">
+                  <i class="fa-solid fa-list-check"></i> Xem 70 NPP
+                </button>
+                <button class="btn-nav" style="background:#0284c7; color:white; border:none;" onclick="viewRegionOnMap('Hà Nội')">
+                  <i class="fa-solid fa-map"></i> Bản Đồ
+                </button>
+              </div>
+            </div>
+
+            <!-- VÙNG 4: NHA TRANG -->
+            <div class="regional-card" style="border-top: 3px solid #10b981;">
+              <div class="regional-card-header">
+                <span class="regional-card-title"><i class="fa-solid fa-mountain-sun" style="color:#38bdf8;"></i> Vùng Nha Trang (ĐNB & Tây Nguyên)</span>
+                <span class="risk-badge risk-badge-success">🟢 KIỂM SOÁT TỐT</span>
+              </div>
+              <div class="regional-stats-row">
+                <div><div class="stat-box-title">NPP Đang Chạy</div><div class="stat-box-num">45 / 90</div></div>
+                <div><div class="stat-box-title">Điểm Bán</div><div class="stat-box-num">13,718</div></div>
+                <div><div class="stat-box-title">Cự Ly TB</div><div class="stat-box-num" style="color:#34d399;">11.3 km</div></div>
+                <div><div class="stat-box-title">Khách >45km</div><div class="stat-box-num">160 (1.2%)</div></div>
+              </div>
+              <div class="regional-bottleneck">
+                <strong>Điểm nghẽn ranh giới:</strong> NPP Tiến An Nhiên (Đồng Nai) có 55 khách giáp Bình Phước/Lâm Đồng (Max 65.9km). NPP Đăng Khoa BD có 29 khách cự ly 50km.
+              </div>
+              <div class="regional-advice-box">
+                💡 <strong>Khuyến nghị RTM:</strong><br>
+                1. 🔄 <b>Tái cấu trúc ranh giới (Re-zoning):</b> Cắt chuyển các điểm bán vùng giáp ranh của Đồng Nai và Bình Dương giao cho NPP Bình Phước và Tây Ninh quản lý.<br>
+                2. <b>Tây Nguyên (Đắk Lắk, Lâm Đồng):</b> Gom chuyến theo lịch thứ cố định trong tuần (Route-day schedule).
+              </div>
+              <div class="regional-card-footer">
+                <button class="btn-nav" style="flex:1; justify-content:center; background:#2563eb; color:white; border:none;" onclick="filterByRegionFromStrategic('Nha Trang')">
+                  <i class="fa-solid fa-list-check"></i> Xem 90 NPP
+                </button>
+                <button class="btn-nav" style="background:#0284c7; color:white; border:none;" onclick="viewRegionOnMap('Nha Trang')">
+                  <i class="fa-solid fa-map"></i> Bản Đồ
+                </button>
+              </div>
+            </div>
+
+            <!-- VÙNG 5: ĐÀ NẴNG -->
+            <div class="regional-card" style="border-top: 3px solid #10b981;">
+              <div class="regional-card-header">
+                <span class="regional-card-title"><i class="fa-solid fa-bridge-water" style="color:#38bdf8;"></i> Vùng Đà Nẵng (Miền Trung)</span>
+                <span class="risk-badge risk-badge-success">🟢 DỌC TRỤC QL1A</span>
+              </div>
+              <div class="regional-stats-row">
+                <div><div class="stat-box-title">NPP Đang Chạy</div><div class="stat-box-num">27 / 44</div></div>
+                <div><div class="stat-box-title">Điểm Bán</div><div class="stat-box-num">6,224</div></div>
+                <div><div class="stat-box-title">Cự Ly TB</div><div class="stat-box-num" style="color:#34d399;">10.7 km</div></div>
+                <div><div class="stat-box-title">Khách >45km</div><div class="stat-box-num">103 (1.7%)</div></div>
+              </div>
+              <div class="regional-bottleneck">
+                <strong>Điểm nghẽn ranh giới:</strong> NPP Hoàng Mai Foods (Huế) giao ra Chân Mây - Lăng Cô mất 60km qua đèo; NPP Cao Hồng Ánh (Quảng Trị) giao 15 khách Lao Bảo (75.7% hàng đông).
+              </div>
+              <div class="regional-advice-box">
+                💡 <strong>Khuyến nghị RTM:</strong><br>
+                1. <b>Bàn giao cụm Lăng Cô cho NPP Đà Nẵng:</b> Rút ngắn cự ly từ 60.4km xuống còn 25km (qua hầm Hải Vân).<br>
+                2. <b>Tuyến Lao Bảo:</b> Chạy xe tải lạnh chuyên dụng 2 chuyến/tuần từ Đông Hà thay vì chạy xe máy thùng xốp.
+              </div>
+              <div class="regional-card-footer">
+                <button class="btn-nav" style="flex:1; justify-content:center; background:#2563eb; color:white; border:none;" onclick="filterByRegionFromStrategic('Đà Nẵng')">
+                  <i class="fa-solid fa-list-check"></i> Xem 44 NPP
+                </button>
+                <button class="btn-nav" style="background:#0284c7; color:white; border:none;" onclick="viewRegionOnMap('Đà Nẵng')">
+                  <i class="fa-solid fa-map"></i> Bản Đồ
+                </button>
+              </div>
+            </div>
+
+            <!-- VÙNG 6: TP. HỒ CHÍ MINH -->
+            <div class="regional-card" style="border-top: 3px solid #10b981;">
+              <div class="regional-card-header">
+                <span class="regional-card-title"><i class="fa-solid fa-city" style="color:#38bdf8;"></i> Vùng TP. Hồ Chí Minh</span>
+                <span class="risk-badge risk-badge-success">🟢 HOÀN HẢO CỰ LY</span>
+              </div>
+              <div class="regional-stats-row">
+                <div><div class="stat-box-title">NPP Đang Chạy</div><div class="stat-box-num">35 / 47</div></div>
+                <div><div class="stat-box-title">Điểm Bán</div><div class="stat-box-num">7,104</div></div>
+                <div><div class="stat-box-title">Cự Ly TB</div><div class="stat-box-num" style="color:#34d399;">6.2 km</div></div>
+                <div><div class="stat-box-title">Khách >45km</div><div class="stat-box-num" style="color:#34d399;">0 (0.0%)</div></div>
+              </div>
+              <div class="regional-bottleneck">
+                <strong>Thách thức đô thị:</strong> 100% khách hàng trong cự ly an toàn <43km. Rủi ro chính là <b>xung đột chồng chéo địa bàn (overlap)</b> giữa 35 NPP và chi phí kẹt xe/dừng đỗ đô thị.
+              </div>
+              <div class="regional-advice-box">
+                💡 <strong>Khuyến nghị RTM:</strong><br>
+                1. 🗺️ <b>Siết chặt ranh giới địa bàn:</b> Rà soát triệt để hiện tượng 2 NPP cùng chào hàng vào 1 phường/tuyến phố.<br>
+                2. <b>Tăng Dropsize & Tần suất:</b> Đẩy mạnh tần suất lên F4 hoặc F8 cho Key Outlets và tăng giá trị đơn hàng bình quân.
+              </div>
+              <div class="regional-card-footer">
+                <button class="btn-nav" style="flex:1; justify-content:center; background:#2563eb; color:white; border:none;" onclick="filterByRegionFromStrategic('HCM')">
+                  <i class="fa-solid fa-list-check"></i> Xem 47 NPP
+                </button>
+                <button class="btn-nav" style="background:#0284c7; color:white; border:none;" onclick="viewRegionOnMap('HCM')">
+                  <i class="fa-solid fa-map"></i> Bản Đồ
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Lộ trình Ưu Tiên Triển Khai -->
+          <div class="roadmap-container">
+            <div style="font-size:0.86rem; font-weight:800; color:#f8fafc; margin-bottom:8px;">
+              <i class="fa-solid fa-route" style="color:#10b981;"></i> Lộ Trình 3 Giai Đoạn Tái Cấu Trúc Toàn Quốc:
+            </div>
+            
+            <div class="roadmap-phase">
+              <span class="roadmap-tag" style="background:#dc2626;">GIAI ĐOẠN 1 (Tháng 1 - 2)</span>
+              <div class="roadmap-desc">
+                <b>Cấp bách chuỗi lạnh:</b> Mở Cold Sub-depot giải cứu 438 khách hàng >45km của NPP Hà Hải (Hải Phòng) & Đặt tủ đông đệm (Buffer Cold Storage) cho NPP Duy Thúy (Tuyên Quang).
+              </div>
+            </div>
+
+            <div class="roadmap-phase">
+              <span class="roadmap-tag" style="background:#d97706;">GIAI ĐOẠN 2 (Tháng 3 - 4)</span>
+              <div class="roadmap-desc">
+                <b>Tái cấu trúc cước Miền Tây:</b> Mở 2 Đại lý chuyển tiếp Hàng Khô (Dry Hubs) tại Cà Mau & Cần Thơ; ban hành chính sách MOQ &ge; 1.2M và giãn tần suất F4 cho các cụm cự ly >30km.
+              </div>
+            </div>
+
+            <div class="roadmap-phase">
+              <span class="roadmap-tag" style="background:#059669;">GIAI ĐOẠN 3 (Tháng 5 - 6)</span>
+              <div class="roadmap-desc">
+                <b>Tối ưu hóa & Chống chồng lấn:</b> Bàn giao tuyến giáp ranh (Lăng Cô sang Đà Nẵng; Định Quán sang Bình Phước); Siết chặt ranh giới địa bàn phường/quận giữa 35 NPP tại TP.HCM.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ====================================================================
+             TAB 2: BẢNG DỮ LIỆU CHI TIẾT 388 NPP & ĐỀ XUẤT TRẠM HUB (HIỆN CÓ)
+             ==================================================================== -->
+        <div class="tab-content" id="tabContentDetails" style="display:none;">
+          <!-- KPI Summary Cards (Cập nhật động theo Vùng / Bộ lọc) -->
         <div class="modal-kpi-grid">
           <div class="modal-kpi-card">
             <span class="modal-kpi-title"><i class="fa-solid fa-arrows-left-right" style="color:#38bdf8;"></i> Cự Ly Trung Bình</span>
@@ -1205,6 +1792,7 @@ html_template = f'''<!DOCTYPE html>
             </tbody>
           </table>
         </div>
+        </div> <!-- End Tab 2 Details -->
       </div>
     </div>
   </div>
@@ -1911,6 +2499,53 @@ html_template = f'''<!DOCTYPE html>
       filterAnalyticsTable();
     }}
 
+    function switchModalTab(tab) {{
+      const btnStrategic = document.getElementById('tabBtnStrategic');
+      const btnDetails = document.getElementById('tabBtnDetails');
+      const contentStrategic = document.getElementById('tabContentStrategic');
+      const contentDetails = document.getElementById('tabContentDetails');
+
+      if (tab === 'strategic') {{
+        if (btnStrategic) btnStrategic.classList.add('active');
+        if (btnDetails) btnDetails.classList.remove('active');
+        if (contentStrategic) contentStrategic.style.display = 'flex';
+        if (contentDetails) contentDetails.style.display = 'none';
+      }} else {{
+        if (btnStrategic) btnStrategic.classList.remove('active');
+        if (btnDetails) btnDetails.classList.add('active');
+        if (contentStrategic) contentStrategic.style.display = 'none';
+        if (contentDetails) contentDetails.style.display = 'flex';
+        filterAnalyticsTable();
+      }}
+    }}
+
+    function openStrategicModal() {{
+      document.getElementById('analyticsModal').classList.add('open');
+      switchModalTab('strategic');
+    }}
+
+    function filterByRegionFromStrategic(areaName) {{
+      const modalVung = document.getElementById('modalFilterVung');
+      if (modalVung) modalVung.value = areaName;
+
+      const mainVung = document.getElementById('filterVung');
+      if (mainVung) {{
+        mainVung.value = areaName;
+        onVungChange();
+      }}
+
+      switchModalTab('details');
+    }}
+
+    function viewRegionOnMap(areaName) {{
+      closeAnalyticsModal();
+      const mainVung = document.getElementById('filterVung');
+      if (mainVung) {{
+        mainVung.value = areaName;
+        onVungChange();
+      }}
+    }}
+
     function openAnalyticsModal() {{
       // Đồng bộ theo bộ lọc Miền & Vùng hiện tại trên thanh công cụ bản đồ
       const mainMien = document.getElementById('filterMien') ? document.getElementById('filterMien').value : 'ALL';
@@ -1927,7 +2562,7 @@ html_template = f'''<!DOCTYPE html>
       }}
 
       document.getElementById('analyticsModal').classList.add('open');
-      filterAnalyticsTable();
+      switchModalTab('details');
     }}
 
     function closeAnalyticsModal() {{
