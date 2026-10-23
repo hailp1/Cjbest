@@ -618,6 +618,16 @@
       </select>
     </div>
 
+    <!-- BỘ LỌC TRẠNG THÁI NPP: ĐANG HOẠT ĐỘNG / NGƯNG / TẤT CẢ -->
+    <div class="filter-group">
+      <span class="filter-label"><i class="fa-solid fa-toggle-on"></i> Trạng thái NPP:</span>
+      <select id="filterStatus" class="filter-select" onchange="applyFilters()">
+        <option value="ALL">Tất cả Trạng thái (391 NPP)</option>
+        <option value="ACTIVE">🟢 Đang Hoạt Động (215 NPP)</option>
+        <option value="INACTIVE">🔴 Ngưng Hoạt Động (176 NPP)</option>
+      </select>
+    </div>
+
     <!-- DẤU TICK HIỂN THỊ LỚP (LAYER TOGGLES) -->
     <div class="layer-toggle-container">
       <label class="toggle-checkbox-label npp-label active-npp" id="lblChkNpp" title="Bật/Tắt hiển thị Nhà Phân Phối">
@@ -671,6 +681,7 @@
     <div class="kpi-pill">
       <span>Đang xem:</span>
       <span id="kpiCount" class="kpi-val">391</span> NPP
+      (<span id="kpiActive" class="kpi-active">215 Chạy</span>/<span id="kpiInactive" class="kpi-inactive">176 Ngưng</span>)
       &bull; <span id="kpiOutlets" class="kpi-outlets">59.4k</span> Điểm Bán
       (<span id="kpiRemote" class="kpi-remote">2,456</span> xa >45km)
     </div>
@@ -916,6 +927,7 @@
       const mienVal = document.getElementById('filterMien').value;
       const vungVal = document.getElementById('filterVung').value;
       const tinhVal = document.getElementById('filterTinh').value;
+      const statusVal = document.getElementById('filterStatus') ? document.getElementById('filterStatus').value : 'ALL';
       const searchVal = document.getElementById('filterSearch').value.toLowerCase().trim();
 
       const allowCold = document.getElementById('chkToggleCold').checked;
@@ -932,6 +944,9 @@
         const matchMien = (mienVal === 'ALL' || n.region === mienVal);
         const matchVung = (vungVal === 'ALL' || n.area === vungVal);
         const matchTinh = (tinhVal === 'ALL' || n.province === tinhVal);
+        const matchStatus = (statusVal === 'ALL') || 
+                            (statusVal === 'ACTIVE' && n.status.includes('Đang')) || 
+                            (statusVal === 'INACTIVE' && !n.status.includes('Đang'));
         const matchSearch = !searchVal || 
           n.name.toLowerCase().includes(searchVal) ||
           n.code.toLowerCase().includes(searchVal) ||
@@ -939,8 +954,10 @@
           n.address.toLowerCase().includes(searchVal) ||
           n.province.toLowerCase().includes(searchVal);
 
-        return matchMien && matchVung && matchTinh && matchSearch;
+        return matchMien && matchVung && matchTinh && matchStatus && matchSearch;
       });
+
+      const matchingNppCodeSet = new Set(filteredNPPs.map(n => String(n.code)));
 
       // 2. Filter Outlets
       filteredOutlets = ALL_OUTLETS.filter(o => {
@@ -948,6 +965,9 @@
         if (mienVal !== 'ALL' && o[7] !== mienVal) return false;
         if (vungVal !== 'ALL' && o[6] !== vungVal) return false;
         if (tinhVal !== 'ALL' && o[5] !== tinhVal) return false;
+
+        // If status filter is applied, only show outlets of filtered NPPs
+        if (statusVal !== 'ALL' && !matchingNppCodeSet.has(String(o[4]))) return false;
 
         // Remote only (> 45km)
         if (remoteOnly && o[10] < 45) return false;
@@ -987,6 +1007,8 @@
       const remoteCount = filteredOutlets.filter(o => o[10] >= 45).length;
 
       document.getElementById('kpiCount').textContent = totalNpp;
+      if (document.getElementById('kpiActive')) document.getElementById('kpiActive').textContent = `${activeNpp} Chạy`;
+      if (document.getElementById('kpiInactive')) document.getElementById('kpiInactive').textContent = `${inactiveNpp} Ngưng`;
       document.getElementById('kpiOutlets').textContent = totalOutlets.toLocaleString('vi-VN');
       document.getElementById('kpiRemote').textContent = remoteCount.toLocaleString('vi-VN');
       document.getElementById('sidebarCount').textContent = totalNpp;
