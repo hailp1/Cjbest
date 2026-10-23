@@ -1,0 +1,17 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/map",
+      "destination": "/ban_do_khong_gian_rtm_mekong.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/rtm_dashboard_mien_tay.html"
+    }
+  ]
+}
