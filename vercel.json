@@ -1,17 +1,43 @@
 {
   "cleanUrls": true,
-  "rewrites": [
+  "headers": [
     {
       "source": "/",
-      "destination": "/index.html"
+      "headers": [
+        { "key": "Content-Type", "value": "text/html; charset=utf-8" },
+        { "key": "Content-Disposition", "value": "inline" },
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
+        { "key": "Pragma", "value": "no-cache" },
+        { "key": "Expires", "value": "0" }
+      ]
     },
     {
-      "source": "/map",
-      "destination": "/ban_do_khong_gian_rtm_mekong.html"
+      "source": "/index.html",
+      "headers": [
+        { "key": "Content-Type", "value": "text/html; charset=utf-8" },
+        { "key": "Content-Disposition", "value": "inline" },
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+      ]
     },
     {
-      "source": "/dashboard",
-      "destination": "/rtm_dashboard_mien_tay.html"
+      "source": "/ban_do_khong_gian_rtm_mekong.html",
+      "headers": [
+        { "key": "Content-Type", "value": "text/html; charset=utf-8" },
+        { "key": "Content-Disposition", "value": "inline" },
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/outlets_data.js",
+      "headers": [
+        { "key": "Content-Type", "value": "application/javascript; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=86400, immutable" }
+      ]
     }
+  ],
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/map", "destination": "/ban_do_khong_gian_rtm_mekong.html" },
+    { "source": "/dashboard", "destination": "/rtm_dashboard_mien_tay.html" }
   ]
 }
