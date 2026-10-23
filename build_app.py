@@ -1817,7 +1817,8 @@ html_template = f'''<!DOCTYPE html>
     const map = L.map('map', {{
       center: [14.0583, 108.2772],
       zoom: 6,
-      zoomControl: false
+      zoomControl: false,
+      preferCanvas: true
     }});
 
     L.control.zoom({{ position: 'topleft' }}).addTo(map);

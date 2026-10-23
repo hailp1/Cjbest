@@ -1788,7 +1788,8 @@
     const map = L.map('map', {
       center: [14.0583, 108.2772],
       zoom: 6,
-      zoomControl: false
+      zoomControl: false,
+      preferCanvas: true
     });
 
     L.control.zoom({ position: 'topleft' }).addTo(map);
@@ -1808,8 +1809,9 @@
     // Poll data loaded from deferred script
     let checkTimer = setInterval(() => {
       let hasUpdate = false;
-      if (window.ALL_OUTLETS && ALL_OUTLETS.length === 0) {
-        ALL_OUTLETS = window.ALL_OUTLETS;
+      const rawOutlets = window.RAW_OUTLETS || window.ALL_OUTLETS;
+      if (rawOutlets && ALL_OUTLETS.length === 0) {
+        ALL_OUTLETS = rawOutlets;
         hasUpdate = true;
       }
       if (window.NPP_ANALYTICS && NPP_ANALYTICS.length === 0) {
@@ -1950,18 +1952,26 @@
       const lbl = document.getElementById('lblChkOutlet');
       const quickBtn = document.getElementById('btnQuickToggleOutlet');
       const quickText = document.getElementById('btnQuickOutletText');
-      showOutlets = chk.checked;
+      showOutlets = chk ? chk.checked : true;
+
+      if (ALL_OUTLETS.length === 0) {
+        const raw = window.RAW_OUTLETS || window.ALL_OUTLETS;
+        if (raw) ALL_OUTLETS = raw;
+      }
+
       if (showOutlets) {
         if (lbl) lbl.classList.add('active-outlet');
         if (quickBtn) quickBtn.classList.add('active-quick-outlet');
         if (quickText) quickText.textContent = 'Ẩn Điểm Bán';
-        renderOutlets();
-        outletsLayer.addTo(map);
+        applyFilters();
+        if (!map.hasLayer(outletsLayer)) outletsLayer.addTo(map);
       } else {
         if (lbl) lbl.classList.remove('active-outlet');
         if (quickBtn) quickBtn.classList.remove('active-quick-outlet');
         if (quickText) quickText.textContent = 'Hiện Điểm Bán';
-        map.removeLayer(outletsLayer);
+        outletsLayer.clearLayers();
+        if (map.hasLayer(outletsLayer)) map.removeLayer(outletsLayer);
+        updateKPIs();
       }
     }
 
