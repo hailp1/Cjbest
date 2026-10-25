@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CJ Foods RTM 2027 - Mekong Region Blueprint (Updated with Ba Tri)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #0f172a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* 16:9 Presentation Canvas */
+        .slide-container {
+            width: 1400px;
+            height: 788px;
+            background: #fafaf8;
+            border-radius: 8px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            padding: 32px 44px 28px 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 2px;
+        }
+        .header-row h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111827;
+            letter-spacing: -0.5px;
+        }
+        .region-badge {
+            font-size: 12.5px;
+            font-weight: 800;
+            color: #0369a1;
+            background: #e0f2fe;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+        .subtitle {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #64748b;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        /* Main Body Grid: 2 Columns */
+        .body-grid {
+            display: grid;
+            grid-template-columns: 440px 1fr;
+            gap: 20px;
+            flex: 1;
+            margin-bottom: 14px;
+        }
+
+        /* Left Column: Diagnostics */
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .section-title {
+            font-size: 11.5px;
+            font-weight: 800;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Diagnostic KPI cards */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .kpi-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .kpi-card-full {
+            grid-column: span 2;
+        }
+        .kpi-val {
+            font-size: 24px;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 3px;
+        }
+        .val-red { color: #dc2626; }
+        .val-amber { color: #d97706; }
+        .val-blue { color: #0284c7; }
+
+        .kpi-lbl {
+            font-size: 11px;
+            font-weight: 700;
+            color: #334155;
+            line-height: 1.25;
+        }
+        .kpi-sub {
+            font-size: 10.5px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        /* Diagnostic Box */
+        .diag-box {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 11px 13px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .diag-item {
+            font-size: 11.5px;
+            line-height: 1.4;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+        .diag-item strong {
+            color: #1e293b;
+        }
+        .alert-box {
+            background: #fef2f2;
+            border-left: 3px solid #ef4444;
+            padding: 8px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #991b1b;
+            line-height: 1.35;
+        }
+
+        /* Right Column: 4 C1 Hubs & SM Plan */
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .c1-cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .c1-item-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px 14px;
+            display: grid;
+            grid-template-columns: 195px 1fr 125px;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            border-left: 4px solid #0284c7;
+        }
+        .c1-item-card.hub-1 { border-left-color: #dc2626; }
+        .c1-item-card.hub-2 { border-left-color: #f59e0b; }
+        .c1-item-card.hub-3 { border-left-color: #059669; }
+        .c1-item-card.hub-4 { border-left-color: #7c3aed; }
+
+        .c1-title-block h3 {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 2px;
+        }
+        .c1-tag {
+            font-size: 9.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 1px 6px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+        .tag-camau { background: #fee2e2; color: #991b1b; }
+        .tag-baclieu { background: #fef3c7; color: #92400e; }
+        .tag-kiengiang { background: #d1fae5; color: #065f46; }
+        .tag-bentre { background: #ede9fe; color: #6d28d9; }
+
+        .c1-desc-block {
+            font-size: 11.5px;
+            color: #475569;
+            line-height: 1.35;
+        }
+        .c1-desc-block strong {
+            color: #1e293b;
+        }
+
+        .c1-metric-block {
+            text-align: right;
+            border-left: 1px solid #f1f5f9;
+            padding-left: 10px;
+        }
+        .c1-metric-val {
+            font-size: 16px;
+            font-weight: 800;
+            color: #0284c7;
+        }
+        .c1-metric-sub {
+            font-size: 10px;
+            color: #64748b;
+        }
+
+        /* SM Callout Card */
+        .sm-rebalance-card {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 6px;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sm-text {
+            font-size: 11.5px;
+            color: #166534;
+            line-height: 1.35;
+        }
+        .sm-text strong {
+            color: #14532d;
+        }
+        .sm-badge {
+            background: #16a34a;
+            color: #ffffff;
+            font-size: 10.5px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        /* Bottom 4 Pillars: HOW WE UNLOCK IT */
+        .unlock-container {
+            margin-top: 4px;
+        }
+        .unlock-title {
+            font-size: 10.5px;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+        .unlock-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .unlock-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px 10px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+        .unlock-card h4 {
+            font-size: 11px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 3px;
+        }
+        .unlock-card p {
+            font-size: 10.5px;
+            color: #64748b;
+            line-height: 1.3;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 6px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10.5px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="slide-container">
+        <!-- Header -->
+        <div>
+            <div class="header-row">
+                <h1>Mekong Region 2027: 4 C1 Hubs & SM Deployment to Cut Distance & Capture Golden Outlets</h1>
+                <span class="region-badge">REGION: CẦN THƠ & ĐBSCL</span>
+            </div>
+            <div class="subtitle">REGIONAL RTM BLUEPRINT &bull; Solving canal bottlenecks, remote drops & securing 3 Top 50 unmanaged NPPs</div>
+        </div>
+
+        <!-- Main Body -->
+        <div class="body-grid">
+            
+            <!-- Left Column: Diagnostic -->
+            <div class="left-col">
+                <div class="section-title">1. Current RTM Diagnostic & Bottlenecks</div>
+                
+                <div class="kpi-row">
+                    <div class="kpi-card">
+                        <div class="kpi-val val-red">19.4 km</div>
+                        <div class="kpi-lbl">Avg Drop Distance</div>
+                        <div class="kpi-sub">Ferries & canals delay deliveries</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-val val-red">831</div>
+                        <div class="kpi-lbl">Outlets >45km (10.0%)</div>
+                        <div class="kpi-sub">Cà Mau, Kiên Giang & Bến Tre</div>
+                    </div>
+                    <div class="kpi-card kpi-card-full">
+                        <div class="kpi-val val-amber">8 NPPs (30.8%) No SM</div>
+                        <div class="kpi-lbl">Critical Governance Void: 3 Top 50 NPPs Unmanaged</div>
+                        <div class="kpi-sub">Food House, Shiba, Cúc Tuấn operating without CJ Sales Supervisor</div>
+                    </div>
+                </div>
+
+                <div class="diag-box">
+                    <div>
+                        <div class="diag-item">
+                            &bull; <strong>Canal & Waterway Friction:</strong> 42% of remote drops require river ferries, pushing delivery lead times to >3.5h and spiking fuel/toll costs.
+                        </div>
+                        <div class="diag-item">
+                            &bull; <strong>Extreme Routes:</strong> Hưng Lộc Phát (Cái Nước) driving <strong>70.6 km</strong> across Đầm Dơi/Cà Mau; TP. Bến Tre driving <strong>42km-65km</strong> across island bridges to Ba Tri/Bình Đại (45.2% outlets over cost threshold).
+                        </div>
+                    </div>
+                    <div class="alert-box">
+                        <strong>Urgent Risk:</strong> 3 Top 50 Mekong NPPs lack SM field oversight &ndash; high risk of gray-market cross-shipping and competitor encroachment.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: 4 C1 Hubs & SM Plan -->
+            <div class="right-col">
+                <div class="section-title">2. 2027 Transformation: 4 Strategic C1 Sub-Hubs & Rebalancing</div>
+
+                <div class="c1-cards-container">
+                    
+                    <!-- C1 #1: Cà Mau -->
+                    <div class="c1-item-card hub-1">
+                        <div class="c1-title-block">
+                            <span class="c1-tag tag-camau">Sub-Hub Cực Nam</span>
+                            <h3>C1 TP. CÀ MAU</h3>
+                            <div style="font-size: 10px; color: #64748b;">Reactivate Dormant NPP</div>
+                        </div>
+                        <div class="c1-desc-block">
+                            Reactivate warehouse from dormant NPP list in Cà Mau City. <strong>Eliminates 70.6km route</strong> from Cái Nước. Directly serves ~120 retail outlets in TP. Cà Mau & Đầm Dơi via local trikes.
+                        </div>
+                        <div class="c1-metric-block">
+                            <div class="c1-metric-val">-58 km</div>
+                            <div class="c1-metric-sub">Drop distance cut</div>
+                            <div style="font-size: 10.5px; font-weight:700; color:#dc2626; margin-top:2px;">~120 Shops</div>
+                        </div>
+                    </div>
+
+                    <!-- C1 #2: Bạc Liêu / Giá Rai -->
+                    <div class="c1-item-card hub-2">
+                        <div class="c1-title-block">
+                            <span class="c1-tag tag-baclieu">Trục QL1A</span>
+                            <h3>C1 TX. GIÁ RAI</h3>
+                            <div style="font-size: 10px; color: #64748b;">Bạc Liêu / Cà Mau Border</div>
+                        </div>
+                        <div class="c1-desc-block">
+                            Establish wholesale partner at Giá Rai crossroad. Consolidates drops between Bạc Liêu and Cà Mau. Takes over <strong>85 Golden Outlets</strong> along QL1A waterway corridor.
+                        </div>
+                        <div class="c1-metric-block">
+                            <div class="c1-metric-val">-42 km</div>
+                            <div class="c1-metric-sub">Drop distance cut</div>
+                            <div style="font-size: 10.5px; font-weight:700; color:#d97706; margin-top:2px;">~85 Shops</div>
+                        </div>
+                    </div>
+
+                    <!-- C1 #3: Kiên Lương / Hà Tiên -->
+                    <div class="c1-item-card hub-3">
+                        <div class="c1-title-block">
+                            <span class="c1-tag tag-kiengiang">Biên Giới & Du Lịch</span>
+                            <h3>C1 HÀ TIÊN / KIÊN LƯƠNG</h3>
+                            <div style="font-size: 10px; color: #64748b;">Kiên Giang Coastal Hub</div>
+                        </div>
+                        <div class="c1-desc-block">
+                            Cuts <strong>68 km coastal haul</strong> from Rạch Giá. Serves high-density grocery & border tourism shops. Bulk FCL delivery once a week replaces 12 fragmented van trips.
+                        </div>
+                        <div class="c1-metric-block">
+                            <div class="c1-metric-val">-52 km</div>
+                            <div class="c1-metric-sub">Drop distance cut</div>
+                            <div style="font-size: 10.5px; font-weight:700; color:#059669; margin-top:2px;">~75 Shops</div>
+                        </div>
+                    </div>
+
+                    <!-- C1 #4: Ba Tri (Bến Tre) -->
+                    <div class="c1-item-card hub-4">
+                        <div class="c1-title-block">
+                            <span class="c1-tag tag-bentre">Cù Lao Bến Tre</span>
+                            <h3>C1 TT. BA TRI (BẾN TRE)</h3>
+                            <div style="font-size: 10px; color: #64748b;">Sub-C1 under NPP Hoàng Sơn</div>
+                        </div>
+                        <div class="c1-desc-block">
+                            Wholesale partner at Ba Tri Market, supplied weekly in bulk FCL by Top 50 NPP Hoàng Sơn. <strong>Eliminates 42km-65km island drops</strong>. Serves ~80 coastal Golden Outlets in Ba Tri & Bình Đại.
+                        </div>
+                        <div class="c1-metric-block">
+                            <div class="c1-metric-val">-42 km</div>
+                            <div class="c1-metric-sub">Drop distance cut</div>
+                            <div style="font-size: 10.5px; font-weight:700; color:#7c3aed; margin-top:2px;">~80 Shops</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- SM Callout -->
+                <div class="sm-rebalance-card">
+                    <div class="sm-text">
+                        <strong>Field Force Rebalancing:</strong> Transfer <strong>4 SMs from HCM</strong> (dense urban cluster) to permanently base at <strong>Food House, Shiba, Cúc Tuấn</strong> and supervise 4 C1 rollouts.
+                    </div>
+                    <span class="sm-badge">0 VNĐ Headcount Cost</span>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Bottom 4 Execution Pillars -->
+        <div class="unlock-container">
+            <div class="unlock-title">HOW WE UNLOCK IT &bull; 4 REGIONAL EXECUTION LEVERS</div>
+            <div class="unlock-grid">
+                <div class="unlock-card">
+                    <h4>1. Network Setup</h4>
+                    <p>Reactivate dormant Cà Mau warehouse; contract 3 wholesale C1s in Giá Rai, Hà Tiên & Ba Tri by end of M2.</p>
+                </div>
+                <div class="unlock-card">
+                    <h4>2. FCL Bulk Logistics</h4>
+                    <p>Deliver 5T/8T bulk trucks directly to C1 weekly; C1 handles last-mile via small trucks/trikes across canals.</p>
+                </div>
+                <div class="unlock-card">
+                    <h4>3. SM Cắm Chốt</h4>
+                    <p>Deploy 4 transferred SMs to lock in 3 Top 50 NPPs; enforce 100% daily DMS check-in for Mekong sales reps.</p>
+                </div>
+                <div class="unlock-card">
+                    <h4>4. Trade Cold Sync</h4>
+                    <p>Equip 4 C1s with -18&deg;C storage; coordinate with Trade to install CJ Freezers at top 200 converted Golden Outlets.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <span>* Mekong Delta RTM restructuring reduces remote drops >45km from 831 to ~200 (-76%), lowering average distance from 19.4km to 11.5km.</span>
+            <span>Confidential &bull; CJ Foods Vietnam &bull; Region 2: Cần Thơ</span>
+        </div>
+    </div>
+
+</body>
+</html>

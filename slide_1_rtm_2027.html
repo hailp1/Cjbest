@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CJ Foods RTM 2027 - Executive Summary Slide 1</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #0f172a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* 16:9 Presentation Canvas */
+        .slide-container {
+            width: 1400px;
+            height: 788px;
+            background: #fafaf8;
+            border-radius: 8px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            padding: 42px 48px 36px 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Top Header */
+        .header {
+            margin-bottom: 24px;
+        }
+        .header-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .header h1 {
+            font-size: 34px;
+            font-weight: 700;
+            color: #111827;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+        .slide-number {
+            font-size: 18px;
+            font-weight: 600;
+            color: #9ca3af;
+        }
+        .header .subtitle {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        /* 4 Columns Grid */
+        .grid-levers {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            flex: 1;
+            margin-bottom: 24px;
+        }
+
+        .lever-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 22px 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        /* Tag Pill */
+        .lever-tag {
+            align-self: flex-start;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+        .tag-1 { background: #fee2e2; color: #b91c1c; }
+        .tag-2 { background: #e0f2fe; color: #0369a1; }
+        .tag-3 { background: #dcfce7; color: #15803d; }
+        .tag-4 { background: #f3e8ff; color: #7e22ce; }
+
+        /* Metric Number */
+        .lever-metric {
+            font-size: 46px;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+        .metric-1 { color: #dc2626; }
+        .metric-2 { color: #0284c7; }
+        .metric-3 { color: #16a34a; }
+        .metric-4 { color: #4f46e5; }
+
+        .metric-sub {
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        /* Lever Headline */
+        .lever-headline {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1.35;
+            margin-bottom: 18px;
+            min-height: 42px;
+        }
+
+        .divider {
+            height: 1px;
+            background: #f1f5f9;
+            margin-bottom: 14px;
+        }
+
+        /* Section Blocks: Today & Key Move */
+        .content-block {
+            margin-bottom: 14px;
+        }
+        .block-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 4px;
+        }
+        .block-desc {
+            font-size: 12.5px;
+            color: #64748b;
+            line-height: 1.45;
+        }
+        .block-desc strong {
+            color: #334155;
+            font-weight: 600;
+        }
+
+        .key-move-block {
+            margin-top: auto;
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 10px 12px;
+            border-left: 3px solid #cbd5e1;
+        }
+        .lever-card:nth-child(1) .key-move-block { border-left-color: #ef4444; }
+        .lever-card:nth-child(2) .key-move-block { border-left-color: #0ea5e9; }
+        .lever-card:nth-child(3) .key-move-block { border-left-color: #22c55e; }
+        .lever-card:nth-child(4) .key-move-block { border-left-color: #6366f1; }
+
+        .key-move-block .block-label {
+            color: #1e293b;
+        }
+        .key-move-block .block-desc {
+            color: #334155;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Common Thread Banner */
+        .common-thread {
+            background: #334155;
+            color: #ffffff;
+            border-radius: 6px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13.5px;
+            line-height: 1.4;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .common-thread-badge {
+            background: #475569;
+            color: #f8fafc;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+        .common-thread-text {
+            font-weight: 500;
+            color: #f1f5f9;
+        }
+        .common-thread-text strong {
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        /* Footer Notes */
+        .footer {
+            margin-top: 14px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="slide-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title-row">
+                <h1>2027: four levers to transform the RTM network & drive GT growth</h1>
+                <span class="slide-number">CJ FOODS RTM</span>
+            </div>
+            <div class="subtitle">EXECUTIVE SUMMARY &bull; In-year 2027 estimated net-run growth allocations & logistics savings: VND</div>
+        </div>
+
+        <!-- 4 Levers Grid -->
+        <div class="grid-levers">
+            
+            <!-- Lever 1 -->
+            <div class="lever-card">
+                <span class="lever-tag tag-1">1 - C1 SUB-HUBS</span>
+                <div class="lever-metric metric-1">
+                    +26.5B
+                </div>
+                <div class="lever-headline">
+                    Recruit & activate 13 C1 sub-hubs to capture deep white spaces
+                </div>
+                <div class="divider"></div>
+                <div class="content-block">
+                    <div class="block-label">Today</div>
+                    <div class="block-desc">
+                        <strong>9,038 A&B shops</strong> on market census; CJ has zero reach in deep rural districts. Distant retail outlets left unserved.
+                    </div>
+                </div>
+                <div class="key-move-block">
+                    <div class="block-label">Key move</div>
+                    <div class="block-desc">
+                        Activate <strong>5 dormant NPPs</strong> as C1 + recruit <strong>8 new sub-wholesalers</strong> by M3. Target ~2,000 converted A&B shops (150-200 shops/C1).
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lever 2 -->
+            <div class="lever-card">
+                <span class="lever-tag tag-2">2 - ROUTE & COST</span>
+                <div class="lever-metric metric-2">
+                    -8.6B <span class="metric-sub">Cost</span>
+                </div>
+                <div class="lever-headline">
+                    Cut -69% remote routes (>45km) & shift to bulk delivery
+                </div>
+                <div class="divider"></div>
+                <div class="content-block">
+                    <div class="block-label">Today</div>
+                    <div class="block-desc">
+                        <strong>2,452 outlets >45km</strong> (HP avg 21.3km, CT avg 19.4km). Single-drop van deliveries eat <strong>12-15% gross margin</strong>.
+                    </div>
+                </div>
+                <div class="key-move-block">
+                    <div class="block-label">Key move</div>
+                    <div class="block-desc">
+                        Transfer <strong>1,695 remote drops</strong> to C1 FCL bulk shipments. Enforce <strong>Dynamic MOQ &ge;1.2M</strong>; re-zone Lăng Cô & Thái Bình.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lever 3 -->
+            <div class="lever-card">
+                <span class="lever-tag tag-3">3 - SM REBALANCING</span>
+                <div class="lever-metric metric-3">
+                    +18.5B <span class="metric-sub">Secured</span>
+                </div>
+                <div class="lever-headline">
+                    Reallocate 6 SMs across regions (Zero headcount cost)
+                </div>
+                <div class="divider"></div>
+                <div class="content-block">
+                    <div class="block-label">Today</div>
+                    <div class="block-desc">
+                        Headcount freeze. <strong>28 NPPs have No SM</strong> (CT 30.8%). <strong>4 Top 50 NPPs</strong> (Food House, Shiba, Cúc Tuấn...) unmanaged.
+                    </div>
+                </div>
+                <div class="key-move-block">
+                    <div class="block-label">Key move</div>
+                    <div class="block-desc">
+                        Rebalance <strong>4 SMs from dense HCM</strong> (1 SM/2 NPPs) to save Mekong Top 50; <strong>2 SMs</strong> to North C1 axis. Mandate 100% DMS GPS.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lever 4 -->
+            <div class="lever-card">
+                <span class="lever-tag tag-4">4 - IN-FILL & COVERAGE</span>
+                <div class="lever-metric metric-4">
+                    +15.8B
+                </div>
+                <div class="lever-headline">
+                    In-fill ~1,800 A&B shops (&le;15km) into existing beats
+                </div>
+                <div class="divider"></div>
+                <div class="content-block">
+                    <div class="block-label">Today</div>
+                    <div class="block-desc">
+                        <strong>6,744 A&B market shops</strong> are &le;15km from existing NPPs but not visited. 24.8% cold mix requires freezer at store.
+                    </div>
+                </div>
+                <div class="key-move-block">
+                    <div class="block-label">Key move</div>
+                    <div class="block-desc">
+                        Absorb <strong>3-5 verified A&B shops</strong> per DSR beat. Coordinate with Trade Marketing to prioritize <strong>Freezers & Standees</strong>.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Common Thread Banner -->
+        <div class="common-thread">
+            <span class="common-thread-badge">Common thread</span>
+            <span class="common-thread-text">
+                The North & Mekong are the biggest distance traps &ndash; <strong>C1 Sub-Hubs take over long-haul drops</strong> &ndash; Zero-budget SM rebalancing to secure Top 50 assets &ndash; Incentives paid on tier step-ups.
+            </span>
+        </div>
+
+        <!-- Footnote -->
+        <div class="footer">
+            <span>* Levers are mutually reinforcing; C1 volume feeds into regional GT revenue and logistics savings. Market census shops calibrated to CJ Foods GT basket size (~1.2M - 1.8M/shop/month).</span>
+            <span>Confidential &bull; CJ Foods Vietnam &bull; RTM Strategic Plan 2027</span>
+        </div>
+    </div>
+
+</body>
+</html>

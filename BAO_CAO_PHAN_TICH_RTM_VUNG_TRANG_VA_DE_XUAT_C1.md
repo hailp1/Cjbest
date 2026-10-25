@@ -140,7 +140,7 @@ Từ tệp dữ liệu tổ chức bán hàng `loaiNPP.xlsx` (gồm **145 Nhà P
 | 28 | **1063689** | LY NHƯ Ý | Cần Thơ | Cần Thơ | C. Thơ | Nguyễn Hồng Đạt | - | Cần Thơ |
 
 ### 3.3. Tác Động Của Trạng Thái "Không SM" Đến Khai Thác Vùng Trắng
-1. **Không thể kết nạp điểm bán tiềm năng Nhóm A & B:** Tại các địa bàn có NPP "Không SM", dù có nhiều shop A & B tiềm năng (ví dụ An Giang có hơn 80 shop A&B, Cần Thơ có hơn 90 shop A&B), CJ hoàn toàn không thể đưa sản phẩm vào vì không có DSR đi viếng thăm, giới thiệu chương trình khuyến mãi hay đặt đơn trên DMS.
+1. **Không thể kết nạp điểm bán tiềm năng (Golden Outlets):** Tại các địa bàn có NPP "Không SM", dù có nhiều Golden Outlets tiềm năng (ví dụ An Giang có hơn 80 Golden Outlets, Cần Thơ có hơn 90 Golden Outlets), CJ hoàn toàn không thể đưa sản phẩm vào vì không có DSR đi viếng thăm, giới thiệu chương trình khuyến mãi hay đặt đơn trên DMS.
 2. **Nguy cơ mất thị phần vào tay đối thủ:** Các NPP "Không SM" thường phân phối đa nhãn hàng. Nếu CJ không có nhân sự cắm chốt, NPP sẽ ưu tiên đẩy hàng của các nhãn hàng khác có nhân viên hỗ trợ bán lẻ.
 3. **Khuyến nghị RTM cấp bách:**
    * **Bổ sung ngay DSR cho 4 NPP Top 50 "Không SM"** (Food House, Shiba, Cúc Tuấn, Tiên Phong) để tối đa hóa doanh số bán ra.

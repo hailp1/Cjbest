@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>CJ Foods RTM 2026 - Current State Overview</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #0f172a; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .slide-container { width: 1400px; height: 788px; background: #fafaf8; border-radius: 8px; padding: 34px 46px 28px 46px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .header-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
+        .header-row h1 { font-size: 29px; font-weight: 700; color: #111827; }
+        .tag-badge { font-size: 12px; font-weight: 800; color: #b91c1c; background: #fee2e2; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; }
+        .subtitle { font-size: 12.5px; font-weight: 600; color: #64748b; letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 16px; }
+        
+        .grid-main { display: grid; grid-template-columns: 460px 1fr; gap: 24px; flex: 1; margin-bottom: 14px; }
+        
+        /* Map side */
+        .map-box { background: #0f172a; border-radius: 8px; padding: 18px 20px; display: flex; flex-direction: column; justify-content: space-between; color: #f8fafc; border: 1px solid #1e293b; position: relative; overflow: hidden; }
+        .map-title { font-size: 13px; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.6px; }
+        .map-svg-container { flex: 1; display: flex; justify-content: center; align-items: center; padding: 10px 0; }
+        .map-legend { display: flex; justify-content: space-around; background: #1e293b; border-radius: 6px; padding: 8px 10px; font-size: 11px; }
+        .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; }
+        
+        /* Right stats */
+        .stats-col { display: flex; flex-direction: column; gap: 12px; }
+        .kpi-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .kpi-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 14px; }
+        .kpi-val { font-size: 26px; font-weight: 800; line-height: 1; margin-bottom: 3px; }
+        .val-red { color: #dc2626; }
+        .val-amber { color: #d97706; }
+        .val-blue { color: #0284c7; }
+        .val-dark { color: #1e293b; }
+        .kpi-lbl { font-size: 11px; font-weight: 700; color: #334155; }
+        .kpi-sub { font-size: 10px; color: #64748b; margin-top: 2px; }
+
+        /* Region Table */
+        .table-box { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 16px; flex: 1; }
+        .tbl-title { font-size: 11.5px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+        th { text-align: left; padding: 6px 8px; background: #f8fafc; color: #475569; font-weight: 700; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 6px 8px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+        tr.highlight { background: #fef2f2; font-weight: 600; color: #991b1b; }
+
+        .callout-banner { background: #fef2f2; border-left: 4px solid #ef4444; border-radius: 4px; padding: 10px 14px; font-size: 12px; color: #991b1b; line-height: 1.4; }
+        .footer { display: flex; justify-content: space-between; font-size: 10.5px; color: #94a3b8; }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div>
+            <div class="header-row">
+                <h1>RTM Network 2026: Nationwide Baseline & Strategic Bottlenecks</h1>
+                <span class="tag-badge">BASELINE DIAGNOSTIC 2026</span>
+            </div>
+            <div class="subtitle">CURRENT SYSTEM SCALE &bull; 391 NPPS (215 ACTIVE) &bull; 59,366 OUTLETS &bull; CRITICAL DISTANCE & GOVERNANCE VOIDS</div>
+        </div>
+
+        <div class="grid-main">
+            <!-- Map box -->
+            <div class="map-box">
+                <div class="map-title">Bản Đồ Không Gian Phân Phối RTM Toàn Quốc</div>
+                <div class="map-svg-container">
+                    <svg viewBox="0 0 320 480" width="280" height="380">
+                        <!-- Vietnam S-shape stylized path -->
+                        <path d="M 120 20 Q 180 25 190 70 Q 170 120 140 140 Q 120 170 160 210 Q 190 260 200 310 Q 210 360 170 410 Q 120 450 70 430 Q 50 390 100 370 Q 130 350 140 300 Q 130 240 100 190 Q 90 130 110 80 Z" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+                        
+                        <!-- Northern Hubs -->
+                        <circle cx="150" cy="65" r="9" fill="#0284c7" stroke="#ffffff" stroke-width="2"/>
+                        <text x="165" y="70" fill="#ffffff" font-size="11" font-weight="bold">Hà Nội (12.6km)</text>
+                        <circle cx="180" cy="80" r="7" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+                        <text x="192" y="85" fill="#fca5a5" font-size="10">Hải Phòng (21.3km - Red Alert)</text>
+                        
+                        <!-- Central & Highlands -->
+                        <circle cx="160" cy="205" r="7" fill="#0284c7" stroke="#ffffff" stroke-width="1.5"/>
+                        <text x="175" y="210" fill="#ffffff" font-size="10">Đà Nẵng (10.1km)</text>
+                        <circle cx="185" cy="285" r="7" fill="#0284c7" stroke="#ffffff" stroke-width="1.5"/>
+                        <text x="200" y="290" fill="#ffffff" font-size="10">Nha Trang (11.8km)</text>
+                        <circle cx="155" cy="275" r="6" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+                        <text x="95" y="278" fill="#fde68a" font-size="9">Tây Nguyên</text>
+                        
+                        <!-- Southern Hubs -->
+                        <circle cx="140" cy="370" r="10" fill="#10b981" stroke="#ffffff" stroke-width="2"/>
+                        <text x="156" y="375" fill="#a7f3d0" font-size="11" font-weight="bold">TP.HCM (6.2km - Dense)</text>
+                        <circle cx="110" cy="415" r="8" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+                        <text x="125" y="420" fill="#fca5a5" font-size="10" font-weight="bold">Cần Thơ (19.4km - Red Alert)</text>
+                        
+                        <!-- Extreme Hotspots -->
+                        <line x1="180" y1="80" x2="210" y2="95" stroke="#ef4444" stroke-dasharray="3,3" stroke-width="2"/>
+                        <text x="215" y="100" fill="#ef4444" font-size="8">Thái Bình 78km</text>
+                        
+                        <line x1="110" y1="415" x2="80" y2="445" stroke="#ef4444" stroke-dasharray="3,3" stroke-width="2"/>
+                        <text x="40" y="460" fill="#ef4444" font-size="8">Cà Mau 70.6km</text>
+                    </svg>
+                </div>
+                <div class="map-legend">
+                    <span><span class="legend-dot" style="background:#10b981;"></span>Tối ưu (&le;10km)</span>
+                    <span><span class="legend-dot" style="background:#0284c7;"></span>Trung bình (10-15km)</span>
+                    <span><span class="legend-dot" style="background:#dc2626;"></span>Điểm nóng (>19km)</span>
+                </div>
+            </div>
+
+            <!-- Stats & Table side -->
+            <div class="stats-col">
+                <div class="kpi-strip">
+                    <div class="kpi-card">
+                        <div class="kpi-val val-dark">59,366</div>
+                        <div class="kpi-lbl">Active Outlets</div>
+                        <div class="kpi-sub">24.8% cold/frozen mix</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-val val-red">2,452</div>
+                        <div class="kpi-lbl">Outlets >45km (4.1%)</div>
+                        <div class="kpi-sub">HP (1,118) & CT (831)</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-val val-amber">28 NPPs</div>
+                        <div class="kpi-lbl">No SM (19.3%)</div>
+                        <div class="kpi-sub">4 Top 50 unmanaged</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-val val-blue">176 Kho</div>
+                        <div class="kpi-lbl">Dormant NPPs</div>
+                        <div class="kpi-sub">Ready for C1 conversion</div>
+                    </div>
+                </div>
+
+                <div class="table-box">
+                    <div class="tbl-title">Bảng Đối Chiếu Hiện Trạng 6 Vùng Phân Phối (Baseline 2026)</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vùng Thị Trường</th>
+                                <th>NPP Hoạt Động</th>
+                                <th>Cự Ly Giao TB</th>
+                                <th>Điểm Bán >45km</th>
+                                <th>Tỷ Lệ Lạnh (%)</th>
+                                <th>Đánh Giá Nút Thắt Vận Hành</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="highlight">
+                                <td><strong>1. Hải Phòng</strong></td>
+                                <td>38 NPP</td>
+                                <td><strong>21.3 km</strong></td>
+                                <td><strong>1,118 điểm (45.6%)</strong></td>
+                                <td>24.3%</td>
+                                <td>Chi phí vận chuyển cao nhất nước, tuyến xa Đông Bắc</td>
+                            </tr>
+                            <tr class="highlight">
+                                <td><strong>2. Cần Thơ</strong></td>
+                                <td>26 NPP</td>
+                                <td><strong>19.4 km</strong></td>
+                                <td><strong>831 điểm (33.9%)</strong></td>
+                                <td>18.9%</td>
+                                <td>Sông ngòi chia cắt; 8 NPP không SM (Food House, Shiba...)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>3. Hà Nội</strong></td>
+                                <td>43 NPP</td>
+                                <td>12.6 km</td>
+                                <td>389 điểm (15.9%)</td>
+                                <td><strong>36.1%</strong></td>
+                                <td>Tỷ lệ hàng lạnh cao nhất; cự ly xa ở Lào Cai, Phú Thọ</td>
+                            </tr>
+                            <tr>
+                                <td><strong>4. Nha Trang</strong></td>
+                                <td>57 NPP</td>
+                                <td>11.8 km</td>
+                                <td>88 điểm (3.6%)</td>
+                                <td>24.0%</td>
+                                <td>Địa bàn trải dài đèo dốc Tây Nguyên (Buôn Hồ, Ayun Pa)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>5. Đà Nẵng</strong></td>
+                                <td>16 NPP</td>
+                                <td>10.1 km</td>
+                                <td>26 điểm (1.1%)</td>
+                                <td>30.7%</td>
+                                <td>Cắt ranh giới giao hàng qua Đèo/Hầm Hải Vân (Lăng Cô)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>6. TP. Hồ Chí Minh</strong></td>
+                                <td>35 NPP</td>
+                                <td><strong>6.2 km</strong></td>
+                                <td><strong>0 điểm (0.0%)</strong></td>
+                                <td>25.2%</td>
+                                <td>Mật độ tối ưu, dư thừa quản trị SM, ngõ hẻm nội đô</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout-banner">
+                    <strong>Nỗi Đau Chiến Lược:</strong> Hải Phòng và Cần Thơ chiếm tới <strong>79.5% tổng số điểm bán giao xa >45km cả nước</strong>. Xe tải chạy rỗng đường dài ăn mòn 12-15% biên lợi nhuận gộp và đe dọa chuỗi lạnh. RTM 2027 bắt buộc phải thiết lập mạng lưới C1 Sub-Hubs để chặn đứng tình trạng này.
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>* Dữ liệu khảo sát Route-to-Market toàn quốc 2026 &bull; Nguồn: RTM Spatial Database & DMS Sell-out.</span>
+            <span>Confidential &bull; CJ Foods Vietnam &bull; Slide 1: Current State Overview</span>
+        </div>
+    </div>
+</body>
+</html>
