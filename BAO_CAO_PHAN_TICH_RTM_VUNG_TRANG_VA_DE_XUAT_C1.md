@@ -3,6 +3,7 @@
 > **Căn cứ dữ liệu:**
 > * Dữ liệu vận hành thực tế CJ: **391 Nhà Phân Phối** (215 đang hoạt động, 176 ngưng hoạt động) & **59,366 Điểm bán (Outlets)**.
 > * Dữ liệu thị trường tiềm năng: **215,376 Điểm bán GT toàn quốc** (Trích xuất từ tệp `GT Potentail Shop_12'25.xlsb`), lọc trọng tâm **9,056 Điểm bán Nhóm A & B** (9,038 điểm có tọa độ GPS chuẩn xác).
+> * Dữ liệu phân bổ lực lượng bán hàng: **145 Nhà Phân Phối chính thức** (Trích xuất từ tệp `loaiNPP.xlsx`), phân loại chi tiết **117 NPP Có SM (273 NVBH)** và **28 NPP Không SM**.
 > * Đơn vị phân tích: Mô hình RTM Không gian (Spatial Route-To-Market) CJ Foods Việt Nam.
 
 ---
@@ -10,9 +11,10 @@
 ## MỤC LỤC
 1. [TỔNG HỢP MA TRẬN PHÂN PHỐI & CỰ LY GIAO HÀNG 6 VÙNG](#1-tổng-hợp-ma-trận-phân-phối--cự-ly-giao-hàng-6-vùng)
 2. [ĐÁNH GIÁ CHI TIẾT TÌNH HÌNH PHÂN PHỐI & LOGISTICS CỰ LY THEO VÙNG](#2-đánh-giá-chi-tiết-tình-hình-phân-phối--logistics-cự-ly-theo-vùng)
-3. [PHÂN TÍCH VÙNG TRẮNG & TIỀM NĂNG OUTLET NHÓM A & B](#3-phân-tích-vùng-trắng--tiềm-năng-outlet-nhóm-a--b)
-4. [ĐỀ XUẤT THIẾT LẬP ĐẠI LÝ CẤP 1 (C1 / SUB-HUB) TẠI TỪNG VÙNG](#4-đề-xuất-thiết-lập-đại-lý-cấp-1-c1--sub-hub-tại-từng-vùng)
-5. [LỘ TRÌNH TRIỂN KHAI VÀ KHUYẾN NGHỊ VẬN HÀNH](#5-lộ-trình-triển-khai-và-khuyến-nghị-vận-hành)
+3. [PHÂN TÍCH LỰC LƯỢNG BÁN HÀNG: CƠ CẤU NPP CÓ SM VS KHÔNG SM (TỪ TỆP LOAINPP)](#3-phân-tích-lực-lượng-bán-hàng-cơ-cấu-npp-có-sm-vs-không-sm-từ-tệp-loainpp)
+4. [PHÂN TÍCH VÙNG TRẮNG & TIỀM NĂNG OUTLET NHÓM A & B](#4-phân-tích-vùng-trắng--tiềm-năng-outlet-nhóm-a--b)
+5. [ĐỀ XUẤT THIẾT LẬP ĐẠI LÝ CẤP 1 (C1 / SUB-HUB) TẠI TỪNG VÙNG](#5-đề-xuất-thiết-lập-đại-lý-cấp-1-c1--sub-hub-tại-từng-vùng)
+6. [LỘ TRÌNH TRIỂN KHAI VÀ KHUYẾN NGHỊ VẬN HÀNH](#6-lộ-trình-triển-khai-và-khuyến-nghị-vận-hành)
 
 ---
 
@@ -78,7 +80,73 @@
 
 ---
 
-## 3. PHÂN TÍCH VÙNG TRẮNG & TIỀM NĂNG OUTLET NHÓM A & B
+---
+
+## 3. PHÂN TÍCH LỰC LƯỢNG BÁN HÀNG: CƠ CẤU NPP CÓ SM VS KHÔNG SM (TỪ TỆP `loaiNPP.xlsx`)
+
+Từ tệp dữ liệu tổ chức bán hàng `loaiNPP.xlsx` (gồm **145 Nhà Phân Phối chính thức** có GSBH/ASM quản lý), phân tích chuyên sâu về lực lượng bán hàng (Sales Representative / Salesman - SM) cho thấy cơ cấu phân bổ nhân sự như sau:
+
+* **Tổng NPP Có SM:** **117 NPP (80.7%)** với tổng cộng **273 nhân viên bán hàng (NVBH)** phụ trách tuyến (dao động từ 1 đến 6 NVBH/NPP).
+* **Tổng NPP "Không SM":** **28 NPP (19.3%)** — Đây là các NPP hoàn toàn **không có nhân viên bán hàng của CJ phụ trách đi tuyến viếng thăm**, chỉ vận hành theo hình thức đại lý nhận đơn thụ động hoặc bán sỉ.
+
+### 3.1. Bảng Ma Trận Phân Bổ NPP Có SM vs Không SM Theo 6 Vùng
+
+| Vùng Kinh Doanh | Tổng NPP Quản Lý | NPP Có SM | NPP Không SM | Tỷ Lệ Không SM (%) | Tổng Số NVBH | NVBH Bình Quân/NPP Có SM |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Cần Thơ (Miền Tây)** | 26 | 18 | **8** | **30.8%** | 41 | 2.3 NVBH |
+| **TP. Hồ Chí Minh** | 13 | 8 | **5** | **38.5%** | 31 | 3.9 NVBH |
+| **Hà Nội** | 22 | 17 | **5** | **22.7%** | 48 | 2.8 NVBH |
+| **Nha Trang & ĐNB** | 34 | 30 | **4** | 11.8% | 63 | 2.1 NVBH |
+| **Đà Nẵng** | 17 | 14 | **3** | 17.6% | 30 | 2.1 NVBH |
+| **Hải Phòng** | 33 | 30 | **3** | 9.1% | 60 | 2.0 NVBH |
+| **TỔNG CỘNG** | **145** | **117** | **28** | **19.3%** | **273** | **2.3 NVBH** |
+
+> [!WARNING]
+> **CẢNH BÁO NÚT THẮT TẠI MIỀN TÂY & HÀ NỘI:**
+> * **Vùng Cần Thơ (Miền Tây)** có tỷ lệ "Không SM" cao vượt trội (**30.8%**, 8/26 NPP), trong đó có tới **3 NPP thuộc nhóm TOP 50 Doanh Số Toàn Quốc** (Food House, Shiba, Cúc Tuấn). Việc thiếu vắng lực lượng bán hàng chuyên trách khiến địa bàn Miền Tây vừa bị cự ly xa, vừa không có người mở mới điểm bán.
+> * **Vùng Hà Nội:** Toàn bộ **4 NPP tại Tỉnh Sơn La** (Thu Hương, Tú Anh, BTH, Nguyễn Duy Tiệp) đều ở trạng thái **"Không SM"**, khiến thị trường Tây Bắc bị cô lập hoàn toàn về mặt phát triển kinh doanh.
+
+### 3.2. Danh Mục Chi Tiết 28 Nhà Phân Phối Trạng Thái "Không SM"
+
+| STT | Mã NPP | Tên Nhà Phân Phối | Vùng CJ | Area | Văn Phòng / Tỉnh | GSBH Quản Lý | Xếp Hạng Top 50 | Ghi Chú & Đánh Giá Tác Động |
+| :---: | :---: | :--- | :---: | :---: | :---: | :--- | :---: | :--- |
+| 1 | **1029803** | THU HƯƠNG | Hà Nội | Hà Nội | Son La | NEW_SUP_SONLA1 | - | Thị trường Sơn La không có DSR đi tuyến |
+| 2 | **1055883** | TÚ ANH | Hà Nội | Hà Nội | Son La | NEW_SUP_SONLA1 | - | Thị trường Sơn La không có DSR đi tuyến |
+| 3 | **1055987** | BTH | Hà Nội | Hà Nội | Son La | NEW_SUP_SONLA1 | - | Thị trường Sơn La không có DSR đi tuyến |
+| 4 | **1057620** | NGUYỄN DUY TIỆP | Hà Nội | Hà Nội | Son La | NEW_SUP_SONLA1 | - | Thị trường Sơn La không có DSR đi tuyến |
+| 5 | **1029779** | TIÊN PHONG | Hà Nội | Hà Nội | H.Noi 5 | Vũ Thị Huệ | ⭐ **Top 50** | NPP lớn nội thành nhưng đại lý tự bán |
+| 6 | **1057474** | HƯNG THẢO | Hải Phòng | DH & BMT | N.An | Lê Văn Bảo | - | Khu vực Nghệ An cần bổ sung DSR |
+| 7 | **1057558** | KHANG NA | Hải Phòng | DH & BMT | N.An | Lê Văn Bảo | - | Khu vực Nghệ An cần bổ sung DSR |
+| 8 | **1059078** | CHI LÂM | Hải Phòng | DH & BMT | N.Binh 2 | Phạm Văn Sơn | - | Khu vực Ninh Bình |
+| 9 | **1035885** | THIỆN NHÂN | Đà Nẵng | Đà Nẵng 2 | Hue | Trương Phước Cao | - | Thừa Thiên Huế |
+| 10 | **1039535** | HỒNG ÂN PARIS | Đà Nẵng | Đà Nẵng 2 | Hue | Trương Phước Cao | - | Thừa Thiên Huế |
+| 11 | **1035470** | THU THỦY | Đà Nẵng | Đà Nẵng 2 | Bình Định | Lê Hoàng Y Ron | - | Bình Định |
+| 12 | **1029754** | TÙNG LOAN | Nha Trang | Nha Trang | B.Thuan | Nguyễn Xuân Sáu | - | Bình Thuận |
+| 13 | **1057464** | KIM PHƯỢNG ĐỨC LINH | Nha Trang | Nha Trang | B.Thuan | Nguyễn Xuân Sáu | - | Đức Linh (Bình Thuận) |
+| 14 | **1029762** | FOODCOMART | Nha Trang | Nha Trang | Dlak | Lê Quốc Cường | - | Đắk Lắk |
+| 15 | **1063980** | CẨM LY FOODS | Nha Trang | Nha Trang | Dlak | Lê Quốc Cường | - | Đắk Lắk |
+| 16 | **1029721** | THĂNG LONG | HCM | HCM | HCM 3 | Hà Minh Long | - | Đối tác kênh đặc biệt / Wholesale |
+| 17 | **1035180** | MARIS | HCM | HCM | HCM 3 | Hà Minh Long | - | Đối tác Horeca / Bán sỉ |
+| 18 | **1029725** | KHỞI THỊNH | HCM | HCM | HCM 4 | Huỳnh Hưng Long | - | Bán sỉ |
+| 19 | **1029726** | THUẬN PHÁT THÀNH | HCM | HCM | HCM 4 | Huỳnh Hưng Long | - | Bán sỉ |
+| 20 | **1029724** | NGUYÊN HÀ | HCM | HCM | HCM 5 | Nguyễn Khắc Lợi | - | Kênh buôn thực phẩm |
+| 21 | **1029737** | FOOD HOUSE | Cần Thơ | Cần Thơ | An Giang | Tô Bá Vinh | ⭐ **Top 50** | NPP trọng điểm An Giang nhưng thiếu SM |
+| 22 | **1033606** | NGỌC KHÁNH AN | Cần Thơ | Cần Thơ | An Giang | Tô Bá Vinh | - | An Giang |
+| 23 | **1037766** | SHIBA | Cần Thơ | Cần Thơ | An Giang | Tô Bá Vinh | ⭐ **Top 50** | NPP trọng điểm An Giang nhưng thiếu SM |
+| 24 | **1057019** | AB HAPPY | Cần Thơ | Cần Thơ | An Giang | Tô Bá Vinh | - | An Giang |
+| 25 | **1057032** | AN NGỌC NGÂN | Cần Thơ | Cần Thơ | An Giang | Tô Bá Vinh | - | An Giang |
+| 26 | **1029735** | CẦU TRE | Cần Thơ | Cần Thơ | C. Thơ | Nguyễn Hồng Đạt | - | Trung tâm Cần Thơ |
+| 27 | **1029740** | CÚC TUẤN | Cần Thơ | Cần Thơ | C. Thơ | Nguyễn Hồng Đạt | ⭐ **Top 50** | NPP trọng điểm Cần Thơ nhưng thiếu SM |
+| 28 | **1063689** | LY NHƯ Ý | Cần Thơ | Cần Thơ | C. Thơ | Nguyễn Hồng Đạt | - | Cần Thơ |
+
+### 3.3. Tác Động Của Trạng Thái "Không SM" Đến Khai Thác Vùng Trắng
+1. **Không thể kết nạp điểm bán tiềm năng Nhóm A & B:** Tại các địa bàn có NPP "Không SM", dù có nhiều shop A & B tiềm năng (ví dụ An Giang có hơn 80 shop A&B, Cần Thơ có hơn 90 shop A&B), CJ hoàn toàn không thể đưa sản phẩm vào vì không có DSR đi viếng thăm, giới thiệu chương trình khuyến mãi hay đặt đơn trên DMS.
+2. **Nguy cơ mất thị phần vào tay đối thủ:** Các NPP "Không SM" thường phân phối đa nhãn hàng. Nếu CJ không có nhân sự cắm chốt, NPP sẽ ưu tiên đẩy hàng của các nhãn hàng khác có nhân viên hỗ trợ bán lẻ.
+3. **Khuyến nghị RTM cấp bách:**
+   * **Bổ sung ngay DSR cho 4 NPP Top 50 "Không SM"** (Food House, Shiba, Cúc Tuấn, Tiên Phong) để tối đa hóa doanh số bán ra.
+   * Chuyển đổi các NPP "Không SM" nhỏ lẻ thành mô hình **Đại lý C1 / Sub-Hub** tự quản có cam kết chỉ tiêu hoặc gom tuyến giao lại cho NPP lân cận có SM phụ trách.
+
+## 4. PHÂN TÍCH VÙNG TRẮNG & TIỀM NĂNG OUTLET NHÓM A & B
 
 Từ cơ sở dữ liệu **215,376 điểm bán GT toàn quốc**, lọc ra **9,056 điểm bán Nhóm A & B** (9,038 điểm có tọa độ GPS hợp lệ). Doanh số Sellout thị trường của nhóm này đạt **100.26 Tỷ VNĐ/tháng** (~ **1.20 Nghìn Tỷ VNĐ/năm**).
 
@@ -118,7 +186,7 @@ Bằng thuật toán phân tích không gian đa chiều đo cự ly từ 9,038 
 
 ---
 
-## 4. ĐỀ XUẤT THIẾT LẬP ĐẠI LÝ CẤP 1 (C1 / SUB-HUB) TẠI TỪNG VÙNG
+## 5. ĐỀ XUẤT THIẾT LẬP ĐẠI LÝ CẤP 1 (C1 / SUB-HUB) TẠI TỪNG VÙNG
 
 Dựa trên thuật toán gom cụm mật độ không gian của các điểm bán A & B nằm ngoài bán kính 30km kết hợp với 2,452 điểm bán hiện hữu bị cự ly xa, dưới đây là **danh mục chi tiết các vị trí đề xuất thành lập Đại lý Cấp 1 (C1 / Sub-Hub)** cho từng vùng:
 
@@ -230,7 +298,7 @@ DANH MỤC ĐỀ XUẤT MỞ MỚI / TÁI KÍCH HOẠT ĐẠI LÝ CẤP 1 (C1 / 
 
 ---
 
-## 5. LỘ TRÌNH TRIỂN KHAI VÀ KHUYẾN NGHỊ VẬN HÀNH
+## 6. LỘ TRÌNH TRIỂN KHAI VÀ KHUYẾN NGHỊ VẬN HÀNH
 
 ```
    GIAI ĐOẠN 1 (Tháng 1 - 2)      GIAI ĐOẠN 2 (Tháng 3 - 4)      GIAI ĐOẠN 3 (Tháng 5 - 6)

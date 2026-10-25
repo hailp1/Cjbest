@@ -632,6 +632,15 @@
         <div class="kpi-value">13 <span style="font-size:1rem;font-weight:600;">Vị Trí</span></div>
         <div class="kpi-sub">5 Tái Kích Hoạt • 8 Mở Mới Vùng Sâu</div>
       </div>
+
+      <div class="kpi-card" style="--kpi-color: #f43f5e;" title="Theo file phân loại loaiNPP.xlsx">
+        <div class="kpi-header">
+          <span class="kpi-title">NPP Trạng Thái "Không SM"</span>
+          <div class="kpi-icon"><i class="fa-solid fa-user-slash"></i></div>
+        </div>
+        <div class="kpi-value">28 <span style="font-size:1rem;font-weight:600;">NPP</span></div>
+        <div class="kpi-sub"><span style="color:#f43f5e;font-weight:700;">19.3%</span> • Có 4 NPP Top 50 Thiếu SM</div>
+      </div>
     </section>
 
     <!-- Visual Charts Grid -->
@@ -742,6 +751,7 @@
         <button class="filter-chip" onclick="filterByRegion('Nha Trang', this)">Nha Trang & ĐNB</button>
         <button class="filter-chip" onclick="filterByRegion('Đà Nẵng', this)">Đà Nẵng</button>
         <button class="filter-chip" onclick="filterByRegion('HCM', this)">TP. Hồ Chí Minh</button>
+        <button class="filter-chip" style="border:1px solid #ef4444; color:#fca5a5;" onclick="filterKhongSM(this)"><i class="fa-solid fa-user-slash"></i> 28 NPP Không SM</button>
         
         <div class="search-input-wrap">
           <i class="fa-solid fa-magnifying-glass"></i>
@@ -810,6 +820,39 @@
               </tr>
             </thead>
             <tbody id="tbodyWhiteDistricts">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+        <!-- Table 4: 28 NPPs Không SM -->
+    <section id="sectionKhongSM">
+      <div class="section-head">
+        <div class="section-title">
+          <i class="fa-solid fa-user-slash" style="color:#f43f5e;"></i> Bảng 4: Danh Mục 28 Nhà Phân Phối Trạng Thái "Không SM" (Từ Tệp loaiNPP.xlsx)
+        </div>
+        <span class="badge badge-danger">28 / 145 NPP Quản Lý Chính (19.3%)</span>
+      </div>
+
+      <div class="table-card">
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Mã NPP</th>
+                <th>Tên Nhà Phân Phối</th>
+                <th>Vùng Phụ Trách</th>
+                <th>Văn Phòng / Tỉnh</th>
+                <th>GSBH Quản Lý</th>
+                <th>Xếp Hạng Top 50</th>
+                <th>Hiện Trạng Bán Hàng</th>
+                <th>Khuyến Nghị RTM</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyKhongSM">
               <!-- Rendered via JS -->
             </tbody>
           </table>
@@ -1247,12 +1290,14 @@
       if (btn) btn.classList.add('active');
       renderC1Table();
       renderWhiteDistrictsTable();
+      renderKhongSMTable();
     }
 
     function handleSearch(val) {
       searchQuery = val.trim().toLowerCase();
       renderC1Table();
       renderWhiteDistrictsTable();
+      renderKhongSMTable();
     }
 
     // Modal
@@ -1320,6 +1365,64 @@
     }
 
     // Chart.js Visualizations
+        const KHONG_SM_NPPS = [
+      { stt: 1, code: "1029803", name: "THU HƯƠNG", region: "Hà Nội", area: "Hà Nội", office: "Son La", gsbh: "NEW_SUP_SONLA1", top50: 0, desc: "Thị trường Sơn La không có DSR đi tuyến", action: "Tuyển bổ sung DSR hoặc chuyển giao C1 Sơn La" },
+      { stt: 2, code: "1055883", name: "TÚ ANH", region: "Hà Nội", area: "Hà Nội", office: "Son La", gsbh: "NEW_SUP_SONLA1", top50: 0, desc: "Thị trường Sơn La không có DSR đi tuyến", action: "Tuyển bổ sung DSR" },
+      { stt: 3, code: "1055987", name: "BTH", region: "Hà Nội", area: "Hà Nội", office: "Son La", gsbh: "NEW_SUP_SONLA1", top50: 0, desc: "Thị trường Sơn La không có DSR đi tuyến", action: "Tuyển bổ sung DSR" },
+      { stt: 4, code: "1057620", name: "NGUYỄN DUY TIỆP", region: "Hà Nội", area: "Hà Nội", office: "Son La", gsbh: "NEW_SUP_SONLA1", top50: 0, desc: "Thị trường Sơn La không có DSR đi tuyến", action: "Tuyển bổ sung DSR" },
+      { stt: 5, code: "1029779", name: "TIÊN PHONG", region: "Hà Nội", area: "Hà Nội", office: "H.Noi 5", gsbh: "Vũ Thị Huệ", top50: 1, desc: "NPP lớn nội thành nhưng đại lý tự bán", action: "Bắt buộc bố trí ít nhất 2 DSR chăm sóc điểm bán A/B" },
+      { stt: 6, code: "1057474", name: "HƯNG THẢO", region: "Hải Phòng", area: "DH & BMT", office: "N.An", gsbh: "Lê Văn Bảo", top50: 0, desc: "Khu vực Nghệ An", action: "Kết nối vào tuyến C1 Diễn Châu" },
+      { stt: 7, code: "1057558", name: "KHANG NA", region: "Hải Phòng", area: "DH & BMT", office: "N.An", gsbh: "Lê Văn Bảo", top50: 0, desc: "Khu vực Nghệ An", action: "Kết nối vào tuyến C1 Diễn Châu" },
+      { stt: 8, code: "1059078", name: "CHI LÂM", region: "Hải Phòng", area: "DH & BMT", office: "N.Binh 2", gsbh: "Phạm Văn Sơn", top50: 0, desc: "Khu vực Ninh Bình", action: "Bổ sung DSR đi tuyến" },
+      { stt: 9, code: "1035885", name: "THIỆN NHÂN", region: "Đà Nẵng", area: "Đà Nẵng 2", office: "Hue", gsbh: "Trương Phước Cao", top50: 0, desc: "Thừa Thiên Huế", action: "Bố trí DSR phụ trách Huế" },
+      { stt: 10, code: "1039535", name: "HỒNG ÂN PARIS", region: "Đà Nẵng", area: "Đà Nẵng 2", office: "Hue", gsbh: "Trương Phước Cao", top50: 0, desc: "Thừa Thiên Huế", action: "Bố trí DSR phụ trách Huế" },
+      { stt: 11, code: "1035470", name: "THU THỦY", region: "Đà Nẵng", area: "Đà Nẵng 2", office: "Bình Định", gsbh: "Lê Hoàng Y Ron", top50: 0, desc: "Bình Định", action: "Tái cấu trúc tuyến bán hàng Quy Nhơn" },
+      { stt: 12, code: "1029754", name: "TÙNG LOAN", region: "Nha Trang", area: "Nha Trang", office: "B.Thuan", gsbh: "Nguyễn Xuân Sáu", top50: 0, desc: "Bình Thuận", action: "Bổ sung DSR Phan Thiết" },
+      { stt: 13, code: "1057464", name: "KIM PHƯỢNG ĐỨC LINH", region: "Nha Trang", area: "Nha Trang", office: "B.Thuan", gsbh: "Nguyễn Xuân Sáu", top50: 0, desc: "Đức Linh (Bình Thuận)", action: "Gom vào tuyến C1 Đông Nam Bộ" },
+      { stt: 14, code: "1029762", name: "FOODCOMART", region: "Nha Trang", area: "Nha Trang", office: "Dlak", gsbh: "Lê Quốc Cường", top50: 0, desc: "Đắk Lắk", action: "Bố trí DSR kết hợp C1 Buôn Hồ" },
+      { stt: 15, code: "1063980", name: "CẨM LY FOODS", region: "Nha Trang", area: "Nha Trang", office: "Dlak", gsbh: "Lê Quốc Cường", top50: 0, desc: "Đắk Lắk", action: "Bố trí DSR kết hợp C1 Buôn Hồ" },
+      { stt: 16, code: "1029721", name: "THĂNG LONG", region: "HCM", area: "HCM", office: "HCM 3", gsbh: "Hà Minh Long", top50: 0, desc: "Kênh buôn / Nhà thầu lớn", action: "Giữ mô hình Fulfillment không DSR" },
+      { stt: 17, code: "1035180", name: "MARIS", region: "HCM", area: "HCM", office: "HCM 3", gsbh: "Hà Minh Long", top50: 0, desc: "Đối tác Horeca / Bán sỉ", action: "Chuyên trách Horeca" },
+      { stt: 18, code: "1029725", name: "KHỞI THỊNH", region: "HCM", area: "HCM", office: "HCM 4", gsbh: "Huỳnh Hưng Long", top50: 0, desc: "Bán buôn thực phẩm", action: "Chuyên trách bán sỉ" },
+      { stt: 19, code: "1029726", name: "THUẬN PHÁT THÀNH", region: "HCM", area: "HCM", office: "HCM 4", gsbh: "Huỳnh Hưng Long", top50: 0, desc: "Bán buôn thực phẩm", action: "Chuyên trách bán sỉ" },
+      { stt: 20, code: "1029724", name: "NGUYÊN HÀ", region: "HCM", area: "HCM", office: "HCM 5", gsbh: "Nguyễn Khắc Lợi", top50: 0, desc: "Kênh buôn thực phẩm", action: "Chuyên trách bán sỉ" },
+      { stt: 21, code: "1029737", name: "FOOD HOUSE", region: "Cần Thơ", area: "Cần Thơ", office: "An Giang", gsbh: "Tô Bá Vinh", top50: 1, desc: "NPP Top 50 An Giang nhưng thiếu DSR", action: "BẮT BUỘC BỔ SUNG 2 DSR ĐI TUYẾN" },
+      { stt: 22, code: "1033606", name: "NGỌC KHÁNH AN", region: "Cần Thơ", area: "Cần Thơ", office: "An Giang", gsbh: "Tô Bá Vinh", top50: 0, desc: "An Giang", action: "Bổ sung DSR đi tuyến" },
+      { stt: 23, code: "1037766", name: "SHIBA", region: "Cần Thơ", area: "Cần Thơ", office: "An Giang", gsbh: "Tô Bá Vinh", top50: 1, desc: "NPP Top 50 An Giang nhưng thiếu DSR", action: "BẮT BUỘC BỔ SUNG 2 DSR ĐI TUYẾN" },
+      { stt: 24, code: "1057019", name: "AB HAPPY", region: "Cần Thơ", area: "Cần Thơ", office: "An Giang", gsbh: "Tô Bá Vinh", top50: 0, desc: "An Giang", action: "Bổ sung DSR đi tuyến" },
+      { stt: 25, code: "1057032", name: "AN NGỌC NGÂN", region: "Cần Thơ", area: "Cần Thơ", office: "An Giang", gsbh: "Tô Bá Vinh", top50: 0, desc: "An Giang", action: "Bổ sung DSR đi tuyến" },
+      { stt: 26, code: "1029735", name: "CẦU TRE", region: "Cần Thơ", area: "Cần Thơ", office: "C. Thơ", gsbh: "Nguyễn Hồng Đạt", top50: 0, desc: "Trung tâm TP. Cần Thơ", action: "Bố trí DSR nội ô Cần Thơ" },
+      { stt: 27, code: "1029740", name: "CÚC TUẤN", region: "Cần Thơ", area: "Cần Thơ", office: "C. Thơ", gsbh: "Nguyễn Hồng Đạt", top50: 1, desc: "NPP Top 50 Cần Thơ nhưng thiếu DSR", action: "BẮT BUỘC BỔ SUNG 2 DSR ĐI TUYẾN" },
+      { stt: 28, code: "1063689", name: "LY NHƯ Ý", region: "Cần Thơ", area: "Cần Thơ", office: "C. Thơ", gsbh: "Nguyễn Hồng Đạt", top50: 0, desc: "TP. Cần Thơ", action: "Bố trí DSR nội ô Cần Thơ" }
+    ];
+
+    function renderKhongSMTable() {
+      const tbody = document.getElementById('tbodyKhongSM');
+      if (!tbody) return;
+      tbody.innerHTML = KHONG_SM_NPPS.map(n => {
+        return `
+          <tr>
+            <td style="color:var(--text-dim);font-weight:700;">#${n.stt}</td>
+            <td style="font-family:monospace;font-weight:800;color:var(--primary);">${n.code}</td>
+            <td style="font-weight:700;color:white;">${n.name}</td>
+            <td><span class="badge badge-purple">${n.region}</span></td>
+            <td><span style="font-weight:600;color:#cbd5e1;">${n.office}</span> <span style="font-size:0.75rem;color:var(--text-dim);">(${n.area})</span></td>
+            <td style="color:#38bdf8;font-weight:600;"><i class="fa-solid fa-user-tie"></i> ${n.gsbh}</td>
+            <td>${n.top50 ? '<span class="badge badge-warning"><i class="fa-solid fa-star"></i> Top 50 Doanh Số</span>' : '<span style="color:var(--text-dim);">-</span>'}</td>
+            <td style="font-size:0.78rem;color:#fca5a5;"><i class="fa-solid fa-circle-exclamation"></i> ${n.desc}</td>
+            <td style="font-size:0.78rem;color:#6ee7b7;font-weight:600;">${n.action}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterKhongSM(btn) {
+      document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      const el = document.getElementById('sectionKhongSM');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+
     function initCharts() {
       // Common chart font styling
       Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
@@ -1559,6 +1662,7 @@
       renderRegionsTable();
       renderC1Table();
       renderWhiteDistrictsTable();
+      renderKhongSMTable();
       initCharts();
     });
   </script>
