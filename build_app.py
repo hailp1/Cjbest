@@ -1137,7 +1137,238 @@ html_template = f'''<!DOCTYPE html>
         max-height: 96vh;
       }}
     }}
-  </style>
+  
+    /* ===== PLANNED NPP FLAGS FEATURE STYLING ===== */
+    @keyframes radar-pulse-flag {{
+      0% {{ transform: scale(0.6); opacity: 0.9; }}
+      100% {{ transform: scale(2.6); opacity: 0; }}
+    }}
+    @keyframes flag-bounce {{
+      0%, 100% {{ transform: translateY(0); }}
+      50% {{ transform: translateY(-7px); }}
+    }}
+
+    .planned-flag-container {{
+      position: relative;
+      width: 46px;
+      height: 52px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      pointer-events: auto;
+      cursor: pointer;
+    }}
+    .planned-flag-pulse {{
+      position: absolute;
+      bottom: 2px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(245, 158, 11, 0.45);
+      border: 2px solid #f59e0b;
+      animation: radar-pulse-flag 2.2s infinite ease-out;
+      pointer-events: none;
+    }}
+    .planned-flag-icon {{
+      position: relative;
+      z-index: 2;
+      font-size: 28px;
+      color: #ef4444;
+      filter: drop-shadow(0 2px 5px rgba(0,0,0,0.85)) drop-shadow(0 0 12px rgba(245, 158, 11, 0.9));
+      animation: flag-bounce 2s infinite ease-in-out;
+    }}
+    .planned-flag-label {{
+      position: absolute;
+      top: -24px;
+      white-space: nowrap;
+      background: #0f172a;
+      border: 1.5px solid #f59e0b;
+      color: #fef08a;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+      pointer-events: none;
+      z-index: 3;
+    }}
+
+    /* Pin Mode Banner */
+    .pin-mode-banner {{
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: rgba(15, 23, 42, 0.95);
+      border: 2px solid #f59e0b;
+      border-radius: 30px;
+      padding: 6px 18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6), 0 0 15px rgba(245, 158, 11, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      backdrop-filter: blur(6px);
+      animation: fadeIn 0.3s ease-out;
+    }}
+    .banner-quick-btn {{
+      border: none;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }}
+    .banner-quick-btn:hover {{
+      filter: brightness(1.15);
+      transform: translateY(-1px);
+    }}
+
+    /* Planned Flags Management Widget */
+    .planned-flags-widget {{
+      position: absolute;
+      bottom: 24px;
+      right: 16px;
+      z-index: 950;
+      width: 320px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1.5px solid #f59e0b;
+      border-radius: 10px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: all 0.25s ease;
+    }}
+    .planned-widget-header {{
+      background: #1e293b;
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+      cursor: pointer;
+      user-select: none;
+    }}
+    .widget-badge-pulse {{
+      background: #059669;
+      color: #fff;
+      font-size: 0.58rem;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }}
+    .planned-widget-body {{
+      padding: 10px;
+      max-height: 280px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }}
+    .planned-flags-list {{
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }}
+    .flag-list-item {{
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-left: 3px solid #f59e0b;
+      border-radius: 6px;
+      padding: 6px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.15s;
+    }}
+    .flag-list-item:hover {{
+      background: #273549;
+      border-color: #64748b;
+    }}
+    .flag-item-info {{
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      flex: 1;
+    }}
+    .flag-item-title {{
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #fef08a;
+    }}
+    .flag-item-sub {{
+      font-size: 0.65rem;
+      color: #94a3b8;
+    }}
+    .flag-item-actions {{
+      display: flex;
+      gap: 4px;
+    }}
+    .flag-btn-icon {{
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      transition: all 0.15s;
+    }}
+    .flag-btn-icon:hover {{
+      color: #f87171;
+      background: rgba(239, 68, 68, 0.2);
+    }}
+    .planned-widget-footer {{
+      display: flex;
+      gap: 6px;
+      padding-top: 6px;
+      border-top: 1px solid #334155;
+    }}
+    .widget-action-btn {{
+      flex: 1;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 8px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }}
+    .widget-action-btn.btn-preset {{
+      background: #0284c7;
+      color: #fff;
+    }}
+    .widget-action-btn.btn-add {{
+      background: #059669;
+      color: #fff;
+    }}
+    .widget-action-btn.btn-clear {{
+      background: #334155;
+      color: #fca5a5;
+    }}
+    .widget-action-btn:hover {{
+      filter: brightness(1.15);
+    }}
+
+    /* Crosshair cursor when in pin mode */
+    .pin-mode-active #map {{
+      cursor: crosshair !important;
+    }}
+
+</style>
 </head>
 <body>
 
@@ -1290,6 +1521,12 @@ html_template = f'''<!DOCTYPE html>
       <button class="quick-btn" onclick="zoomToPreset('MN')"><i class="fa-solid fa-location-dot"></i> Nam</button>
       
       <!-- NÚT HIỆN / ẨN OUTLET TRỰC TIẾP TRÊN BẢN ĐỒ -->
+      
+      <!-- NÚT CẮM CỜ NPP / C1 DỰ KIẾN MỞ -->
+      <button class="quick-btn" id="btnTogglePinMode" onclick="togglePinMode()" style="border-color: #f59e0b; color: #fef08a; background: rgba(245, 158, 11, 0.15);">
+        <i class="fa-solid fa-flag" style="color:#f59e0b;"></i> <span id="btnPinText">Cắm Cờ Mở NPP</span>
+      </button>
+
       <button class="quick-btn active-quick-outlet" id="btnQuickToggleOutlet" onclick="toggleOutletQuick()" style="border-color: rgba(245, 158, 11, 0.6);">
         <i class="fa-solid fa-store" style="color:#f59e0b;"></i> <span id="btnQuickOutletText">Ẩn Điểm Bán</span>
       </button>
@@ -1300,7 +1537,107 @@ html_template = f'''<!DOCTYPE html>
       <button class="quick-btn" id="btnToggleRadius" onclick="toggleRadius()"><i class="fa-solid fa-circle-notch"></i> Bán kính 45km</button>
     </div>
 
-    <!-- Mobile Button to Open Drawer -->
+    
+    <!-- BANNER CHẾ ĐỘ CẮM CỜ -->
+    <div id="pinModeBanner" class="pin-mode-banner" style="display:none;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <i class="fa-solid fa-crosshairs fa-spin" style="color:#f59e0b; font-size:1rem;"></i>
+        <div>
+          <div style="font-weight:800; font-size:0.75rem; color:#fef08a;">CHẾ ĐỘ CẮM CỜ NPP / C1 DỰ KIẾN</div>
+          <div style="font-size:0.68rem; color:#cbd5e1;">Nhấp bất kỳ điểm nào trên bản đồ để cắm cờ hoặc nạp nhanh:</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+        <button onclick="loadMekongPresets()" class="banner-quick-btn" style="background:#0284c7; color:#fff;">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> 4 Vùng Mekong
+        </button>
+        <button onclick="togglePinMode(false)" class="banner-quick-btn" style="background:#dc2626; color:#fff;">
+          <i class="fa-solid fa-check"></i> Hoàn tất
+        </button>
+      </div>
+    </div>
+
+    <!-- WIDGET QUẢN LÝ CỜ NPP DỰ KIẾN (GÓC PHẢI DƯỚI) -->
+    <div id="plannedFlagsWidget" class="planned-flags-widget" style="display:none;">
+      <div class="planned-widget-header" onclick="toggleFlagsWidgetCollapse()">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <i class="fa-solid fa-flag" style="color:#f59e0b;"></i>
+          <span style="font-weight:800; font-size:0.75rem; color:#f8fafc;">NPP DỰ KIẾN MỞ (<span id="flagWidgetCount">0</span>)</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="widget-badge-pulse" id="widgetLiveBadge">DỰ KIẾN</span>
+          <i class="fa-solid fa-chevron-down" id="widgetChevron" style="font-size:0.7rem; color:#94a3b8; transition:transform 0.2s;"></i>
+        </div>
+      </div>
+      <div id="plannedWidgetBody" class="planned-widget-body">
+        <div id="plannedFlagsList" class="planned-flags-list">
+          <!-- Dynamic Flag Items -->
+        </div>
+        <div class="planned-widget-footer">
+          <button class="widget-action-btn btn-preset" onclick="loadMekongPresets()" title="Nạp 4 vùng trắng trọng điểm: Cai Lậy, Đức Hòa, Trà Vinh, Ba Tri">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> 4 Vùng Mekong
+          </button>
+          <button class="widget-action-btn btn-add" onclick="enablePinModeFromWidget()" title="Nhấp bản đồ để cắm thêm cờ">
+            <i class="fa-solid fa-plus"></i> Cắm thêm
+          </button>
+          <button class="widget-action-btn btn-clear" onclick="clearAllPlannedFlags()" title="Xóa toàn bộ cờ dự kiến">
+            <i class="fa-solid fa-trash-can"></i> Xóa hết
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL THIẾT LẬP CỜ NPP DỰ KIẾN -->
+    <div id="modalAddFlag" class="modal-backdrop" style="display:none; z-index: 9999;">
+      <div class="modal-box" style="max-width: 440px; border: 1.5px solid #f59e0b; box-shadow: 0 20px 45px rgba(0,0,0,0.8);">
+        <div class="modal-header" style="background: #1e293b; border-bottom: 1px solid #334155; padding: 12px 16px;">
+          <h3 style="font-size: 0.9rem; font-weight: 800; color: #fef08a; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-flag" style="color: #f59e0b;"></i> THIẾT LẬP NPP / C1 DỰ KIẾN MỞ
+          </h3>
+          <button class="btn-close-modal" onclick="closeAddFlagModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div style="padding: 16px; display: flex; flex-direction: column; gap: 12px; background: #0f172a; color: #e2e8f0;">
+          <div>
+            <label style="font-size: 0.72rem; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">TÊN NPP / C1 DỰ KIẾN</label>
+            <input type="text" id="flagInputName" placeholder="VD: C1 TT. Cai Lậy / NPP Mới Đức Hòa" style="width: 100%; padding: 8px 10px; background: #1e293b; border: 1px solid #475569; border-radius: 6px; color: #fff; font-size: 0.8rem;">
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+              <label style="font-size: 0.72rem; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">MÔ HÌNH VẬN HÀNH</label>
+              <select id="flagInputType" style="width: 100%; padding: 8px 10px; background: #1e293b; border: 1px solid #475569; border-radius: 6px; color: #fff; font-size: 0.8rem;">
+                <option value="C1 Partner" selected>C1 Partner (Đại lý cấp 1)</option>
+                <option value="NPP Mới">NPP Mới (New Distributor)</option>
+                <option value="Kho Trung Chuyển">Kho Trung Chuyển (Depot)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 0.72rem; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">BÁN KÍNH PHỤC VỤ</label>
+              <select id="flagInputRadius" style="width: 100%; padding: 8px 10px; background: #1e293b; border: 1px solid #475569; border-radius: 6px; color: #fff; font-size: 0.8rem;">
+                <option value="15">15 km (Nội ô / Cự ly ngắn)</option>
+                <option value="25" selected>25 km (Cụm huyện)</option>
+                <option value="35">35 km (Vùng trắng)</option>
+                <option value="45">45 km (Toàn tỉnh)</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label style="font-size: 0.72rem; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">GHI CHÚ / MỤC TIÊU PHỤC VỤ</label>
+            <textarea id="flagInputNote" rows="2" placeholder="VD: Cắt giảm cự ly giao xa, gom 50 Golden Outlets + 233 tiệm Nhóm C..." style="width: 100%; padding: 8px 10px; background: #1e293b; border: 1px solid #475569; border-radius: 6px; color: #fff; font-size: 0.75rem;"></textarea>
+          </div>
+          <div style="background: rgba(30, 41, 59, 0.7); border: 1px dashed #475569; border-radius: 6px; padding: 8px 10px; font-size: 0.7rem; color: #94a3b8;">
+            <i class="fa-solid fa-location-dot" style="color:#f59e0b;"></i> Tọa độ đã chọn: <b id="flagCoordsDisplay" style="color:#f1f5f9;">--</b>
+          </div>
+          <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px;">
+            <button onclick="closeAddFlagModal()" style="padding: 7px 14px; background: #334155; border: none; border-radius: 6px; color: #cbd5e1; font-size: 0.75rem; cursor: pointer;">Hủy</button>
+            <button onclick="confirmAddFlag()" style="padding: 7px 18px; background: #f59e0b; border: none; border-radius: 6px; color: #0f172a; font-weight: 800; font-size: 0.75rem; cursor: pointer;">
+              <i class="fa-solid fa-flag"></i> Xác Nhận Cắm Cờ
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- Mobile Button to Open Drawer -->
     <button class="btn-mobile-drawer" id="btnOpenMobileDrawer" onclick="toggleMobileSidebar(true)">
       <i class="fa-solid fa-list-check"></i> Danh Sách NPP (<span id="mobileCount">391</span>)
     </button>
@@ -1864,6 +2201,8 @@ html_template = f'''<!DOCTYPE html>
     document.addEventListener('DOMContentLoaded', () => {{
       populateVungOptions();
       populateTinhOptions();
+      loadPlannedFlagsFromStorage();
+
       applyFilters();
 
       // Check mobile size to auto-adjust
@@ -2740,7 +3079,434 @@ html_template = f'''<!DOCTYPE html>
       closeAnalyticsModal();
       focusNPPAndSpider(code);
     }}
-  </script>
+  
+    // ==========================================
+    // PLANNED NPP FLAGS ENGINE (CẮM CỜ DỰ KIẾN MỞ)
+    // ==========================================
+    let plannedFlags = [];
+    let isPinMode = false;
+    let pendingFlagCoords = null;
+    let isWidgetCollapsed = false;
+
+    const plannedFlagsLayer = L.layerGroup().addTo(map);
+
+    // Bật / Tắt chế độ cắm cờ
+    function togglePinMode(forceState) {{
+      if (typeof forceState === 'boolean') {{
+        isPinMode = forceState;
+      }} else {{
+        isPinMode = !isPinMode;
+      }}
+
+      const btn = document.getElementById('btnTogglePinMode');
+      const text = document.getElementById('btnPinText');
+      const banner = document.getElementById('pinModeBanner');
+
+      if (isPinMode) {{
+        document.body.classList.add('pin-mode-active');
+        if (btn) {{
+          btn.style.background = 'rgba(245, 158, 11, 0.4)';
+          btn.style.borderColor = '#fbbf24';
+          btn.style.boxShadow = '0 0 12px rgba(245, 158, 11, 0.5)';
+        }}
+        if (text) text.textContent = 'Đang Cắm Cờ...';
+        if (banner) banner.style.display = 'flex';
+      }} else {{
+        document.body.classList.remove('pin-mode-active');
+        if (btn) {{
+          btn.style.background = 'rgba(245, 158, 11, 0.15)';
+          btn.style.borderColor = '#f59e0b';
+          btn.style.boxShadow = 'none';
+        }}
+        if (text) text.textContent = 'Cắm Cờ Mở NPP';
+        if (banner) banner.style.display = 'none';
+      }}
+    }}
+
+    function enablePinModeFromWidget() {{
+      togglePinMode(true);
+    }}
+
+    // Lắng nghe click trên map để cắm cờ
+    map.on('click', function(e) {{
+      if (!isPinMode) return;
+      openAddFlagModal(e.latlng.lat, e.latlng.lng);
+    }});
+
+    function openAddFlagModal(lat, lng, defName, defType, defRadius, defNote) {{
+      pendingFlagCoords = {{ lat: lat, lng: lng }};
+      document.getElementById('flagCoordsDisplay').textContent = `${{lat.toFixed(5)}}, ${{lng.toFixed(5)}}`;
+      document.getElementById('flagInputName').value = defName || `NPP Mới (${{lat.toFixed(3)}}, ${{lng.toFixed(3)}})`;
+      document.getElementById('flagInputType').value = defType || 'C1 Partner';
+      document.getElementById('flagInputRadius').value = defRadius || '25';
+      document.getElementById('flagInputNote').value = defNote || '';
+
+      document.getElementById('modalAddFlag').style.display = 'flex';
+      setTimeout(() => {{
+        document.getElementById('flagInputName').focus();
+        document.getElementById('flagInputName').select();
+      }}, 100);
+    }}
+
+    function closeAddFlagModal() {{
+      document.getElementById('modalAddFlag').style.display = 'none';
+      pendingFlagCoords = null;
+    }}
+
+    function confirmAddFlag() {{
+      if (!pendingFlagCoords) return;
+      const name = document.getElementById('flagInputName').value.trim() || 'NPP Dự Kiến Mới';
+      const type = document.getElementById('flagInputType').value;
+      const radiusKm = parseFloat(document.getElementById('flagInputRadius').value) || 25;
+      const note = document.getElementById('flagInputNote').value.trim();
+
+      addPlannedFlag({{
+        id: 'flag_' + Date.now() + '_' + Math.floor(Math.random()*1000),
+        name: name,
+        type: type,
+        lat: pendingFlagCoords.lat,
+        lng: pendingFlagCoords.lng,
+        radiusKm: radiusKm,
+        note: note
+      }}, true, true);
+
+      closeAddFlagModal();
+    }}
+
+    // Hàm tạo và hiển thị cờ trên bản đồ
+    function addPlannedFlag(flagData, autoOpen, shouldSave) {{
+      // 1. Phân tích không gian: Tìm NPP active gần nhất
+      let closestNPP = null;
+      let minDistanceKm = 99999;
+      ALL_NPPS.filter(n => n.status === 'Đang Sử Dụng').forEach(n => {{
+        const d = map.distance([flagData.lat, flagData.lng], [n.lat, n.lng]) / 1000;
+        if (d < minDistanceKm) {{
+          minDistanceKm = d;
+          closestNPP = n;
+        }}
+      }});
+
+      // 2. Đếm số outlet hiện hữu nằm trong bán kính
+      let coveredOutlets = 0;
+      let coldOutlets = 0;
+      if (ALL_OUTLETS && ALL_OUTLETS.length > 0) {{
+        const radMeters = flagData.radiusKm * 1000;
+        for (let i = 0; i < ALL_OUTLETS.length; i++) {{
+          const o = ALL_OUTLETS[i];
+          const dist = map.distance([flagData.lat, flagData.lng], [o[2], o[3]]);
+          if (dist <= radMeters) {{
+            coveredOutlets++;
+            if (o[7] === 'DONG' || o[7] === 'BOTH') coldOutlets++;
+          }}
+        }}
+      }}
+
+      flagData.closestNPP = closestNPP;
+      flagData.minDistanceKm = minDistanceKm.toFixed(1);
+      flagData.coveredOutlets = coveredOutlets;
+      flagData.coldOutlets = coldOutlets;
+
+      // 3. Tạo DivIcon cờ siêu nổi bật với radar phát sóng
+      const flagIcon = L.divIcon({{
+        className: 'custom-planned-flag-wrapper',
+        html: `
+          <div class="planned-flag-container">
+            <div class="planned-flag-pulse"></div>
+            <i class="fa-solid fa-flag planned-flag-icon"></i>
+            <div class="planned-flag-label">🚩 ${{flagData.name}}</div>
+          </div>
+        `,
+        iconSize: [46, 52],
+        iconAnchor: [23, 50],
+        popupAnchor: [0, -48]
+      }});
+
+      const marker = L.marker([flagData.lat, flagData.lng], {{ icon: flagIcon, zIndexOffset: 3000 }});
+
+      // 4. Vòng tròn bán kính phục vụ dự kiến (Dashed Gold)
+      const circle = L.circle([flagData.lat, flagData.lng], {{
+        radius: flagData.radiusKm * 1000,
+        color: '#f59e0b',
+        weight: 2,
+        dashArray: '6, 6',
+        fillColor: '#f59e0b',
+        fillOpacity: 0.12,
+        interactive: false
+      }});
+
+      // 5. Popup hiển thị đầy đủ thông số
+      const popupHtml = `
+        <div class="popup-card" style="border-top: 3px solid #f59e0b; width: 300px;">
+          <div class="popup-header">
+            <span class="popup-tag" style="background:#fef3c7; color:#92400e; font-weight:800;">🚩 NPP / C1 DỰ KIẾN MỞ 2027</span>
+            <div class="popup-title" style="font-size:0.9rem; color:#fef08a;">${{flagData.name}}</div>
+            <div style="font-size:0.68rem; color:#94a3b8; margin-top:2px;">Mô hình: <b style="color:#38bdf8;">${{flagData.type}}</b></div>
+          </div>
+          <div class="popup-body">
+            <div class="popup-row">
+              <i class="fa-solid fa-circle-notch" style="color:#f59e0b;"></i>
+              <div>Bán kính phục vụ: <b style="color:#f1f5f9;">${{flagData.radiusKm}} km</b></div>
+            </div>
+            <div class="popup-row">
+              <i class="fa-solid fa-store" style="color:#34d399;"></i>
+              <div>Điểm bán CJ trong vùng: <b style="color:#34d399;">${{flagData.coveredOutlets}} điểm</b> (${{flagData.coldOutlets}} điểm đông lạnh)</div>
+            </div>
+            <div class="popup-row">
+              <i class="fa-solid fa-route" style="color:#60a5fa;"></i>
+              <div>NPP Active gần nhất: <b style="color:#e2e8f0;">${{closestNPP ? closestNPP.short_name : 'Không'}}</b> (<span style="color:#f87171; font-weight:800;">${{flagData.minDistanceKm}} km</span>)</div>
+            </div>
+            ${{flagData.note ? `
+            <div style="background:#1e293b; border-left:2px solid #f59e0b; padding:4px 6px; border-radius:3px; margin-top:4px; font-size:0.68rem; color:#cbd5e1;">
+              <b>Mục tiêu:</b> ${{flagData.note}}
+            </div>` : ''}}
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:6px; border-top:1px solid #334155;">
+            <button onclick="changeFlagRadius('${{flagData.id}}')" style="background:#0284c7; color:#fff; border:none; padding:3px 8px; border-radius:4px; font-size:0.65rem; font-weight:700; cursor:pointer;">
+              <i class="fa-solid fa-arrows-up-down-left-right"></i> Đổi bán kính
+            </button>
+            <button onclick="removePlannedFlag('${{flagData.id}}')" style="background:#dc2626; color:#fff; border:none; padding:3px 8px; border-radius:4px; font-size:0.65rem; font-weight:700; cursor:pointer;">
+              <i class="fa-solid fa-trash-can"></i> Xóa cờ
+            </button>
+          </div>
+        </div>
+      `;
+
+      marker.bindPopup(popupHtml, {{ maxWidth: 320 }});
+
+      // Lưu tham chiếu marker & circle
+      flagData.marker = marker;
+      flagData.circle = circle;
+
+      plannedFlagsLayer.addLayer(circle);
+      plannedFlagsLayer.addLayer(marker);
+
+      plannedFlags.push(flagData);
+
+      if (autoOpen) {{
+        marker.openPopup();
+      }}
+
+      if (shouldSave) {{
+        savePlannedFlagsToStorage();
+      }}
+
+      updatePlannedFlagsUI();
+    }}
+
+    // Đổi bán kính phục vụ của cờ
+    function changeFlagRadius(flagId) {{
+      const flag = plannedFlags.find(f => f.id === flagId);
+      if (!flag) return;
+      const current = flag.radiusKm;
+      const nextRadii = [15, 25, 35, 45];
+      const idx = nextRadii.indexOf(current);
+      const nextR = nextRadii[(idx + 1) % nextRadii.length];
+
+      flag.radiusKm = nextR;
+      flag.circle.setRadius(nextR * 1000);
+
+      // Recalculate outlets count
+      let coveredOutlets = 0;
+      let coldOutlets = 0;
+      if (ALL_OUTLETS && ALL_OUTLETS.length > 0) {{
+        const radMeters = nextR * 1000;
+        for (let i = 0; i < ALL_OUTLETS.length; i++) {{
+          const o = ALL_OUTLETS[i];
+          const dist = map.distance([flag.lat, flag.lng], [o[2], o[3]]);
+          if (dist <= radMeters) {{
+            coveredOutlets++;
+            if (o[7] === 'DONG' || o[7] === 'BOTH') coldOutlets++;
+          }}
+        }}
+      }}
+      flag.coveredOutlets = coveredOutlets;
+      flag.coldOutlets = coldOutlets;
+
+      // Re-bind popup
+      removePlannedFlag(flagId, false);
+      addPlannedFlag(flag, true, true);
+    }}
+
+    // Xóa 1 cờ
+    function removePlannedFlag(flagId, shouldSave = true) {{
+      const idx = plannedFlags.findIndex(f => f.id === flagId);
+      if (idx !== -1) {{
+        const flag = plannedFlags[idx];
+        if (flag.marker) plannedFlagsLayer.removeLayer(flag.marker);
+        if (flag.circle) plannedFlagsLayer.removeLayer(flag.circle);
+        plannedFlags.splice(idx, 1);
+        if (shouldSave) savePlannedFlagsToStorage();
+        updatePlannedFlagsUI();
+      }}
+    }}
+
+    // Xóa tất cả cờ
+    function clearAllPlannedFlags() {{
+      if (plannedFlags.length === 0) return;
+      if (confirm('Bạn có chắc chắn muốn xóa tất cả các cờ NPP dự kiến trên bản đồ?')) {{
+        plannedFlags.forEach(f => {{
+          if (f.marker) plannedFlagsLayer.removeLayer(f.marker);
+          if (f.circle) plannedFlagsLayer.removeLayer(f.circle);
+        }});
+        plannedFlags = [];
+        savePlannedFlagsToStorage();
+        updatePlannedFlagsUI();
+      }}
+    }}
+
+    // Bay tới vị trí cờ
+    function flyToPlannedFlag(flagId) {{
+      const flag = plannedFlags.find(f => f.id === flagId);
+      if (flag && flag.marker) {{
+        map.flyTo([flag.lat, flag.lng], 12, {{ animate: true, duration: 1.2 }});
+        setTimeout(() => {{
+          flag.marker.openPopup();
+        }}, 1200);
+      }}
+    }}
+
+    // Cập nhật giao diện Widget
+    function updatePlannedFlagsUI() {{
+      const widget = document.getElementById('plannedFlagsWidget');
+      const countEl = document.getElementById('flagWidgetCount');
+      const listEl = document.getElementById('plannedFlagsList');
+
+      if (!widget || !countEl || !listEl) return;
+
+      countEl.textContent = plannedFlags.length;
+
+      if (plannedFlags.length === 0) {{
+        widget.style.display = 'none';
+        listEl.innerHTML = '';
+        return;
+      }}
+
+      widget.style.display = 'flex';
+      listEl.innerHTML = '';
+
+      plannedFlags.forEach(f => {{
+        const div = document.createElement('div');
+        div.className = 'flag-list-item';
+        div.innerHTML = `
+          <div class="flag-item-info" onclick="flyToPlannedFlag('${{f.id}}')" title="Nhấp để xem trên bản đồ">
+            <span class="flag-item-title">🚩 ${{f.name}}</span>
+            <span class="flag-item-sub">Bán kính: <b style="color:#e2e8f0;">${{f.radiusKm}}km</b> | Phủ: <b style="color:#34d399;">${{f.coveredOutlets}} KH</b></span>
+          </div>
+          <div class="flag-item-actions">
+            <button class="flag-btn-icon" onclick="flyToPlannedFlag('${{f.id}}')" title="Xem trên bản đồ"><i class="fa-solid fa-crosshairs"></i></button>
+            <button class="flag-btn-icon" onclick="removePlannedFlag('${{f.id}}')" title="Xóa cờ này"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        `;
+        listEl.appendChild(div);
+      }});
+    }}
+
+    function toggleFlagsWidgetCollapse() {{
+      const body = document.getElementById('plannedWidgetBody');
+      const chev = document.getElementById('widgetChevron');
+      if (!body) return;
+      isWidgetCollapsed = !isWidgetCollapsed;
+      if (isWidgetCollapsed) {{
+        body.style.display = 'none';
+        if (chev) chev.style.transform = 'rotate(-90deg)';
+      }} else {{
+        body.style.display = 'flex';
+        if (chev) chev.style.transform = 'rotate(0deg)';
+      }}
+    }}
+
+    // Lưu vào LocalStorage
+    function savePlannedFlagsToStorage() {{
+      try {{
+        const dataToSave = plannedFlags.map(f => ({{
+          id: f.id,
+          name: f.name,
+          type: f.type,
+          lat: f.lat,
+          lng: f.lng,
+          radiusKm: f.radiusKm,
+          note: f.note
+        }}));
+        localStorage.setItem('RTM_PLANNED_FLAGS_2027', JSON.stringify(dataToSave));
+      }} catch (e) {{
+        console.warn('Cannot save planned flags to storage:', e);
+      }}
+    }}
+
+    // Nạp lại từ LocalStorage khi khởi động
+    function loadPlannedFlagsFromStorage() {{
+      try {{
+        const saved = localStorage.getItem('RTM_PLANNED_FLAGS_2027');
+        if (saved) {{
+          const list = JSON.parse(saved);
+          if (Array.isArray(list) && list.length > 0) {{
+            list.forEach(f => addPlannedFlag(f, false, false));
+          }}
+        }}
+      }} catch (e) {{
+        console.warn('Cannot load planned flags from storage:', e);
+      }}
+    }}
+
+    // Nạp nhanh 4 Vùng Trắng Trọng Điểm Mekong (Cai Lậy, Đức Hòa, Trà Vinh, Ba Tri)
+    function loadMekongPresets() {{
+      const mekongPresets = [
+        {{
+          id: 'preset_cailay',
+          name: 'C1 TT. Cai Lậy (Tiền Giang)',
+          type: 'C1 Partner',
+          lat: 10.4087,
+          lng: 106.1158,
+          radiusKm: 25,
+          note: 'Cắt giảm 60km từ TP. Mỹ Tho sang Cái Bè/Cai Lậy. Tiếp quản 50 Golden Outlets + 233 tiệm Nhóm C.'
+        }},
+        {{
+          id: 'preset_duchoa',
+          name: 'C1 TT. Hậu Nghĩa / Đức Hòa (Long An)',
+          type: 'C1 Partner',
+          lat: 10.8872,
+          lng: 106.4485,
+          radiusKm: 25,
+          note: 'Cắt giảm 40km từ TP. Tân An lên Bắc Long An. Tiếp quản 17 Golden Outlets + 266 tiệm Nhóm C.'
+        }},
+        {{
+          id: 'preset_travinh',
+          name: 'C1 TP. Trà Vinh (Trà Vinh)',
+          type: 'C1 Partner',
+          lat: 9.9348,
+          lng: 106.3456,
+          radiusKm: 30,
+          note: 'Cắt giảm 42km vượt sông Cổ Chiên từ NPP Vĩnh Long. Tiếp quản 87-453 Golden Outlets + 400 tiệm Nhóm C.'
+        }},
+        {{
+          id: 'preset_batri',
+          name: 'C1 TT. Ba Tri (Bến Tre)',
+          type: 'C1 Partner',
+          lat: 10.0381,
+          lng: 106.5986,
+          radiusKm: 25,
+          note: 'Cắt giảm 42km-65km vượt đảo từ TP. Bến Tre. Tiếp quản 80 Golden Outlets Ba Tri & Bình Đại.'
+        }}
+      ];
+
+      let addedCount = 0;
+      mekongPresets.forEach(preset => {{
+        if (!plannedFlags.some(f => f.id === preset.id || f.name === preset.name)) {{
+          addPlannedFlag(preset, false, false);
+          addedCount++;
+        }}
+      }});
+
+      savePlannedFlagsToStorage();
+      updatePlannedFlagsUI();
+
+      // Zoom tới vùng Mekong
+      map.flyTo([10.25, 106.25], 9, {{ animate: true, duration: 1.2 }});
+
+      alert(`Đã nạp thành công 4 cờ C1 trọng điểm vùng trắng Mekong:\n1. C1 Cai Lậy (Tiền Giang)\n2. C1 Đức Hòa (Long An)\n3. C1 TP. Trà Vinh\n4. C1 Ba Tri (Bến Tre)\n\nCác cờ được hiển thị nổi bật với hiệu ứng radar phát sóng và vòng tròn bán kính.`);
+    }}
+
+</script>
 </body>
 </html>
 '''
