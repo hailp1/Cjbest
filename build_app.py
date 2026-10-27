@@ -80,6 +80,56 @@ ksm_active = sum(1 for n in npps if n.get('status', '').startswith('Đang') and 
 csm_active = sum(1 for n in npps if n.get('status', '').startswith('Đang') and not n.get('is_khong_sm'))
 print(f"Enriched SM status: {csm_active} Active Có SM, {ksm_active} Active Không SM.")
 
+# 1.2 Enrich NPPs with Sales Revenue T9/2026 from doanh_so_t92026_clean.csv
+sales_csv_path = 'd:/SE_Project/RTM_Model/doanh_so_t92026_clean.csv'
+sales_dict = {}
+if os.path.exists(sales_csv_path):
+    import csv
+    with open(sales_csv_path, 'r', encoding='utf-8') as sf:
+        reader = csv.reader(sf)
+        header = next(reader, None)
+        for row in reader:
+            if not row or not row[0]: continue
+            raw_c = row[0].strip().replace('\ufeff', '').replace('"', '')
+            try:
+                c = str(int(float(raw_c)))
+            except:
+                c = raw_c
+            try: amb = float(row[2]) if len(row) > 2 and row[2] else 0.0
+            except: amb = 0.0
+            try: chi = float(row[3]) if len(row) > 3 and row[3] else 0.0
+            except: chi = 0.0
+            try: fro = float(row[4]) if len(row) > 4 and row[4] else 0.0
+            except: fro = 0.0
+            tot = amb + chi + fro
+            sales_dict[c] = {
+                'ambient': amb,
+                'chilled': chi,
+                'frozen': fro,
+                'total': tot
+            }
+
+sales_matched = 0
+for n in npps:
+    c = str(n.get('code', '')).strip()
+    if c in sales_dict:
+        sinfo = sales_dict[c]
+        n['sales_ambient'] = sinfo['ambient']
+        n['sales_chilled'] = sinfo['chilled']
+        n['sales_frozen'] = sinfo['frozen']
+        n['sales_total'] = sinfo['total']
+        n['has_sales'] = True
+        sales_matched += 1
+    else:
+        n['sales_ambient'] = 0.0
+        n['sales_chilled'] = 0.0
+        n['sales_frozen'] = 0.0
+        n['sales_total'] = 0.0
+        n['has_sales'] = False
+
+print(f"Enriched Sales Revenue T9/2026: {sales_matched} NPPs matched.")
+
+
 # 2. Build complete HTML
 npps_json_str = json.dumps(npps, ensure_ascii=False)
 
@@ -560,6 +610,187 @@ html_template = f'''<!DOCTYPE html>
     }}
     .leaflet-tooltip.npp-hover-tooltip.tooltip-ksm::before {{
       border-top-color: rgba(15, 23, 42, 0.95) !important;
+    }}
+
+    
+    /* ==========================================
+       SPATIAL SELECTION & REVENUE ANALYTICS CSS
+       ========================================== */
+    .crosshair-cursor {{
+      cursor: crosshair !important;
+    }}
+
+    /* Floating Toolbar on Top of Map */
+    #spatialToolbar {{
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      backdrop-filter: blur(10px);
+      padding: 6px 14px;
+      border-radius: 30px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      animation: fadeInDown 0.25s ease-out;
+    }}
+    .spatial-tool-btn {{
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }}
+    .spatial-tool-btn:hover {{
+      background: #334155;
+      color: #38bdf8;
+      border-color: #38bdf8;
+    }}
+    .spatial-tool-btn.active {{
+      background: #059669;
+      color: #ffffff;
+      border-color: #10b981;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }}
+    .spatial-tool-btn.btn-danger-tool {{
+      border-color: #ef4444;
+      color: #fca5a5;
+    }}
+    .spatial-tool-btn.btn-danger-tool:hover {{
+      background: #dc2626;
+      color: #ffffff;
+    }}
+
+    /* Floating Revenue Analytics Panel */
+    #spatialRevenuePanel {{
+      position: absolute;
+      bottom: 25px;
+      left: 20px;
+      width: 480px;
+      max-width: calc(100vw - 40px);
+      max-height: 80vh;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(16, 185, 129, 0.6);
+      backdrop-filter: blur(16px);
+      border-radius: 12px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7);
+      z-index: 1001;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }}
+    .revenue-panel-header {{
+      padding: 12px 16px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 95, 70, 0.2));
+      border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }}
+    .revenue-panel-title {{
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #34d399;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }}
+    .revenue-panel-body {{
+      padding: 14px 16px;
+      overflow-y: auto;
+      max-height: calc(80vh - 60px);
+    }}
+    .revenue-kpi-grid {{
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }}
+    .revenue-kpi-card {{
+      background: #1e293b;
+      border-radius: 8px;
+      padding: 8px 10px;
+      text-align: center;
+      border-left: 3px solid #10b981;
+    }}
+    .revenue-kpi-val {{
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #f8fafc;
+      margin-top: 2px;
+    }}
+    .revenue-kpi-lbl {{
+      font-size: 0.68rem;
+      color: #94a3b8;
+      font-weight: 600;
+      text-transform: uppercase;
+    }}
+    .revenue-progress-container {{
+      background: #1e293b;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }}
+    .revenue-stacked-bar {{
+      display: flex;
+      height: 12px;
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 6px 0;
+      background: #334155;
+    }}
+    .bar-ambient {{ background: #f59e0b; }}
+    .bar-chilled {{ background: #10b981; }}
+    .bar-frozen  {{ background: #38bdf8; }}
+    .revenue-breakdown-legend {{
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      margin-top: 4px;
+    }}
+    .revenue-table-wrapper {{
+      max-height: 220px;
+      overflow-y: auto;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      background: #0f172a;
+      margin-bottom: 12px;
+    }}
+    .revenue-table {{
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.72rem;
+      text-align: left;
+    }}
+    .revenue-table th {{
+      position: sticky;
+      top: 0;
+      background: #1e293b;
+      color: #94a3b8;
+      padding: 6px 8px;
+      border-bottom: 1px solid #334155;
+      font-weight: 700;
+      z-index: 1;
+    }}
+    .revenue-table td {{
+      padding: 5px 8px;
+      border-bottom: 1px solid #1e293b;
+      color: #e2e8f0;
+    }}
+    .revenue-table tr:hover {{
+      background: rgba(16, 185, 129, 0.1);
     }}
 
     /* Marker Custom */
@@ -1641,6 +1872,45 @@ html_template = f'''<!DOCTYPE html>
   <div class="main-container">
     <div id="map"></div>
 
+    <!-- THANH CÔNG CỤ KHOANH VÙNG BẢN ĐỒ -->
+    <div id="spatialToolbar">
+      <span style="font-size:0.75rem; font-weight:800; color:#34d399; margin-right:4px;">
+        <i class="fa-solid fa-draw-polygon"></i> Khoanh Vùng:
+      </span>
+      <button class="spatial-tool-btn active" id="btnToolPolygon" onclick="setSpatialTool('polygon')" title="Click các điểm trên bản đồ để vẽ vùng đa giác">
+        <i class="fa-solid fa-draw-polygon"></i> Đa giác (Lasso)
+      </button>
+      <button class="spatial-tool-btn" id="btnToolCircle" onclick="setSpatialTool('circle')" title="Click 1 điểm trung tâm và kéo bán kính">
+        <i class="fa-solid fa-circle-dot"></i> Bán kính (Vòng tròn)
+      </button>
+      <button class="spatial-tool-btn btn-danger-tool" onclick="clearSpatialSelection()" title="Xóa vùng đã khoanh">
+        <i class="fa-solid fa-trash-can"></i> Xóa vùng
+      </button>
+      <button class="spatial-tool-btn" onclick="toggleSpatialSelectMode(false)" title="Thoát chế độ khoanh vùng">
+        <i class="fa-solid fa-xmark"></i> Thoát
+      </button>
+    </div>
+
+    <!-- BẢNG THỐNG KÊ DOANH SỐ NHÓM NPP KHOANH VÙNG -->
+    <div id="spatialRevenuePanel">
+      <div class="revenue-panel-header">
+        <div class="revenue-panel-title">
+          <i class="fa-solid fa-chart-pie"></i> Doanh Số Nhóm NPP Khoanh Vùng (T9/2026)
+        </div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <button onclick="exportSpatialRevenueCSV()" style="background:#059669; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:700; cursor:pointer;" title="Tải file CSV">
+            <i class="fa-solid fa-file-excel"></i> Xuất CSV
+          </button>
+          <button onclick="document.getElementById('spatialRevenuePanel').style.display='none'" style="background:transparent; color:#94a3b8; border:none; font-size:1rem; cursor:pointer; padding:2px 6px;">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+      <div class="revenue-panel-body" id="spatialRevenueBody">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
     <!-- Floating Outlet Banner when viewing single NPP outlets -->
     <div id="nppOutletBanner">
       <i class="fa-solid fa-store" style="color:#f59e0b;"></i>
@@ -1663,6 +1933,11 @@ html_template = f'''<!DOCTYPE html>
       <!-- NÚT BỎ / ẨN NPP KHÔNG CÓ SM -->
       <button class="quick-btn" id="btnQuickHideKhongSM" onclick="toggleHideKhongSMQuick()" style="border-color: rgba(239, 68, 68, 0.7); color: #fca5a5;" title="Bấm để ẩn hoặc hiện toàn bộ các NPP không có nhân viên giám sát">
         <i class="fa-solid fa-user-slash" style="color:#ef4444;"></i> <span id="btnQuickHideKhongSMText">Bỏ NPP Không SM</span>
+      </button>
+
+      <!-- NÚT KHOANH VÙNG DOANH SỐ THEO NHÓM NPP / VÙNG -->
+      <button class="quick-btn" id="btnSpatialSelect" onclick="toggleSpatialSelectMode()" style="border-color: #10b981; color: #6ee7b7; background: rgba(16, 185, 129, 0.15);" title="Khoanh vùng tự do hoặc bán kính trên bản đồ để tính doanh số nhóm NPP theo ngành hàng">
+        <i class="fa-solid fa-draw-polygon" style="color:#10b981;"></i> <span id="btnSpatialSelectText">📐 Khoanh Vùng Doanh Số</span>
       </button>
 
       <button class="quick-btn" id="btnTogglePinMode" onclick="togglePinMode()" style="border-color: #f59e0b; color: #fef08a; background: rgba(245, 158, 11, 0.15);">
@@ -2709,6 +2984,30 @@ html_template = f'''<!DOCTYPE html>
                   ${{n.gsbh ? `<span style="color:#94a3b8; font-size:0.68rem; margin-left:4px;">(GS: ${{n.gsbh}})</span>` : ''}}
                 </div>
               </div>
+
+              
+              <!-- THÔNG TIN DOANH SỐ T9/2026 THEO NHÓM SẢN PHẨM -->
+              ${{n.sales_total > 0 ? `
+              <div class="popup-row" style="margin: 5px 0; padding: 7px 10px; background: rgba(16, 185, 129, 0.1); border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.35); flex-direction:column; align-items:flex-start;">
+                <div style="display:flex; justify-content:space-between; width:100%; align-items:center; margin-bottom:4px;">
+                  <span style="color:#6ee7b7; font-weight:800; font-size:0.75rem;"><i class="fa-solid fa-chart-line"></i> Doanh số T9/2026:</span>
+                  <b style="color:#10b981; font-size:0.85rem;">${{formatMoneyVND(n.sales_total)}}</b>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; width:100%; text-align:center; font-size:0.68rem;">
+                  <div style="background:#1e293b; padding:3px 2px; border-radius:4px; border-left:2px solid #f59e0b;">
+                    <div style="color:#94a3b8;">Ambient</div>
+                    <b style="color:#fbbf24;">${{formatMoneyShort(n.sales_ambient)}}</b>
+                  </div>
+                  <div style="background:#1e293b; padding:3px 2px; border-radius:4px; border-left:2px solid #10b981;">
+                    <div style="color:#94a3b8;">Chilled</div>
+                    <b style="color:#34d399;">${{formatMoneyShort(n.sales_chilled)}}</b>
+                  </div>
+                  <div style="background:#1e293b; padding:3px 2px; border-radius:4px; border-left:2px solid #38bdf8;">
+                    <div style="color:#94a3b8;">Frozen</div>
+                    <b style="color:#38bdf8;">${{formatMoneyShort(n.sales_frozen)}}</b>
+                  </div>
+                </div>
+              </div>` : ''}}
 
               <!-- THÔNG TIN VẬN HÀNH & ĐIỂM BÁN -->
               <div class="popup-row"><i class="fa-solid fa-location-dot" style="color:#60a5fa;"></i><span>${{n.address || 'Đang cập nhật'}}</span></div>
@@ -3777,7 +4076,370 @@ html_template = f'''<!DOCTYPE html>
       applyFilters();
     }}
 
-    </script>
+    
+    // ==========================================
+    // SPATIAL SELECTION & REVENUE ANALYTICS MODULE
+    // ==========================================
+    let isSpatialMode = false;
+    let spatialTool = 'polygon'; // 'polygon' or 'circle'
+    let spatialPoints = [];
+    let spatialActivePolygon = null;
+    let spatialActiveCircle = null;
+    let spatialTempMarkers = [];
+    let spatialLayerGroup = L.layerGroup();
+    let currentSpatialResult = null;
+
+    function formatMoneyVND(num) {{
+      if (!num || isNaN(num)) return '0 đ';
+      if (num >= 1000000000) {{
+        return (num / 1000000000).toFixed(2) + ' Tỷ đ';
+      }}
+      if (num >= 1000000) {{
+        return (num / 1000000).toFixed(1) + ' Tr đ';
+      }}
+      return Math.round(num).toLocaleString('vi-VN') + ' đ';
+    }}
+
+    function formatMoneyShort(num) {{
+      if (!num || isNaN(num)) return '0';
+      if (num >= 1000000000) {{
+        return (num / 1000000000).toFixed(2) + ' Tỷ';
+      }}
+      if (num >= 1000000) {{
+        return (num / 1000000).toFixed(1) + ' Tr';
+      }}
+      if (num >= 1000) {{
+        return (num / 1000).toFixed(0) + ' k';
+      }}
+      return Math.round(num).toLocaleString('vi-VN');
+    }}
+
+    function toggleSpatialSelectMode(forceState) {{
+      isSpatialMode = (forceState !== undefined) ? forceState : !isSpatialMode;
+      const btn = document.getElementById('btnSpatialSelect');
+      const toolbar = document.getElementById('spatialToolbar');
+      const mapElem = document.getElementById('map');
+
+      if (isSpatialMode) {{
+        if (btn) btn.classList.add('active-inactive-btn');
+        if (toolbar) toolbar.style.display = 'flex';
+        if (mapElem) mapElem.classList.add('crosshair-cursor');
+        setSpatialTool('polygon');
+      }} else {{
+        if (btn) btn.classList.remove('active-inactive-btn');
+        if (toolbar) toolbar.style.display = 'none';
+        if (mapElem) mapElem.classList.remove('crosshair-cursor');
+        clearSpatialSelection();
+        document.getElementById('spatialRevenuePanel').style.display = 'none';
+      }}
+    }}
+
+    function setSpatialTool(toolName) {{
+      spatialTool = toolName;
+      document.getElementById('btnToolPolygon').classList.toggle('active', toolName === 'polygon');
+      document.getElementById('btnToolCircle').classList.toggle('active', toolName === 'circle');
+      clearSpatialSelection();
+    }}
+
+    function clearSpatialSelection() {{
+      spatialPoints = [];
+      spatialLayerGroup.clearLayers();
+      spatialTempMarkers = [];
+      spatialActivePolygon = null;
+      spatialActiveCircle = null;
+      currentSpatialResult = null;
+      document.getElementById('spatialRevenuePanel').style.display = 'none';
+    }}
+
+    // Point in polygon math (Ray-casting)
+    function isPointInsidePolygon(lat, lng, polyCoords) {{
+      let inside = false;
+      for (let i = 0, j = polyCoords.length - 1; i < polyCoords.length; j = i++) {{
+        const xi = polyCoords[i][0], yi = polyCoords[i][1];
+        const xj = polyCoords[j][0], yj = polyCoords[j][1];
+        const intersect = ((yi > lng) !== (yj > lng)) &&
+                          (lat < (xj - xi) * (lng - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+      }}
+      return inside;
+    }}
+
+    function getDistanceKm(lat1, lon1, lat2, lon2) {{
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }}
+
+    // Map Click Handler for Spatial Selection
+    function onMapClickSpatial(e) {{
+      if (!isSpatialMode) return;
+
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
+
+      if (spatialTool === 'polygon') {{
+        spatialPoints.push([lat, lng]);
+
+        // Draw point marker
+        const ptMarker = L.circleMarker([lat, lng], {{
+          radius: 5,
+          color: '#10b981',
+          fillColor: '#34d399',
+          fillOpacity: 0.9,
+          weight: 2
+        }});
+        ptMarker.on('click', () => {{
+          if (spatialPoints.length >= 3) finishSpatialPolygon();
+        }});
+        spatialLayerGroup.addLayer(ptMarker);
+        spatialTempMarkers.push(ptMarker);
+
+        // Update polygon preview
+        if (spatialActivePolygon) {{
+          spatialLayerGroup.removeLayer(spatialActivePolygon);
+        }}
+        if (spatialPoints.length >= 2) {{
+          spatialActivePolygon = L.polygon(spatialPoints, {{
+            color: '#10b981',
+            weight: 2,
+            dashArray: '5, 5',
+            fillColor: '#059669',
+            fillOpacity: 0.2
+          }});
+          spatialLayerGroup.addLayer(spatialActivePolygon);
+        }}
+
+        // Auto-close on 3+ points if clicked near start or double click
+        if (spatialPoints.length >= 3) {{
+          const dStart = getDistanceKm(lat, lng, spatialPoints[0][0], spatialPoints[0][1]);
+          if (dStart < 2.0 && spatialPoints.length > 3) {{
+            finishSpatialPolygon();
+          }}
+        }}
+      }} else if (spatialTool === 'circle') {{
+        if (spatialPoints.length === 0) {{
+          // Center point
+          spatialPoints.push([lat, lng]);
+          const centerMarker = L.circleMarker([lat, lng], {{
+            radius: 6,
+            color: '#38bdf8',
+            fillColor: '#60a5fa',
+            fillOpacity: 1,
+            weight: 2
+          }});
+          spatialLayerGroup.addLayer(centerMarker);
+          spatialTempMarkers.push(centerMarker);
+        }} else {{
+          // Radius point
+          const center = spatialPoints[0];
+          const distKm = getDistanceKm(center[0], center[1], lat, lng);
+          const radiusMeters = distKm * 1000;
+
+          if (spatialActiveCircle) {{
+            spatialLayerGroup.removeLayer(spatialActiveCircle);
+          }}
+          spatialActiveCircle = L.circle(center, {{
+            radius: radiusMeters,
+            color: '#38bdf8',
+            weight: 2,
+            dashArray: '6, 6',
+            fillColor: '#0284c7',
+            fillOpacity: 0.2
+          }});
+          spatialLayerGroup.addLayer(spatialActiveCircle);
+          finishSpatialCircle(center, distKm);
+        }}
+      }}
+    }}
+
+    function finishSpatialPolygon() {{
+      if (spatialPoints.length < 3) return;
+      if (spatialActivePolygon) {{
+        spatialActivePolygon.setStyle({{ dashArray: null, fillOpacity: 0.25, weight: 3 }});
+      }}
+
+      // Filter NPPs inside polygon
+      const selected = ALL_NPPS.filter(n => {{
+        if (!n.lat || !n.lng) return false;
+        return isPointInsidePolygon(n.lat, n.lng, spatialPoints);
+      }});
+
+      processSpatialSelection(selected, 'Đa giác tự do');
+    }}
+
+    function finishSpatialCircle(center, radiusKm) {{
+      // Filter NPPs inside radius
+      const selected = ALL_NPPS.filter(n => {{
+        if (!n.lat || !n.lng) return false;
+        const d = getDistanceKm(center[0], center[1], n.lat, n.lng);
+        return d <= radiusKm;
+      }});
+
+      processSpatialSelection(selected, `Vòng tròn bán kính ${{radiusKm.toFixed(1)}} km`);
+      spatialPoints = []; // ready for next
+    }}
+
+    function processSpatialSelection(nppList, zoneTitle) {{
+      let totAmb = 0, totChi = 0, totFro = 0, totRev = 0;
+      let activeCnt = 0, coSmCnt = 0;
+
+      nppList.forEach(n => {{
+        totAmb += (n.sales_ambient || 0);
+        totChi += (n.sales_chilled || 0);
+        totFro += (n.sales_frozen || 0);
+        totRev += (n.sales_total || 0);
+        if (n.status && n.status.includes('Đang')) activeCnt++;
+        if (!n.is_khong_sm && n.status && n.status.includes('Đang')) coSmCnt++;
+      }});
+
+      const ambPct = totRev > 0 ? (totAmb / totRev * 100).toFixed(1) : '0';
+      const chiPct = totRev > 0 ? (totChi / totRev * 100).toFixed(1) : '0';
+      const froPct = totRev > 0 ? (totFro / totRev * 100).toFixed(1) : '0';
+      const avgNpp = nppList.length > 0 ? (totRev / nppList.length) : 0;
+
+      currentSpatialResult = {{
+        zoneTitle,
+        nppList,
+        totAmb, totChi, totFro, totRev,
+        activeCnt, coSmCnt, ambPct, chiPct, froPct, avgNpp
+      }};
+
+      renderSpatialRevenuePanel();
+    }}
+
+    function renderSpatialRevenuePanel() {{
+      const r = currentSpatialResult;
+      if (!r) return;
+
+      const body = document.getElementById('spatialRevenueBody');
+      const panel = document.getElementById('spatialRevenuePanel');
+
+      let rowsHtml = '';
+      r.nppList.forEach(n => {{
+        const rev = n.sales_total || 0;
+        rowsHtml += `
+          <tr>
+            <td style="font-weight:700; color:#38bdf8;">${{n.code}}</td>
+            <td style="max-width:140px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${{n.name}}">
+              ${{n.short_name || n.name}}
+            </td>
+            <td>${{n.province || ''}}</td>
+            <td style="text-align:right; color:#fbbf24;">${{formatMoneyShort(n.sales_ambient || 0)}}</td>
+            <td style="text-align:right; color:#34d399;">${{formatMoneyShort(n.sales_chilled || 0)}}</td>
+            <td style="text-align:right; color:#38bdf8;">${{formatMoneyShort(n.sales_frozen || 0)}}</td>
+            <td style="text-align:right; font-weight:800; color:#10b981;">${{formatMoneyShort(rev)}}</td>
+          </tr>
+        `;
+      }});
+
+      if (r.nppList.length === 0) {{
+        rowsHtml = '<tr><td colspan="7" style="text-align:center; padding:12px; color:#94a3b8;">Không có NPP nào trong vùng khoanh này.</td></tr>';
+      }}
+
+      body.innerHTML = `
+        <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:8px;">
+          Khu vực: <b style="color:#e2e8f0;">${{r.zoneTitle}}</b>
+        </div>
+
+        <div class="revenue-kpi-grid">
+          <div class="revenue-kpi-card" style="border-left-color:#38bdf8;">
+            <div class="revenue-kpi-lbl">Số NPP</div>
+            <div class="revenue-kpi-val" style="color:#38bdf8;">${{r.nppList.length}} <span style="font-size:0.7rem; font-weight:400; color:#94a3b8;">(${{r.coSmCnt}} Có SM)</span></div>
+          </div>
+          <div class="revenue-kpi-card" style="border-left-color:#10b981;">
+            <div class="revenue-kpi-lbl">Tổng Doanh Số T9</div>
+            <div class="revenue-kpi-val" style="color:#10b981;">${{formatMoneyVND(r.totRev)}}</div>
+          </div>
+          <div class="revenue-kpi-card" style="border-left-color:#f59e0b;">
+            <div class="revenue-kpi-lbl">Doanh Số TB/NPP</div>
+            <div class="revenue-kpi-val" style="color:#fbbf24;">${{formatMoneyShort(r.avgNpp)}} đ</div>
+          </div>
+        </div>
+
+        <!-- STACKED PROGRESS BAR THEO NHÓM SP -->
+        <div class="revenue-progress-container">
+          <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:#cbd5e1; margin-bottom:3px;">
+            <span><b>Phân bổ doanh số theo nhóm sản phẩm:</b></span>
+            <span>${{r.ambPct}}% Khô &bull; ${{r.chiPct}}% Mát &bull; ${{r.froPct}}% Đông</span>
+          </div>
+          <div class="revenue-stacked-bar">
+            <div class="bar-ambient" style="width: ${{r.ambPct}}%;" title="Ambient: ${{formatMoneyVND(r.totAmb)}} (${{r.ambPct}}%)"></div>
+            <div class="bar-chilled" style="width: ${{r.chiPct}}%;" title="Chilled: ${{formatMoneyVND(r.totChi)}} (${{r.chiPct}}%)"></div>
+            <div class="bar-frozen"  style="width: ${{r.froPct}}%;" title="Frozen: ${{formatMoneyVND(r.totFro)}} (${{r.froPct}}%)"></div>
+          </div>
+          <div class="revenue-breakdown-legend">
+            <span style="color:#fbbf24;"><i class="fa-solid fa-square" style="color:#f59e0b;"></i> Ambient: <b>${{formatMoneyShort(r.totAmb)}} đ</b> (${{r.ambPct}}%)</span>
+            <span style="color:#34d399;"><i class="fa-solid fa-square" style="color:#10b981;"></i> Chilled: <b>${{formatMoneyShort(r.totChi)}} đ</b> (${{r.chiPct}}%)</span>
+            <span style="color:#38bdf8;"><i class="fa-solid fa-square" style="color:#38bdf8;"></i> Frozen: <b>${{formatMoneyShort(r.totFro)}} đ</b> (${{r.froPct}}%)</span>
+          </div>
+        </div>
+
+        <!-- DANH SÁCH CHI TIẾT NPP TRONG VÙNG -->
+        <div style="font-size:0.75rem; font-weight:700; color:#e2e8f0; margin-bottom:4px;">
+          Danh Sách NPP Trong Vùng (${{r.nppList.length}}):
+        </div>
+        <div class="revenue-table-wrapper">
+          <table class="revenue-table">
+            <thead>
+              <tr>
+                <th>Mã</th>
+                <th>Tên NPP</th>
+                <th>Tỉnh</th>
+                <th style="text-align:right;">Ambient</th>
+                <th style="text-align:right;">Chilled</th>
+                <th style="text-align:right;">Frozen</th>
+                <th style="text-align:right;">Tổng Doanh Số</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${{rowsHtml}}
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      panel.style.display = 'flex';
+    }}
+
+    function exportSpatialRevenueCSV() {{
+      const r = currentSpatialResult;
+      if (!r || !r.nppList || r.nppList.length === 0) {{
+        alert('Chưa có dữ liệu NPP trong vùng khoanh để xuất.');
+        return;
+      }}
+
+      let csvContent = '\uFEFF"Mã NPP","Tên NPP","Tỉnh","Miền","Trạng Thái","Giám Sát","Ambient (VNĐ)","Chilled (VNĐ)","Frozen (VNĐ)","Tổng Doanh Số (VNĐ)"\n';
+      r.nppList.forEach(n => {{
+        const row = [
+          n.code,
+          (n.name || '').replace(/"/g, '""'),
+          n.province || '',
+          n.region || '',
+          n.status || '',
+          n.is_khong_sm ? 'Không SM' : `Có SM (${{n.so_nvbh}} NV)`,
+          Math.round(n.sales_ambient || 0),
+          Math.round(n.sales_chilled || 0),
+          Math.round(n.sales_frozen || 0),
+          Math.round(n.sales_total || 0)
+        ];
+        csvContent += row.map(v => `"${{v}}"`).join(',') + '\n';
+      }});
+
+      const blob = new Blob([csvContent], {{ type: 'text/csv;charset=utf-8;' }});
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `Doanh_So_Nhom_NPP_Khoanh_Vung_T9_2026.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }}
+
+</script>
 </body>
 </html>
 '''
