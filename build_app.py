@@ -2633,7 +2633,7 @@ html_template = f'''<!DOCTYPE html>
                 <span class="popup-tag ${{isActive ? 'badge-active' : 'badge-inactive'}}">${{n.status}}</span>
                 <div style="display:flex; gap:3px;">
                   <span class="popup-tag" style="background:${{n.is_khong_sm ? '#fee2e2' : '#d1fae5'}}; color:${{n.is_khong_sm ? '#991b1b' : '#065f46'}}; font-weight:800;">
-                    ${{n.is_khong_sm ? '⚠️ Không SM' : '👤 ' + (n.so_nvbh_text || 'Có SM')}}
+                    ${{n.is_khong_sm ? '⚠️ Không có nhân viên' : `👤 Có ${{n.so_nvbh}} nhân viên`}}
                   </span>
                   ${{n.top50 ? '<span class="popup-tag" style="background:#fef3c7; color:#92400e; font-weight:800;">⭐ Top 50</span>' : ''}}
                 </div>
@@ -2643,29 +2643,18 @@ html_template = f'''<!DOCTYPE html>
             </div>
 
             <div class="popup-body">
-              <!-- KHỐI THÔNG TIN NHÂN SỰ & GIÁM SÁT BÁN HÀNG -->
-              <div class="popup-personnel-box" style="background:#1e293b; border-radius:6px; padding:7px 9px; margin-bottom:6px; border-left:3px solid ${{n.is_khong_sm ? '#ef4444' : '#10b981'}};">
-                <div style="font-size:0.65rem; font-weight:800; color:#cbd5e1; text-transform:uppercase; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
-                  <span><i class="fa-solid fa-users" style="color:${{n.is_khong_sm ? '#ef4444' : '#34d399'}};"></i> Đội Ngũ Bán Hàng & Giám Sát</span>
-                  <span style="font-weight:700; color:${{n.is_khong_sm ? '#fca5a5' : '#6ee7b7'}}; font-size:0.62rem;">${{n.is_khong_sm ? '⚠️ Thiếu Giám Sát' : '👤 ' + n.so_nvbh_text}}</span>
+              <!-- THÔNG TIN NHÂN SỰ BÁN HÀNG GỌN GÀNG -->
+              <div class="popup-row" style="margin: 4px 0; padding: 5px 8px; background: #1e293b; border-radius: 5px; border-left: 3px solid ${{n.is_khong_sm ? '#ef4444' : '#10b981'}};">
+                <i class="fa-solid fa-users" style="color:${{n.is_khong_sm ? '#ef4444' : '#34d399'}};"></i>
+                <div>
+                  Nhân sự bán hàng: <b style="color:${{n.is_khong_sm ? '#f87171' : '#34d399'}}; font-size: 0.78rem;">
+                    ${{n.is_khong_sm ? 'Không có nhân viên (0 NV)' : `Có ${{n.so_nvbh}} nhân viên`}}
+                  </b>
+                  ${{n.gsbh ? `<span style="color:#94a3b8; font-size:0.68rem; margin-left:4px;">(GS: ${{n.gsbh}})</span>` : ''}}
                 </div>
-                ${{!n.is_khong_sm ? `
-                  <div style="font-size:0.7rem; color:#e2e8f0; display:flex; flex-direction:column; gap:2.5px;">
-                    <div><i class="fa-solid fa-user-tie" style="color:#38bdf8; width:13px;"></i> Giám sát (GSBH/SM): <b style="color:#fef08a;">${{n.gsbh || 'Chưa gán'}}</b></div>
-                    <div><i class="fa-solid fa-person-walking" style="color:#34d399; width:13px;"></i> Lực lượng bán hàng: <b style="color:#34d399;">${{n.so_nvbh}} NVBH trực tiếp</b></div>
-                    ${{n.asm_rsm ? `<div><i class="fa-solid fa-user-shield" style="color:#a78bfa; width:13px;"></i> Quản lý Vùng (ASM/RSM): <b style="color:#f1f5f9;">${{n.asm_rsm}}</b></div>` : ''}}
-                    ${{n.office ? `<div><i class="fa-solid fa-building" style="color:#94a3b8; width:13px;"></i> Văn phòng quản lý: <b style="color:#cbd5e1;">${{n.office}}</b></div>` : ''}}
-                  </div>
-                ` : `
-                  <div style="font-size:0.68rem; color:#fca5a5; line-height:1.35;">
-                    <i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;"></i> <b>Chưa có SM / NVBH phụ trách trực tiếp.</b><br>
-                    <span style="color:#94a3b8;">NPP tự vận hành ngoài thực địa, cần điều chuyển bổ sung nhân sự giám sát.</span>
-                    ${{n.asm_rsm ? `<div style="color:#cbd5e1; margin-top:3px;"><i class="fa-solid fa-user-shield" style="color:#a78bfa; width:13px;"></i> ASM phụ trách vùng: <b style="color:#fff;">${{n.asm_rsm}}</b></div>` : ''}}
-                  </div>
-                `}}
               </div>
 
-              <!-- THÔNG TIN VẬN HÀNH & CỰ LY GIAO HÀNG -->
+              <!-- THÔNG TIN VẬN HÀNH & ĐIỂM BÁN -->
               <div class="popup-row"><i class="fa-solid fa-location-dot" style="color:#60a5fa;"></i><span>${{n.address || 'Đang cập nhật'}}</span></div>
               ${{n.phone && n.phone !== '0000000000' && n.phone !== '123456' ? `<div class="popup-row"><i class="fa-solid fa-phone" style="color:#34d399;"></i><span>Liên hệ: <b style="color:#e2e8f0;">${{n.phone}}</b></span></div>` : ''}}
               <div class="popup-row"><i class="fa-solid fa-store" style="color:#f59e0b;"></i><span><b>${{outletCnt}}</b> Điểm bán (${{dongCnt}} hàng đông)</span></div>
@@ -2710,6 +2699,12 @@ html_template = f'''<!DOCTYPE html>
       outletsLayer.clearLayers();
       if (!showOutlets) return;
 
+      // Tra cứu nhanh Tên NPP theo Mã NPP
+      const nppNameMap = new Map();
+      ALL_NPPS.forEach(n => {{
+        nppNameMap.set(String(n.code), n.short_name || n.name);
+      }});
+
       const maxRender = 12000;
       const toRender = filteredOutlets.slice(0, maxRender);
 
@@ -2718,6 +2713,11 @@ html_template = f'''<!DOCTYPE html>
         const lng = o[1];
         if (!lat || !lng) return;
 
+        const storeName = o[2];
+        const storeCode = o[3];
+        const nppCode = String(o[4]);
+        const nppName = nppNameMap.get(nppCode) || ('NPP ' + nppCode);
+        const address = o[9] || '';
         const dist = o[10];
         const ptype = o[11];
         const isRemote = dist >= 45;
@@ -2737,12 +2737,23 @@ html_template = f'''<!DOCTYPE html>
         }});
 
         circleMarker.bindPopup(`
-          <div style="font-size:0.75rem; padding:4px;">
-            <b style="color:#0f172a;">${{o[2]}}</b> (Mã: ${{o[3]}})<br>
-            <span style="color:#64748b;">NPP Quản lý:</span> <b>${{o[4]}}</b><br>
-            <span style="color:#64748b;">Khoảng cách đến NPP:</span> <b style="color:${{isRemote ? '#dc2626':'#059669'}};">${{dist}} km</b><br>
-            <span style="color:#64748b;">Phân loại hàng:</span> <b>${{ptype === 'DONG' ? '❄️ Hàng Đông' : (ptype === 'BOTH' ? '❄️🌾 Cả 2' : '🌾 Hàng Khô')}}</b><br>
-            <span style="color:#64748b;">Địa chỉ:</span> ${{o[9]}}
+          <div style="font-size:0.75rem; padding:4px 6px; min-width:240px; color:#0f172a;">
+            <div style="font-weight:800; font-size:0.82rem; color:#0f172a; border-bottom:1px solid #cbd5e1; padding-bottom:3px; margin-bottom:4px;">
+              ${{storeName}} <span style="font-weight:600; color:#64748b; font-size:0.7rem;">(#${{storeCode}})</span>
+            </div>
+            <div style="margin-bottom:3px;">
+              <span style="color:#64748b;">NPP Quản lý:</span> <b style="color:#0284c7;">${{nppName}}</b> <span style="color:#64748b; font-size:0.68rem;">(Mã: ${{nppCode}})</span>
+            </div>
+            <div style="margin-bottom:3px;">
+              <span style="color:#64748b;">Khoảng cách đến NPP:</span> <b style="color:${{isRemote ? '#dc2626':'#059669'}};">${{dist}} km</b>
+              ${{isRemote ? '<span style="color:#dc2626; font-size:0.65rem; font-weight:700; margin-left:3px;">(⚠️ Giao xa >45km)</span>' : ''}}
+            </div>
+            <div style="margin-bottom:3px;">
+              <span style="color:#64748b;">Phân loại hàng:</span> <b>${{ptype === 'DONG' ? '❄️ Hàng Đông' : (ptype === 'BOTH' ? '❄️🌾 Cả 2' : '🌾 Hàng Khô')}}</b>
+            </div>
+            <div style="color:#475569; font-size:0.7rem; line-height:1.3; margin-top:3px; padding-top:3px; border-top:1px dashed #e2e8f0;">
+              <i class="fa-solid fa-location-dot" style="color:#94a3b8;"></i> ${{address}}
+            </div>
           </div>
         `);
 
