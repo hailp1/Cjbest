@@ -2090,12 +2090,18 @@ html_template = f'''<!DOCTYPE html>
 
     <!-- Sidebar Drawer -->
     <div class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-title">
-          <i class="fa-solid fa-warehouse" style="color:#2563eb;"></i>
-          <span>Danh Sách NPP (<span id="sidebarCount">391</span>)</span>
+      <div class="sidebar-header" style="flex-direction:column; align-items:flex-start; gap:4px; padding:10px 12px;">
+        <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+          <div class="sidebar-title">
+            <i class="fa-solid fa-warehouse" style="color:#2563eb;"></i>
+            <span>Danh Sách NPP (<span id="sidebarCount">391</span>)</span>
+          </div>
+          <button class="btn-close-sidebar" onclick="toggleMobileSidebar(false)"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <button class="btn-close-sidebar" onclick="toggleMobileSidebar(false)"><i class="fa-solid fa-xmark"></i></button>
+        <div id="sidebarSalesSummary" style="font-size:0.72rem; color:#94a3b8; display:flex; justify-content:space-between; width:100%; border-top:1px dashed #334155; padding-top:4px; margin-top:2px;">
+          <span>Tổng Doanh Số Vùng:</span>
+          <b id="sidebarTotalSales" style="color:#10b981; font-weight:800;">0 đ</b>
+        </div>
       </div>
 
       <div class="sidebar-content" id="sidebarList">
@@ -3018,6 +3024,12 @@ html_template = f'''<!DOCTYPE html>
       document.getElementById('sidebarCount').textContent = totalNpp;
       if (document.getElementById('mobileCount')) document.getElementById('mobileCount').textContent = totalNpp;
 
+      const totalFilteredSales = filteredNPPs.reduce((acc, n) => acc + (n.sales_total || 0), 0);
+      const salesElem = document.getElementById('sidebarTotalSales');
+      if (salesElem) {{
+        salesElem.textContent = formatMoneyVND(totalFilteredSales);
+      }}
+
       document.getElementById('chkNppCount').textContent = totalNpp;
       document.getElementById('chkOutletCount').textContent = totalOutlets >= 1000 ? (totalOutlets/1000).toFixed(1) + 'k' : totalOutlets;
     }}
@@ -3356,6 +3368,39 @@ html_template = f'''<!DOCTYPE html>
             <span class="npp-meta-item"><i class="fa-solid fa-arrows-left-right"></i> Max: ${{n.max_dist || 0}}km</span>
             ${{n.remote_count > 0 ? `<span class="badge-remote-danger"><i class="fa-solid fa-triangle-exclamation"></i> ${{n.remote_count}} >45km</span>` : ''}}
           </div>
+
+          <!-- KHỐI DOANH SỐ T9/2026 KÈM 3 NHÓM SP (AMBIENT / CHILLED / FROZEN) -->
+          ${{n.sales_total ? `
+            <div style="background:rgba(15,23,42,0.9); border:1px solid rgba(16,185,129,0.35); border-radius:6px; padding:6px 8px; margin-top:6px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <span style="color:#6ee7b7; font-weight:800; font-size:0.7rem;">
+                  <i class="fa-solid fa-chart-line" style="color:#10b981;"></i> Doanh số T9:
+                </span>
+                <b style="color:#10b981; font-size:0.82rem; font-weight:800;">
+                  ${{formatMoneyVND(n.sales_total)}}
+                </b>
+              </div>
+              <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; text-align:center; font-size:0.65rem;">
+                <div style="background:#1e293b; padding:3px 2px; border-radius:4px; border-left:2px solid #f59e0b;">
+                  <div style="color:#94a3b8; font-size:0.62rem;">Ambient</div>
+                  <b style="color:#fbbf24;">${{formatMoneyShort(n.sales_ambient || 0)}}</b>
+                </div>
+                <div style="background:#1e293b; padding:3px 2px; border-radius:4px; border-left:2px solid #10b981;">
+                  <div style="color:#94a3b8; font-size:0.62rem;">Chilled</div>
+                  <b style="color:#34d399;">${{formatMoneyShort(n.sales_chilled || 0)}}</b>
+                </div>
+                <div style="background:#1e293b; padding:3px 2px; border-radius:4px; border-left:2px solid #38bdf8;">
+                  <div style="color:#94a3b8; font-size:0.62rem;">Frozen</div>
+                  <b style="color:#38bdf8;">${{formatMoneyShort(n.sales_frozen || 0)}}</b>
+                </div>
+              </div>
+            </div>
+          ` : `
+            <div style="font-size:0.65rem; color:#64748b; margin-top:4px;">
+              <i class="fa-solid fa-circle-info"></i> Doanh số T9: <i>Chưa có dữ liệu</i>
+            </div>
+          `}}
+
           <div style="margin-top:6px; display:flex; gap:5px;">
             <button class="btn-nav" style="padding:2px 6px; font-size:0.65rem; background:#2563eb; color:white; border:none; border-radius:4px;" onclick="event.stopPropagation(); focusNPPAndSpider('${{n.code}}')">
               <i class="fa-solid fa-share-nodes"></i> Tia Nối
