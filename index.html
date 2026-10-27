@@ -113,149 +113,297 @@
       color: #ffffff;
     }
 
-    /* Filter Bar - Được chia làm 2 dòng trực quan, dễ bấm, tiện lọc */
+    /* ==========================================================
+       UNIFIED FLOATING ISLAND TOOLBAR (THIẾT KẾ 1 HÀNG TINH GỌN)
+       ========================================================== */
     .filter-bar {
-      background: #1e293b;
-      padding: 0.4rem 0.75rem;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      padding: 5px 12px;
       border-bottom: 1px solid #334155;
       display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
       z-index: 999;
       flex-shrink: 0;
-    }
-    .filter-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      flex-wrap: nowrap;
       overflow-x: auto;
-      white-space: nowrap;
       scrollbar-width: none;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
     }
-    .filter-row::-webkit-scrollbar { display: none; }
-    .filter-row-primary {
-      padding-bottom: 3px;
-    }
-    .filter-row-secondary {
-      padding-top: 3px;
-      border-top: 1px dashed rgba(51, 65, 85, 0.75);
-    }
+    .filter-bar::-webkit-scrollbar { display: none; }
 
-    .filter-group {
-      display: flex;
+    .toolbar-cluster {
+      display: inline-flex;
       align-items: center;
-      gap: 0.3rem;
+      gap: 5px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(51, 65, 85, 0.8);
+      padding: 3px 6px;
+      border-radius: 8px;
+      backdrop-filter: blur(8px);
       flex-shrink: 0;
     }
-    .filter-label {
-      color: #94a3b8;
-      font-size: 0.72rem;
-      font-weight: 700;
-      display: flex;
+    .toolbar-item {
+      display: inline-flex;
       align-items: center;
-      gap: 3px;
-      white-space: nowrap;
+      gap: 4px;
+      position: relative;
     }
-    .filter-select, .filter-search {
+    .island-select {
       background: #0f172a;
       border: 1px solid #334155;
       color: #f1f5f9;
-      font-size: 0.74rem;
+      font-size: 0.72rem;
       font-weight: 600;
       padding: 4px 7px;
       border-radius: 6px;
       outline: none;
-    }
-    .filter-search {
-      min-width: 140px;
-    }
-
-    /* Checkbox Toggles */
-    .layer-toggle-container {
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-      background: #0f172a;
-      padding: 2px 5px;
-      border-radius: 7px;
-      border: 1px solid #334155;
-      flex-shrink: 0;
-    }
-    .toggle-checkbox-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
       cursor: pointer;
-      user-select: none;
-      padding: 3px 6px;
-      border-radius: 5px;
-      font-size: 0.71rem;
-      font-weight: 700;
-      color: #cbd5e1;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid transparent;
-      white-space: nowrap;
       transition: all 0.2s;
+      max-width: 175px;
     }
-    .toggle-checkbox-label input[type="checkbox"] {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 13px;
-      height: 13px;
-      border-radius: 3px;
-      outline: none;
-      cursor: pointer;
-      position: relative;
-      border: 1.5px solid #64748b;
+    .island-select:hover, .island-select:focus {
+      border-color: #38bdf8;
       background: #1e293b;
     }
-    .toggle-checkbox-label.npp-label input[type="checkbox"]:checked { background: #059669; border-color: #10b981; }
-    .toggle-checkbox-label.inactive-label input[type="checkbox"]:checked { background: #dc2626; border-color: #ef4444; }
-    .toggle-checkbox-label.outlet-label input[type="checkbox"]:checked { background: #f59e0b; border-color: #fbbf24; }
-    .toggle-checkbox-label.cold-label input[type="checkbox"]:checked { background: #0284c7; border-color: #38bdf8; }
-    .toggle-checkbox-label.dry-label input[type="checkbox"]:checked { background: #d97706; border-color: #f59e0b; }
-    .toggle-checkbox-label.remote-label input[type="checkbox"]:checked { background: #dc2626; border-color: #ef4444; }
-    .toggle-checkbox-label.spider-label input[type="checkbox"]:checked { background: #8b5cf6; border-color: #a78bfa; }
-    
-    .toggle-checkbox-label input[type="checkbox"]:checked::after {
-      content: '\f00c';
-      font-family: 'Font Awesome 6 Free';
-      font-weight: 900;
-      font-size: 8px;
-      color: white;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    .active-npp { background: rgba(5, 150, 105, 0.18); border-color: rgba(16, 185, 129, 0.4); color: #a7f3d0; }
-    .active-hide-inactive { background: rgba(220, 38, 38, 0.25) !important; border-color: rgba(239, 68, 68, 0.6) !important; color: #fecaca !important; }
-    .active-outlet { background: rgba(245, 158, 11, 0.18); border-color: rgba(245, 158, 11, 0.4); color: #fde68a; }
-    .active-cold { background: rgba(14, 165, 233, 0.18); border-color: rgba(14, 165, 233, 0.4); color: #bae6fd; }
-    .active-dry { background: rgba(217, 119, 6, 0.18); border-color: rgba(217, 119, 6, 0.4); color: #fed7aa; }
-    .active-remote { background: rgba(220, 38, 38, 0.2); border-color: rgba(239, 68, 68, 0.5); color: #fecaca; }
-    .active-spider { background: rgba(139, 92, 246, 0.2); border-color: rgba(167, 139, 250, 0.5); color: #ddd6fe; }
-
-    .kpi-pill {
-      margin-left: auto;
+    .island-search {
       background: #0f172a;
       border: 1px solid #334155;
-      padding: 3px 8px;
+      color: #f1f5f9;
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 4px 8px 4px 24px;
       border-radius: 6px;
-      font-size: 0.7rem;
-      font-weight: 600;
+      outline: none;
+      width: 135px;
+      transition: all 0.2s;
+    }
+    .island-search:focus {
+      width: 185px;
+      border-color: #10b981;
+      background: #1e293b;
+    }
+    .search-icon {
+      position: absolute;
+      left: 7px;
+      font-size: 0.68rem;
+      color: #64748b;
+      pointer-events: none;
+    }
+
+    .island-btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 4px 9px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .island-btn:hover {
+      background: #334155;
+      color: #ffffff;
+    }
+    .island-btn.active-npp {
+      background: rgba(5, 150, 105, 0.25);
+      border-color: #10b981;
+      color: #a7f3d0;
+    }
+    .island-btn.active-outlet {
+      background: rgba(245, 158, 11, 0.25) !important;
+      border-color: #f59e0b !important;
+      color: #fef08a !important;
+    }
+    .island-btn-hero {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: #ffffff !important;
+      border: 1px solid #34d399;
+      padding: 4px 11px;
+      border-radius: 6px;
+      font-size: 0.73rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .island-btn-hero:hover {
+      background: linear-gradient(135deg, #047857 0%, #059669 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.5);
+    }
+    .island-btn-hero.active-spatial {
+      background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%) !important;
+      border-color: #f87171 !important;
+      box-shadow: 0 0 14px rgba(239, 68, 68, 0.6) !important;
+    }
+
+    /* Dropdown Menus */
+    .dropdown-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+    .island-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.75);
+      min-width: 260px;
+      z-index: 10000;
+      display: none;
+      flex-direction: column;
+      padding: 6px 0;
+      backdrop-filter: blur(12px);
+      animation: menuFadeIn 0.15s ease-out;
+    }
+    .island-dropdown-menu.right-aligned {
+      left: auto;
+      right: 0;
+    }
+    .island-dropdown-menu.show {
+      display: flex;
+    }
+    @keyframes menuFadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .dropdown-header {
+      padding: 6px 12px;
+      font-size: 0.65rem;
+      font-weight: 800;
       color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+      margin-bottom: 4px;
+    }
+    .dropdown-menu-item {
+      padding: 7px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+      text-decoration: none;
+    }
+    .dropdown-menu-item:hover {
+      background: #1e293b;
+    }
+    .item-icon-box {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+    .item-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .item-title {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+    .item-sub {
+      font-size: 0.64rem;
+      color: #94a3b8;
+    }
+    .badge-mini {
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+    }
+    .dropdown-divider {
+      height: 1px;
+      background: rgba(51, 65, 85, 0.6);
+      margin: 4px 0;
+    }
+    .zoom-mini-btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .zoom-mini-btn:hover {
+      background: #334155;
+      color: #38bdf8;
+    }
+    .island-kpi-pill {
       display: flex;
       align-items: center;
       gap: 5px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid #334155;
+      padding: 4px 9px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #94a3b8;
       white-space: nowrap;
-      flex-shrink: 0;
+      margin-left: auto;
     }
-    .kpi-val { color: #f8fafc; font-weight: 800; }
-    .kpi-active { color: #10b981; }
-    .kpi-inactive { color: #ef4444; }
-    .kpi-outlets { color: #f59e0b; font-weight: 800; }
-    .kpi-remote { color: #ef4444; font-weight: 800; }
+    .kpi-tag { color: #38bdf8; }
+    .kpi-val { color: #10b981; font-weight: 800; }
+    .kpi-outlets { color: #fbbf24; font-weight: 800; }
+    .kpi-divider { color: #475569; }
+
+    /* Map Zoom Pill */
+    .map-preset-pills {
+      position: absolute;
+      top: 10px;
+      left: 60px;
+      z-index: 900;
+      display: flex;
+      gap: 4px;
+      background: rgba(15, 23, 42, 0.85);
+      padding: 3px 5px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      backdrop-filter: blur(4px);
+    }
+    .preset-pill {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      padding: 3px 7px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .preset-pill:hover {
+      background: #334155;
+      color: #ffffff;
+    }
 
     /* Layout Main */
     .main-container {
@@ -1612,125 +1760,260 @@
     </div>
   </header>
 
-  <!-- Cascading Filter Bar (Được chia làm 2 dòng rõ ràng, dễ chọn & không bị che khuất) -->
+  <!-- UNIFIED FLOATING ISLAND TOOLBAR (Giao diện 1 hàng 4 cụm tinh gọn) -->
   <div class="filter-bar">
-    <!-- DÒNG 1: BỘ LỌC ĐỊA BÀN (MIỀN, VÙNG, TỈNH), TRẠNG THÁI NPP & TÌM KIẾM -->
-    <div class="filter-row filter-row-primary">
-      <div class="filter-group">
-        <span class="filter-label"><i class="fa-solid fa-globe"></i> Miền:</span>
-        <select id="filterMien" class="filter-select" onchange="onMienChange()">
-          <option value="ALL">Tất cả Miền</option>
-          <option value="MIỀN NAM">MIỀN NAM (199 NPP)</option>
-          <option value="MIỀN BẮC">MIỀN BẮC (192 NPP)</option>
+    <!-- CỤM 1: ĐỊA BÀN & TÌM KIẾM (GEO & SEARCH) -->
+    <div class="toolbar-cluster geo-cluster">
+      <div class="toolbar-item" title="Lọc Miền">
+        <select id="filterMien" class="island-select" onchange="onMienChange()">
+          <option value="ALL">🌐 Toàn Quốc</option>
+          <option value="MIỀN NAM">Miền Nam (199)</option>
+          <option value="MIỀN BẮC">Miền Bắc (192)</option>
         </select>
       </div>
 
-      <div class="filter-group">
-        <span class="filter-label"><i class="fa-solid fa-network-wired"></i> Vùng:</span>
-        <select id="filterVung" class="filter-select" onchange="onVungChange()">
+      <div class="toolbar-item" title="Lọc Vùng">
+        <select id="filterVung" class="island-select" onchange="onVungChange()">
           <option value="ALL">Tất cả Vùng</option>
         </select>
       </div>
 
-      <div class="filter-group">
-        <span class="filter-label"><i class="fa-solid fa-city"></i> Tỉnh/Thành:</span>
-        <select id="filterTinh" class="filter-select" onchange="applyFilters()">
+      <div class="toolbar-item" title="Lọc Tỉnh/Thành">
+        <select id="filterTinh" class="island-select" onchange="applyFilters()">
           <option value="ALL">Tất cả Tỉnh/Thành</option>
         </select>
       </div>
 
-      <!-- BỘ LỌC TRẠNG THÁI NPP: ĐANG HOẠT ĐỘNG / NGƯNG / TẤT CẢ -->
-      <div class="filter-group">
-        <span class="filter-label"><i class="fa-solid fa-toggle-on"></i> Trạng thái NPP:</span>
-        <select id="filterStatus" class="filter-select" onchange="onStatusSelectChange()">
-          <option value="ALL">Tất cả Trạng thái (391 NPP)</option>
-          <option value="ACTIVE">🟢 Đang Hoạt Động (215 NPP)</option>
-          <option value="INACTIVE">🔴 Ngưng Hoạt Động (176 NPP)</option>
-        </select>
-      </div>
-
-      
-      <!-- BỘ LỌC TRẠNG THÁI SM -->
-      <div class="filter-group">
-        <label class="filter-label"><i class="fa-solid fa-user-tie"></i> Nhân Sự & Giám Sát (SM):</label>
-        <select id="filterSM" class="filter-select" onchange="applyFilters()">
-          <option value="ALL">Tất cả (Có SM & Không SM)</option>
-          <option value="CO_SM">👤 Chỉ NPP Có Nhân Viên (Ẩn Không SM)</option>
-          <option value="KHONG_SM">⚠️ Chỉ NPP Không Có Nhân Viên</option>
-        </select>
-        <label style="display:flex; align-items:center; gap:6px; font-size:0.75rem; color:#fca5a5; cursor:pointer; margin-top:6px; user-select:none;">
-          <input type="checkbox" id="chkHideKhongSM" onchange="syncHideKhongSMFromCheckbox(this.checked)" style="accent-color:#ef4444; width:15px; height:15px; cursor:pointer;">
-          <span id="lblChkHideKhongSM"><strong>Ẩn các NPP Không Có SM (Không hiển thị)</strong></span>
-        </label>
-      </div>
-
-      <div class="filter-group" style="flex: 1; min-width: 160px;">
-        <input type="text" id="filterSearch" class="filter-search" placeholder="🔍 Tìm NPP, Điểm bán, Tỉnh..." oninput="applyFilters()" style="width: 100%;">
+      <div class="toolbar-item search-item">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" id="filterSearch" class="island-search" placeholder="Tìm NPP, điểm bán..." oninput="applyFilters()">
       </div>
     </div>
 
-    <!-- DÒNG 2: BỘ BẬT/TẮT LỚP HIỂN THỊ (TOGGLES) & THÔNG SỐ KPI TỔNG QUAN -->
-    <div class="filter-row filter-row-secondary">
-      <!-- DẤU TICK HIỂN THỊ LỚP (LAYER TOGGLES) -->
-      <div class="layer-toggle-container">
-        <label class="toggle-checkbox-label npp-label active-npp" id="lblChkNpp" title="Bật/Tắt hiển thị Nhà Phân Phối">
-          <input type="checkbox" id="chkToggleNPP" checked onchange="toggleNPPVisibility()">
-          <i class="fa-solid fa-warehouse" style="color:#10b981;"></i>
-          <span>NPP (<span id="chkNppCount">391</span>)</span>
-        </label>
+    <!-- CỤM 2: QUẢN TRỊ NPP (NPP LAYER & STATUS SELECTOR) -->
+    <div class="toolbar-cluster npp-cluster">
+      <button id="btnUnifiedNppToggle" class="island-btn active-npp" onclick="toggleUnifiedNppLayer()" title="Bật/Tắt hiển thị lớp Nhà Phân Phối trên bản đồ">
+        <i class="fa-solid fa-warehouse" style="color:#10b981;"></i>
+        <span>NPP: <strong id="chkNppCount" style="color:#a7f3d0;">391</strong></span>
+      </button>
 
-        <!-- DẤU TICK BỎ CÁC NPP NGƯNG HOẠT ĐỘNG -->
-        <label class="toggle-checkbox-label inactive-label" id="lblChkHideInactive" title="Tích chọn để BỎ TOÀN BỘ các NPP đã ngưng hoạt động">
-          <input type="checkbox" id="chkHideInactive" onchange="toggleHideInactive()">
-          <i class="fa-solid fa-ban" style="color:#ef4444;"></i>
-          <span>Bỏ NPP Ngưng (<span id="countInactiveNpp">176</span>)</span>
-        </label>
+      <div class="toolbar-item">
+        <select id="filterUnifiedNppStatus" class="island-select" onchange="onUnifiedNppStatusChange(this.value)" title="Lọc trạng thái hoạt động & nhân sự giám sát SM">
+          <option value="ALL">🏢 Tất cả Trạng Thái (391)</option>
+          <option value="ACTIVE_ALL">🟢 Đang Hoạt Động (215)</option>
+          <option value="ACTIVE_SM">👤 Có SM / Nhân Viên (119)</option>
+          <option value="ACTIVE_KSM">⚠️ Chưa Có SM / NV (96)</option>
+          <option value="INACTIVE">🔴 Ngưng Hoạt Động (176)</option>
+        </select>
+      </div>
+    </div>
 
-        <label class="toggle-checkbox-label outlet-label active-outlet" id="lblChkOutlet" title="Bật/Tắt hiển thị Điểm Bán">
-          <input type="checkbox" id="chkToggleOutlet" onchange="toggleOutletVisibility()">
+    <!-- CỤM 3: QUẢN TRỊ ĐIỂM BÁN (OUTLET DROPDOWN MENU) -->
+    <div class="toolbar-cluster outlet-cluster">
+      <div class="dropdown-wrapper" id="outletDropdownWrapper">
+        <button class="island-btn" id="btnOutletMasterTrigger" onclick="toggleOutletMenu(event)" title="Cấu hình lớp điểm bán lẻ & thiết bị">
           <i class="fa-solid fa-store" style="color:#f59e0b;"></i>
-          <span>Điểm Bán (<span id="chkOutletCount">59.4k</span>)</span>
-        </label>
+          <span id="outletTriggerLabel">Điểm Bán (<span id="chkOutletCount">59.4k</span>)</span>
+          <i class="fa-solid fa-chevron-down" style="font-size:0.6rem; color:#94a3b8; margin-left:2px;"></i>
+        </button>
 
-        <label class="toggle-checkbox-label spider-label" id="lblChkSpider" title="Vẽ tia nối liên kết từ NPP đến Điểm Bán">
-          <input type="checkbox" id="chkToggleSpider" onchange="toggleSpiderVisibility()">
-          <i class="fa-solid fa-share-nodes" style="color:#a78bfa;"></i>
-          <span>Tia Nối</span>
-        </label>
-      </div>
+        <div class="island-dropdown-menu" id="outletDropdownMenu">
+          <div class="dropdown-header">
+            <i class="fa-solid fa-sliders"></i> CẤU HÌNH LỚP ĐIỂM BÁN (59.4K)
+          </div>
 
-      <!-- DẤU TICK PHÂN LOẠI HÀNG ĐÔNG / HÀNG KHÔ -->
-      <div class="layer-toggle-container">
-        <label class="toggle-checkbox-label cold-label active-cold" id="lblChkCold" title="Điểm bán có mua Hàng Đông">
-          <input type="checkbox" id="chkToggleCold" checked onchange="applyFilters()">
-          <i class="fa-solid fa-snowflake" style="color:#38bdf8;"></i>
-          <span>Hàng Đông</span>
-        </label>
+          <!-- Lớp hiển thị chính -->
+          <div class="dropdown-menu-item" onclick="toggleOutletMasterFromMenu()">
+            <span class="item-icon-box" style="color:#f59e0b;"><i class="fa-solid fa-store"></i></span>
+            <div class="item-text">
+              <div class="item-title" id="menuOutletStatusTitle">Bật Hiển Thị Điểm Bán</div>
+              <div class="item-sub">Tải và hiển thị điểm bán trên bản đồ</div>
+            </div>
+            <span class="badge-mini" id="badgeOutletMaster">59.4k</span>
+          </div>
 
-        <label class="toggle-checkbox-label dry-label active-dry" id="lblChkDry" title="Điểm bán mua Hàng Khô">
-          <input type="checkbox" id="chkToggleDry" checked onchange="applyFilters()">
-          <i class="fa-solid fa-box-open" style="color:#f59e0b;"></i>
-          <span>Hàng Khô</span>
-        </label>
-      </div>
+          <div class="dropdown-divider"></div>
 
-      <!-- DẤU TICK CỰ LY > 45KM (MỞ ĐẠI LÝ CHUYỂN TIẾP) -->
-      <div class="layer-toggle-container">
-        <label class="toggle-checkbox-label remote-label" id="lblChkRemoteOnly" title="Chỉ xem điểm bán cự ly > 45km">
-          <input type="checkbox" id="chkToggleRemoteOnly" onchange="applyFilters()">
-          <i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;"></i>
-          <span>Cự ly > 45km</span>
-        </label>
-      </div>
+          <!-- Lọc có Doanh Số T9 -->
+          <div class="dropdown-menu-item" onclick="toggleOnlySalesQuick()">
+            <span class="item-icon-box" style="color:#10b981;"><i class="fa-solid fa-coins"></i></span>
+            <div class="item-text">
+              <div class="item-title" style="color:#6ee7b7;">💰 Chỉ Điểm Có DS T9</div>
+              <div class="item-sub">34,171 điểm phát sinh doanh số (38.3 Tỷ)</div>
+            </div>
+            <span class="badge-mini" id="badgeMenuSales">34.2k</span>
+          </div>
 
-      <div class="kpi-pill">
-        <span>Xem:</span>
-        <span id="kpiCount" class="kpi-val">391</span> NPP
-        (<span id="kpiActive" class="kpi-active">215 Chạy</span>/<span id="kpiInactive" class="kpi-inactive">176 Ngưng</span>)
-        &bull; <span id="kpiOutlets" class="kpi-outlets">59.4k</span> Điểm Bán
-        (<span id="kpiRemote" class="kpi-remote">2,456</span> >45km)
+          <!-- Lọc có Tủ CJ -->
+          <div class="dropdown-menu-item" onclick="toggleOnlyEquipQuick()">
+            <span class="item-icon-box" style="color:#38bdf8;"><i class="fa-solid fa-snowflake"></i></span>
+            <div class="item-text">
+              <div class="item-title" style="color:#7dd3fc;">❄️ Chỉ Điểm Có Tủ Đông/Mát</div>
+              <div class="item-sub">2,598 điểm được trang bị thiết bị CJ</div>
+            </div>
+            <span class="badge-mini" id="badgeMenuEquip">2.6k</span>
+          </div>
+
+          <!-- Lọc cự ly > 45km -->
+          <div class="dropdown-menu-item" onclick="toggleRemoteOnlyMenu()">
+            <span class="item-icon-box" style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i></span>
+            <div class="item-text">
+              <div class="item-title" style="color:#fca5a5;" id="menuRemoteTitle">⚠️ Cự Ly Xa > 45km</div>
+              <div class="item-sub">Điểm bán vượt bán kính phục vụ chuẩn</div>
+            </div>
+            <span class="badge-mini" style="color:#f87171;">2,456</span>
+          </div>
+
+          <div class="dropdown-divider"></div>
+
+          <!-- Ngành hàng Đông vs Khô -->
+          <div style="padding: 6px 12px; display:flex; gap:8px;">
+            <label style="display:flex; align-items:center; gap:5px; font-size:0.7rem; font-weight:700; color:#38bdf8; cursor:pointer;">
+              <input type="checkbox" id="chkToggleCold" checked onchange="applyFilters()">
+              <span><i class="fa-solid fa-snowflake"></i> Hàng Đông</span>
+            </label>
+            <label style="display:flex; align-items:center; gap:5px; font-size:0.7rem; font-weight:700; color:#fbbf24; cursor:pointer;">
+              <input type="checkbox" id="chkToggleDry" checked onchange="applyFilters()">
+              <span><i class="fa-solid fa-box-open"></i> Hàng Khô</span>
+            </label>
+          </div>
+
+          <!-- Tia nối liên kết -->
+          <div class="dropdown-menu-item" onclick="toggleSpiderFromMenu()">
+            <span class="item-icon-box" style="color:#a78bfa;"><i class="fa-solid fa-share-nodes"></i></span>
+            <div class="item-text">
+              <div class="item-title" style="color:#c4b5fd;" id="menuSpiderTitle">🕸️ Tia Nối NPP ➔ Điểm Bán</div>
+              <div class="item-sub">Đường kết nối liên kết phụ trách logistics</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- CỤM 4: CÔNG CỤ PHÂN TÍCH & THAO TÁC (ANALYTICS & ACTIONS) -->
+    <div class="toolbar-cluster tools-cluster">
+      <!-- NÚT KHOANH VÙNG DOANH SỐ NỔI BẬT NHẤT -->
+      <button class="island-btn-hero" id="btnSpatialSelect" onclick="toggleSpatialSelectMode()" title="Nhấn giữ và kéo chuột trên bản đồ để khoanh vùng tính doanh số">
+        <i class="fa-solid fa-draw-polygon"></i>
+        <span id="btnSpatialSelectText">📐 Khoanh Vùng Doanh Số</span>
+      </button>
+
+      <!-- MENU CÔNG CỤ MỞ RỘNG -->
+      <div class="dropdown-wrapper" id="toolsDropdownWrapper">
+        <button class="island-btn" onclick="toggleToolsMenu(event)" title="Các công cụ phân tích và quy hoạch khác">
+          <i class="fa-solid fa-compass-drafting" style="color:#818cf8;"></i>
+          <span>Công Cụ ▾</span>
+        </button>
+
+        <div class="island-dropdown-menu right-aligned" id="toolsDropdownMenu">
+          <div class="dropdown-header">
+            <i class="fa-solid fa-wrench"></i> CÔNG CỤ PHÂN TÍCH & QUY HOẠCH
+          </div>
+
+          <div class="dropdown-menu-item" onclick="togglePinMode(); closeAllDropdowns();">
+            <span class="item-icon-box" style="color:#f59e0b;"><i class="fa-solid fa-flag"></i></span>
+            <div class="item-text">
+              <div class="item-title" style="color:#fef08a;" id="btnPinText">🚩 Cắm Cờ Mở NPP / C1</div>
+              <div class="item-sub">Định vị điểm mở mới & mô phỏng bán kính</div>
+            </div>
+          </div>
+
+          <div class="dropdown-menu-item" onclick="toggleRadius(); closeAllDropdowns();">
+            <span class="item-icon-box" style="color:#10b981;"><i class="fa-solid fa-circle-notch"></i></span>
+            <div class="item-text">
+              <div class="item-title" style="color:#6ee7b7;" id="btnToggleRadius">⭕ Bán Kính 45km NPP</div>
+              <div class="item-sub">Hiển thị vòng bán kính dịch vụ logistics chuẩn</div>
+            </div>
+          </div>
+
+          <div class="dropdown-divider"></div>
+
+          <div class="dropdown-menu-item" onclick="openStrategicModal(); closeAllDropdowns();">
+            <span class="item-icon-box" style="color:#38bdf8;"><i class="fa-solid fa-mountain-city"></i></span>
+            <div class="item-text">
+              <div class="item-title" style="color:#7dd3fc;">🧭 Đánh Giá Chiến Lược 6 Vùng</div>
+              <div class="item-sub">Báo cáo hiện trạng mạng lưới & đề xuất C1</div>
+            </div>
+          </div>
+
+          <div class="dropdown-menu-item" onclick="openAnalyticsModal(); closeAllDropdowns();">
+            <span class="item-icon-box" style="color:#a78bfa;"><i class="fa-solid fa-chart-pie"></i></span>
+            <div class="item-text">
+              <div class="item-title" style="color:#c4b5fd;">📊 Báo Cáo Cự Ly & Đề Xuất Hub</div>
+              <div class="item-sub">Chi tiết cự ly max, cự ly TB và điểm nóng >45km</div>
+            </div>
+          </div>
+
+          <div class="dropdown-divider"></div>
+
+          <div class="dropdown-menu-item" onclick="exportFilteredCSV(); closeAllDropdowns();">
+            <span class="item-icon-box" style="color:#10b981;"><i class="fa-solid fa-file-excel"></i></span>
+            <div class="item-text">
+              <div class="item-title" style="color:#a7f3d0;">📥 Xuất Dữ Liệu Excel</div>
+              <div class="item-sub">Tải danh sách NPP đang lọc về máy</div>
+            </div>
+          </div>
+
+          <div class="dropdown-divider"></div>
+
+          <div style="padding: 6px 12px; display:flex; gap:6px; align-items:center;">
+            <span style="font-size:0.68rem; color:#94a3b8; font-weight:700;">Zoom:</span>
+            <button class="zoom-mini-btn" onclick="zoomToPreset('ALL'); closeAllDropdowns();">Toàn Quốc</button>
+            <button class="zoom-mini-btn" onclick="zoomToPreset('MB'); closeAllDropdowns();">Bắc</button>
+            <button class="zoom-mini-btn" onclick="zoomToPreset('MN'); closeAllDropdowns();">Nam</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIVE KPI PILL -->
+      <div class="island-kpi-pill" title="Thống kê trực tiếp theo điều kiện lọc">
+        <span class="kpi-tag"><i class="fa-solid fa-eye"></i></span>
+        <span id="kpiCount" class="kpi-val">391</span> NPP
+        <span class="kpi-divider">•</span>
+        <span id="kpiOutlets" class="kpi-outlets">59.4k</span> Điểm
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTAINER TƯƠNG THÍCH NGẦM (GIỮ CÁC ID CŨ KHÔNG BAO GIỜ BỊ LỖI NULL) -->
+  <div style="display:none;" id="rtmBackwardCompatibilityContainer">
+    <input type="checkbox" id="chkToggleNPP" checked onchange="toggleNPPVisibility()">
+    <input type="checkbox" id="chkToggleOutlet" onchange="toggleOutletVisibility()">
+    <input type="checkbox" id="chkHideInactive" onchange="toggleHideInactive()">
+    <input type="checkbox" id="chkHideKhongSM" onchange="syncHideKhongSMFromCheckbox(this.checked)">
+    <input type="checkbox" id="chkToggleRemoteOnly" onchange="applyFilters()">
+    <input type="checkbox" id="chkToggleSpider" onchange="toggleSpiderVisibility()">
+    <select id="filterStatus" onchange="onStatusSelectChange()">
+      <option value="ALL">ALL</option>
+      <option value="ACTIVE">ACTIVE</option>
+      <option value="INACTIVE">INACTIVE</option>
+    </select>
+    <select id="filterSM" onchange="applyFilters()">
+      <option value="ALL">ALL</option>
+      <option value="CO_SM">CO_SM</option>
+      <option value="KHONG_SM">KHONG_SM</option>
+    </select>
+    <span id="lblChkNpp"></span>
+    <span id="lblChkHideInactive"></span>
+    <span id="lblChkOutlet"></span>
+    <span id="lblChkSpider"></span>
+    <span id="lblChkCold"></span>
+    <span id="lblChkDry"></span>
+    <span id="lblChkRemoteOnly"></span>
+    <span id="countInactiveNpp">176</span>
+    <span id="kpiActive">215 Chạy</span>
+    <span id="kpiInactive">176 Ngưng</span>
+    <span id="kpiRemote">2,456</span>
+    <button id="btnQuickHideKhongSM"></button>
+    <span id="btnQuickHideKhongSMText"></span>
+    <button id="btnQuickToggleOutlet"></button>
+    <span id="btnQuickOutletText"></span>
+    <button id="btnQuickOnlyEquip"></button>
+    <span id="btnQuickOnlyEquipText"></span>
+    <button id="btnQuickOnlySales"></button>
+    <span id="btnQuickOnlySalesText"></span>
+    <button id="btnQuickHideInactive"></button>
+    <button id="btnTogglePinMode"></button>
   </div>
 
   <!-- Main Container -->
@@ -1794,49 +2077,13 @@
       </button>
     </div>
 
-    <!-- Quick Buttons (Bản đồ) -->
-    <div class="map-quick-controls">
-      <button class="quick-btn" onclick="zoomToPreset('ALL')"><i class="fa-solid fa-arrows-to-eye"></i> Toàn Quốc</button>
-      <button class="quick-btn" onclick="zoomToPreset('MB')"><i class="fa-solid fa-location-dot"></i> Bắc</button>
-      <button class="quick-btn" onclick="zoomToPreset('MN')"><i class="fa-solid fa-location-dot"></i> Nam</button>
-      
-      <!-- NÚT HIỆN / ẨN OUTLET TRỰC TIẾP TRÊN BẢN ĐỒ -->
-      
-      <!-- NÚT CẮM CỜ NPP / C1 DỰ KIẾN MỞ -->
-      
-      <!-- NÚT BỎ / ẨN NPP KHÔNG CÓ SM -->
-      <button class="quick-btn" id="btnQuickHideKhongSM" onclick="toggleHideKhongSMQuick()" style="border-color: rgba(239, 68, 68, 0.7); color: #fca5a5;" title="Bấm để ẩn hoặc hiện toàn bộ các NPP không có nhân viên giám sát">
-        <i class="fa-solid fa-user-slash" style="color:#ef4444;"></i> <span id="btnQuickHideKhongSMText">Bỏ NPP Không SM</span>
-      </button>
-
-      <!-- NÚT KHOANH VÙNG DOANH SỐ THEO NHÓM NPP / VÙNG -->
-      <button class="quick-btn" id="btnSpatialSelect" onclick="toggleSpatialSelectMode()" style="border-color: #10b981; color: #6ee7b7; background: rgba(16, 185, 129, 0.15);" title="Khoanh vùng tự do hoặc bán kính trên bản đồ để tính doanh số nhóm NPP theo ngành hàng">
-        <i class="fa-solid fa-draw-polygon" style="color:#10b981;"></i> <span id="btnSpatialSelectText">📐 Khoanh Vùng Doanh Số</span>
-      </button>
-
-      <button class="quick-btn" id="btnTogglePinMode" onclick="togglePinMode()" style="border-color: #f59e0b; color: #fef08a; background: rgba(245, 158, 11, 0.15);">
-        <i class="fa-solid fa-flag" style="color:#f59e0b;"></i> <span id="btnPinText">Cắm Cờ Mở NPP</span>
-      </button>
-
-      <button class="quick-btn" id="btnQuickToggleOutlet" onclick="toggleOutletQuick()" style="border-color: rgba(245, 158, 11, 0.6);">
-        <i class="fa-solid fa-store" style="color:#f59e0b;"></i> <span id="btnQuickOutletText">🏪 Hiện Điểm Bán</span>
-      </button>
-
-      <button class="quick-btn" id="btnQuickOnlyEquip" onclick="toggleOnlyEquipQuick()" style="border-color: #38bdf8; color: #7dd3fc; background: rgba(56, 189, 248, 0.12);" title="Chỉ lọc và hiển thị 2,598 điểm bán có trang bị Tủ đông / Tủ mát CJ Foods">
-        <i class="fa-solid fa-snowflake" style="color:#38bdf8;"></i> <span id="btnQuickOnlyEquipText">❄️ Điểm Có Tủ (2.6k)</span>
-      </button>
-
-      <button class="quick-btn" id="btnQuickOnlySales" onclick="toggleOnlySalesQuick()" style="border-color: #10b981; color: #6ee7b7; background: rgba(16, 185, 129, 0.12);" title="Chỉ lọc và hiển thị 34,171 điểm bán có phát sinh Doanh số T9 (MTD > 0)">
-        <i class="fa-solid fa-coins" style="color:#10b981;"></i> <span id="btnQuickOnlySalesText">💰 Điểm Có DS T9 (34k)</span>
-      </button>
-
-      <button class="quick-btn" id="btnQuickHideInactive" onclick="toggleHideInactiveQuick()" style="border-color: rgba(239, 68, 68, 0.6);"><i class="fa-solid fa-ban" style="color:#ef4444;"></i> Bỏ NPP Ngưng</button>
-      <button class="quick-btn" onclick="openStrategicModal()" style="border-color:#38bdf8; color:#7dd3fc;"><i class="fa-solid fa-compass-drafting"></i> Đánh Giá 6 Vùng</button>
-      <button class="quick-btn" onclick="openAnalyticsModal()" style="border-color:#a78bfa; color:#c4b5fd;"><i class="fa-solid fa-chart-pie"></i> Báo Cáo Cự Ly</button>
-      <button class="quick-btn" id="btnToggleRadius" onclick="toggleRadius()"><i class="fa-solid fa-circle-notch"></i> Bán kính 45km</button>
+    <!-- Mini Map Presets (Góc trái trên) -->
+    <div class="map-preset-pills">
+      <button class="preset-pill" onclick="zoomToPreset('ALL')"><i class="fa-solid fa-arrows-to-eye"></i> Toàn Quốc</button>
+      <button class="preset-pill" onclick="zoomToPreset('MB')">Bắc</button>
+      <button class="preset-pill" onclick="zoomToPreset('MN')">Nam</button>
     </div>
 
-    
     <!-- BANNER CHẾ ĐỘ CẮM CỜ -->
     <div id="pinModeBanner" class="pin-mode-banner" style="display:none;">
       <div style="display:flex; align-items:center; gap:8px;">
@@ -2686,6 +2933,7 @@
     }
 
     function toggleOutletVisibility() {
+      setTimeout(updateOutletTriggerLabel, 50);
       const chk = document.getElementById('chkToggleOutlet');
       const lbl = document.getElementById('lblChkOutlet');
       const quickBtn = document.getElementById('btnQuickToggleOutlet');
@@ -2708,6 +2956,7 @@
     }
 
     function toggleOnlySalesQuick() {
+      setTimeout(updateOutletTriggerLabel, 50);
       showOnlyWithSales = !showOnlyWithSales;
       const btn = document.getElementById('btnQuickOnlySales');
       if (btn) {
@@ -2730,6 +2979,7 @@
     }
 
     function toggleOnlyEquipQuick() {
+      setTimeout(updateOutletTriggerLabel, 50);
       showOnlyEquip = !showOnlyEquip;
       const btn = document.getElementById('btnQuickOnlyEquip');
       if (btn) {
@@ -2770,6 +3020,146 @@
       } else {
         lbl.classList.remove('active-spider');
         spiderLayer.clearLayers();
+      }
+    }
+
+    // ==========================================
+    // UNIFIED TOOLBAR EVENT HANDLERS & HELPERS
+    // ==========================================
+    function toggleUnifiedNppLayer() {
+      const chk = document.getElementById('chkToggleNPP');
+      if (chk) {
+        chk.checked = !chk.checked;
+        toggleNPPVisibility();
+        const btn = document.getElementById('btnUnifiedNppToggle');
+        if (btn) btn.classList.toggle('active-npp', chk.checked);
+      }
+    }
+
+    function onUnifiedNppStatusChange(val) {
+      const filterStatus = document.getElementById('filterStatus');
+      const filterSM = document.getElementById('filterSM');
+      const chkHideInactive = document.getElementById('chkHideInactive');
+      const chkHideKhongSM = document.getElementById('chkHideKhongSM');
+
+      if (val === 'ALL') {
+        if (filterStatus) filterStatus.value = 'ALL';
+        if (chkHideInactive) chkHideInactive.checked = false;
+        if (filterSM) filterSM.value = 'ALL';
+        if (chkHideKhongSM) chkHideKhongSM.checked = false;
+      } else if (val === 'ACTIVE_ALL') {
+        if (filterStatus) filterStatus.value = 'ACTIVE';
+        if (chkHideInactive) chkHideInactive.checked = true;
+        if (filterSM) filterSM.value = 'ALL';
+        if (chkHideKhongSM) chkHideKhongSM.checked = false;
+      } else if (val === 'ACTIVE_SM') {
+        if (filterStatus) filterStatus.value = 'ACTIVE';
+        if (chkHideInactive) chkHideInactive.checked = true;
+        if (filterSM) filterSM.value = 'CO_SM';
+        if (chkHideKhongSM) chkHideKhongSM.checked = true;
+      } else if (val === 'ACTIVE_KSM') {
+        if (filterStatus) filterStatus.value = 'ACTIVE';
+        if (chkHideInactive) chkHideInactive.checked = true;
+        if (filterSM) filterSM.value = 'KHONG_SM';
+        if (chkHideKhongSM) chkHideKhongSM.checked = false;
+      } else if (val === 'INACTIVE') {
+        if (filterStatus) filterStatus.value = 'INACTIVE';
+        if (chkHideInactive) chkHideInactive.checked = false;
+        if (filterSM) filterSM.value = 'ALL';
+        if (chkHideKhongSM) chkHideKhongSM.checked = false;
+      }
+
+      applyFilters();
+    }
+
+    function toggleOutletMenu(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('outletDropdownMenu');
+      const isShown = menu.classList.contains('show');
+      closeAllDropdowns();
+      if (!isShown) menu.classList.add('show');
+    }
+
+    function toggleToolsMenu(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('toolsDropdownMenu');
+      const isShown = menu.classList.contains('show');
+      closeAllDropdowns();
+      if (!isShown) menu.classList.add('show');
+    }
+
+    function closeAllDropdowns() {
+      document.querySelectorAll('.island-dropdown-menu').forEach(el => el.classList.remove('show'));
+    }
+    document.addEventListener('click', (e) => {
+      if (e.target && e.target.closest('#outletDropdownMenu')) return;
+      closeAllDropdowns();
+    });
+
+    function updateOutletTriggerLabel() {
+      const lbl = document.getElementById('outletTriggerLabel');
+      const btn = document.getElementById('btnOutletMasterTrigger');
+      const countSpan = document.getElementById('chkOutletCount');
+      const cnt = countSpan ? countSpan.textContent : '59.4k';
+
+      if (showOnlyWithSales) {
+        if (lbl) lbl.innerHTML = `💰 Có DS T9 (${cnt})`;
+        if (btn) btn.classList.add('active-outlet');
+      } else if (showOnlyEquip) {
+        if (lbl) lbl.innerHTML = `❄️ Có Tủ CJ (${cnt})`;
+        if (btn) btn.classList.add('active-outlet');
+      } else if (showOutlets) {
+        if (lbl) lbl.innerHTML = `🏪 Điểm Bán (${cnt})`;
+        if (btn) btn.classList.add('active-outlet');
+      } else {
+        if (lbl) lbl.innerHTML = `Điểm Bán (${cnt})`;
+        if (btn) btn.classList.remove('active-outlet');
+      }
+
+      // Cập nhật text & badge trong menu
+      const menuTitle = document.getElementById('menuOutletStatusTitle');
+      if (menuTitle) {
+        menuTitle.textContent = showOutlets ? 'Ẩn Lớp Điểm Bán' : 'Bật Hiển Thị Điểm Bán';
+      }
+      const bSales = document.getElementById('badgeMenuSales');
+      if (bSales) {
+        bSales.style.background = showOnlyWithSales ? '#059669' : 'rgba(255,255,255,0.08)';
+        bSales.style.color = showOnlyWithSales ? '#ffffff' : '#cbd5e1';
+      }
+      const bEquip = document.getElementById('badgeMenuEquip');
+      if (bEquip) {
+        bEquip.style.background = showOnlyEquip ? '#0284c7' : 'rgba(255,255,255,0.08)';
+        bEquip.style.color = showOnlyEquip ? '#ffffff' : '#cbd5e1';
+      }
+      const bMaster = document.getElementById('badgeOutletMaster');
+      if (bMaster) {
+        bMaster.style.background = showOutlets ? '#d97706' : 'rgba(255,255,255,0.08)';
+        bMaster.style.color = showOutlets ? '#ffffff' : '#cbd5e1';
+      }
+    }
+
+    function toggleOutletMasterFromMenu() {
+      const chk = document.getElementById('chkToggleOutlet');
+      if (chk) {
+        chk.checked = !chk.checked;
+        toggleOutletVisibility();
+        updateOutletTriggerLabel();
+      }
+    }
+
+    function toggleRemoteOnlyMenu() {
+      const chk = document.getElementById('chkToggleRemoteOnly');
+      if (chk) {
+        chk.checked = !chk.checked;
+        applyFilters();
+      }
+    }
+
+    function toggleSpiderFromMenu() {
+      const chk = document.getElementById('chkToggleSpider');
+      if (chk) {
+        chk.checked = !chk.checked;
+        toggleSpiderVisibility();
       }
     }
 
@@ -2897,6 +3287,7 @@
 
       document.getElementById('chkNppCount').textContent = totalNpp;
       document.getElementById('chkOutletCount').textContent = totalOutlets >= 1000 ? (totalOutlets/1000).toFixed(1) + 'k' : totalOutlets;
+      updateOutletTriggerLabel();
     }
 
     // Render Markers on Map
@@ -4235,7 +4626,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       const mapElem = document.getElementById('map');
 
       if (isSpatialMode) {
-        if (btn) btn.classList.add('active-inactive-btn');
+        if (btn) { btn.classList.add('active-spatial'); const t = document.getElementById('btnSpatialSelectText'); if (t) t.textContent = '❌ Đóng Khoanh Vùng'; }
         if (toolbar) toolbar.style.display = 'flex';
         if (mapElem) mapElem.classList.add('crosshair-cursor');
         
@@ -4246,7 +4637,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         setSpatialTool('box');
         showToastNotification('🖱️ Nhấn giữ chuột và KÉO trên bản đồ để khoanh vùng tính doanh số!');
       } else {
-        if (btn) btn.classList.remove('active-inactive-btn');
+        if (btn) { btn.classList.remove('active-spatial'); const t = document.getElementById('btnSpatialSelectText'); if (t) t.textContent = '📐 Khoanh Vùng Doanh Số'; }
         if (toolbar) toolbar.style.display = 'none';
         if (mapElem) mapElem.classList.remove('crosshair-cursor');
         clearSpatialSelection();

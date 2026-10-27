@@ -97,7 +97,13 @@ Dự án nhằm giải quyết bài toán tối ưu hóa mạng lưới phân ph
   - Loại bỏ hoàn toàn việc tải đồng bộ file 11.85 MB (`outlets_data.js`) lúc mở trang ban đầu.
   - Mặc định khi mở trang: `showOutlets = false`. Bản đồ **tải ngay lập tức trong 0.1s - 0.2s** chỉ với 391 NPP (~300 KB).
   - Điểm bán chỉ được tải ngầm (Background prefetch sau 2.5s) hoặc nạp khi người dùng chủ động bấm `[🏪 Hiện Điểm Bán]` hoặc bấm `Hiện Điểm Bán` của 1 NPP.
-  - Sửa lỗi truyền sai chỉ số tọa độ chuỗi `[o[2], o[3]]` trong hàm tính cự ly cắm cờ `addPlannedFlag` thành `[o[0], o[1]]` chuẩn.
+### 3.6. Giao Diện Thanh Nổi Tinh Gọn (Floating Island Toolbar - 4 Cụm Hợp Nhất)
+* **Tối ưu hóa UX:** Thay thế thanh filter 2 tầng cồng kềnh và hàng 11 nút bấm trùng lặp bằng **1 hàng thanh nổi Glassmorphism hợp nhất**, tiết kiệm 25%+ không gian thẳng cho bản đồ:
+  - **Cụm 1: Địa bàn & Tìm kiếm (Geo & Search):** Lọc nhanh Miền (Toàn Quốc / Nam / Bắc), Vùng, Tỉnh/Thành phố, và ô Tìm kiếm trực tiếp.
+  - **Cụm 2: Quản trị NPP (NPP Management):** Nút bật/tắt lớp NPP kèm Dropdown gộp 5 trạng thái vận hành & giám sát: `Tất cả (391)`, `Đang hoạt động (215)`, `Có SM (119)`, `Chưa có SM (96)`, `Ngưng hoạt động (176)`.
+  - **Cụm 3: Quản trị Điểm Bán (Outlet Layers Dropdown):** Nút trigger đổi màu & nhãn động thông minh (`💰 Có DS T9`, `❄️ Có Tủ`, `🏪 Điểm Bán`) tích hợp menu cấu hình: Lọc điểm có DS T9 (34.2k), Lọc điểm có Tủ (2.6k), Lọc cự ly >45km, Lọc Hàng Đông / Hàng Khô, Tia nối NPP ➔ Điểm bán.
+  - **Cụm 4: Công cụ Phân tích & Thao tác (Analytics & Actions):** Nút hành động chính nổi bật `[📐 Khoanh Vùng Doanh Số]` (gradient xanh ngọc lục bảo) + Menu thả `[🛠️ Công Cụ ▾]` (Cắm cờ mở NPP/C1, Bán kính 45km, Đánh giá 6 vùng, Báo cáo cự ly & Hub, Xuất Excel).
+* **Bảo toàn 100% logic ngầm:** Container tương thích ngầm (`#rtmBackwardCompatibilityContainer`) đảm bảo không phát sinh bất kỳ lỗi `null` ID nào.
 
 ## 4. QUY TRÌNH BUILD & RELEASE MÃ NGUỒN
 
