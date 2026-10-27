@@ -1952,6 +1952,10 @@ html_template = f'''<!DOCTYPE html>
         <i class="fa-solid fa-snowflake" style="color:#38bdf8;"></i> <span id="btnQuickOnlyEquipText">❄️ Điểm Có Tủ (2.6k)</span>
       </button>
 
+      <button class="quick-btn" id="btnQuickOnlySales" onclick="toggleOnlySalesQuick()" style="border-color: #10b981; color: #6ee7b7; background: rgba(16, 185, 129, 0.12);" title="Chỉ lọc và hiển thị 34,171 điểm bán có phát sinh Doanh số T9 (MTD > 0)">
+        <i class="fa-solid fa-coins" style="color:#10b981;"></i> <span id="btnQuickOnlySalesText">💰 Điểm Có DS T9 (34k)</span>
+      </button>
+
       <button class="quick-btn" id="btnQuickHideInactive" onclick="toggleHideInactiveQuick()" style="border-color: rgba(239, 68, 68, 0.6);"><i class="fa-solid fa-ban" style="color:#ef4444;"></i> Bỏ NPP Ngưng</button>
       <button class="quick-btn" onclick="openStrategicModal()" style="border-color:#38bdf8; color:#7dd3fc;"><i class="fa-solid fa-compass-drafting"></i> Đánh Giá 6 Vùng</button>
       <button class="quick-btn" onclick="openAnalyticsModal()" style="border-color:#a78bfa; color:#c4b5fd;"><i class="fa-solid fa-chart-pie"></i> Báo Cáo Cự Ly</button>
@@ -2571,6 +2575,7 @@ html_template = f'''<!DOCTYPE html>
     let showNPP = true;
     let showOutlets = false;
     let showOnlyEquip = false;
+    let showOnlyWithSales = false;
     let showSpiderLines = false;
     let showRadius = false;
 
@@ -2765,14 +2770,14 @@ html_template = f'''<!DOCTYPE html>
     }}
 
     function ensureOutletsLoaded(callback) {{
-      if (typeof ALL_OUTLETS !== 'undefined' && ALL_OUTLETS && ALL_OUTLETS.length > 0) {{
+      if (typeof ALL_OUTLETS !== 'undefined' && ALL_OUTLETS && ALL_OUTLETS.length > 0 && ALL_OUTLETS[0].length > 12) {{
         outletsLoaded = true;
         if (callback) callback();
         return;
       }}
       if (outletsLoading) {{
         const checkTimer = setInterval(() => {{
-          if (typeof ALL_OUTLETS !== 'undefined' && ALL_OUTLETS && ALL_OUTLETS.length > 0) {{
+          if (typeof ALL_OUTLETS !== 'undefined' && ALL_OUTLETS && ALL_OUTLETS.length > 0 && ALL_OUTLETS[0].length > 12) {{
             clearInterval(checkTimer);
             outletsLoaded = true;
             if (callback) callback();
@@ -2781,14 +2786,14 @@ html_template = f'''<!DOCTYPE html>
         return;
       }}
       outletsLoading = true;
-      showToastNotification('⏳ Đang tải dữ liệu 59.4k điểm bán (11.8MB)...');
+      showToastNotification('⏳ Đang tải dữ liệu 59.4k điểm bán & Doanh số T9...');
 
       const s = document.createElement('script');
-      s.src = 'outlets_data.js';
+      s.src = 'outlets_data.js?v=20261027_t9_mtd_v2';
       s.onload = () => {{
         outletsLoaded = true;
         outletsLoading = false;
-        showToastNotification('✅ Đã nạp thành công 59.4k điểm bán!');
+        showToastNotification('✅ Đã nạp 59.4k điểm bán (34.2k có DS T9 - 38.3 Tỷ | 2.6k có Tủ)!');
         console.log('Loaded ALL_OUTLETS:', ALL_OUTLETS.length);
         applyFilters();
         if (callback) callback();
@@ -2819,6 +2824,28 @@ html_template = f'''<!DOCTYPE html>
         if (quickBtn) quickBtn.classList.remove('active-quick-outlet');
         if (quickText) quickText.textContent = 'Hiện Điểm Bán';
         map.removeLayer(outletsLayer);
+      }}
+    }}
+
+    function toggleOnlySalesQuick() {{
+      showOnlyWithSales = !showOnlyWithSales;
+      const btn = document.getElementById('btnQuickOnlySales');
+      if (btn) {{
+        btn.classList.toggle('active-inactive-btn', showOnlyWithSales);
+      }}
+      if (showOnlyWithSales) {{
+        showOutlets = true;
+        const chk = document.getElementById('chkToggleOutlet');
+        if (chk) chk.checked = true;
+        const quickText = document.getElementById('btnQuickOutletText');
+        if (quickText) quickText.textContent = 'Ẩn Điểm Bán';
+        ensureOutletsLoaded(() => {{
+          renderOutlets();
+          outletsLayer.addTo(map);
+          showToastNotification('💰 Đang lọc 34,171 điểm bán có Doanh số T9 (38.3 Tỷ)!');
+        }});
+      }} else {{
+        renderOutlets();
       }}
     }}
 
@@ -3156,6 +3183,9 @@ html_template = f'''<!DOCTYPE html>
       let toRender = filteredOutlets;
       if (showOnlyEquip) {{
         toRender = toRender.filter(o => o[13] && o[13].length > 0);
+      }}
+      if (showOnlyWithSales) {{
+        toRender = toRender.filter(o => o[12] && o[12] > 0);
       }}
       toRender = toRender.slice(0, maxRender);
 
