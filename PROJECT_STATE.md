@@ -80,6 +80,13 @@ Dự án nhằm giải quyết bài toán tối ưu hóa mạng lưới phân ph
 
 ---
 
+### 3.5. Kiến Trúc Tải Nhẹ & Chống Treo Đơ Trình Duyệt (Performance Architecture)
+* **Tách rời luồng nạp (Lazy Loading On-Demand):**
+  - Loại bỏ hoàn toàn việc tải đồng bộ file 11.85 MB (`outlets_data.js`) lúc mở trang ban đầu.
+  - Mặc định khi mở trang: `showOutlets = false`. Bản đồ **tải ngay lập tức trong 0.1s - 0.2s** chỉ với 391 NPP (~300 KB).
+  - Điểm bán chỉ được tải ngầm (Background prefetch sau 2.5s) hoặc nạp khi người dùng chủ động bấm `[🏪 Hiện Điểm Bán]` hoặc bấm `Hiện Điểm Bán` của 1 NPP.
+  - Sửa lỗi truyền sai chỉ số tọa độ chuỗi `[o[2], o[3]]` trong hàm tính cự ly cắm cờ `addPlannedFlag` thành `[o[0], o[1]]` chuẩn.
+
 ## 4. QUY TRÌNH BUILD & RELEASE MÃ NGUỒN
 
 Tất cả các thay đổi giao diện và dữ liệu bản đồ đều được sinh tự động thông qua script `build_app.py`:
