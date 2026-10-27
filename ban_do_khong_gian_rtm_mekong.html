@@ -18,7 +18,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 
   <!-- Load dữ liệu 59,366 điểm bán & Phân tích cự ly ở chế độ DEFER để giao diện mobile tải NGAY LẬP TỨC -->
-  <script src="outlets_data.js" defer></script>
   <script src="npp_analytics_data.js" defer></script>
 
   <style>
@@ -1687,7 +1686,7 @@
         </label>
 
         <label class="toggle-checkbox-label outlet-label active-outlet" id="lblChkOutlet" title="Bật/Tắt hiển thị Điểm Bán">
-          <input type="checkbox" id="chkToggleOutlet" checked onchange="toggleOutletVisibility()">
+          <input type="checkbox" id="chkToggleOutlet" onchange="toggleOutletVisibility()">
           <i class="fa-solid fa-store" style="color:#f59e0b;"></i>
           <span>Điểm Bán (<span id="chkOutletCount">59.4k</span>)</span>
         </label>
@@ -1809,8 +1808,8 @@
         <i class="fa-solid fa-flag" style="color:#f59e0b;"></i> <span id="btnPinText">Cắm Cờ Mở NPP</span>
       </button>
 
-      <button class="quick-btn active-quick-outlet" id="btnQuickToggleOutlet" onclick="toggleOutletQuick()" style="border-color: rgba(245, 158, 11, 0.6);">
-        <i class="fa-solid fa-store" style="color:#f59e0b;"></i> <span id="btnQuickOutletText">Ẩn Điểm Bán</span>
+      <button class="quick-btn" id="btnQuickToggleOutlet" onclick="toggleOutletQuick()" style="border-color: rgba(245, 158, 11, 0.6);">
+        <i class="fa-solid fa-store" style="color:#f59e0b;"></i> <span id="btnQuickOutletText">🏪 Hiện Điểm Bán</span>
       </button>
 
       <button class="quick-btn" id="btnQuickHideInactive" onclick="toggleHideInactiveQuick()" style="border-color: rgba(239, 68, 68, 0.6);"><i class="fa-solid fa-ban" style="color:#ef4444;"></i> Bỏ NPP Ngưng</button>
@@ -2430,7 +2429,7 @@
     let selectedNPP = null;
 
     let showNPP = true;
-    let showOutlets = true;
+    let showOutlets = false;
     let showSpiderLines = false;
     let showRadius = false;
 
@@ -2493,6 +2492,11 @@
       if (window.innerWidth <= 768) {
         map.setZoom(5);
       }
+
+      // Tải ngầm 59.4k điểm bán sau 2.5 giây khi giao diện chính đã sẵn sàng
+      setTimeout(() => {
+        ensureOutletsLoaded();
+      }, 2500);
     });
 
     function populateVungOptions() {
@@ -2598,6 +2602,63 @@
       applyFilters();
     }
 
+    
+    // ==========================================
+    // DYNAMIC LAZY LOADER FOR 59.4K OUTLETS (11.8MB)
+    // ==========================================
+    let outletsLoaded = (typeof ALL_OUTLETS !== 'undefined' && ALL_OUTLETS && ALL_OUTLETS.length > 0);
+    let outletsLoading = false;
+
+    function showToastNotification(msg) {
+      let t = document.getElementById('rtmToast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = 'rtmToast';
+        t.style.cssText = 'position:fixed; bottom:20px; right:20px; background:rgba(15,23,42,0.95); border:1px solid #10b981; color:#fff; font-size:0.75rem; font-weight:700; padding:8px 14px; border-radius:8px; z-index:99999; box-shadow:0 8px 24px rgba(0,0,0,0.5); backdrop-filter:blur(6px); transition:all 0.3s;';
+        document.body.appendChild(t);
+      }
+      t.innerHTML = msg;
+      t.style.display = 'block';
+      setTimeout(() => { if (t) t.style.display = 'none'; }, 3000);
+      return t;
+    }
+
+    function ensureOutletsLoaded(callback) {
+      if (typeof ALL_OUTLETS !== 'undefined' && ALL_OUTLETS && ALL_OUTLETS.length > 0) {
+        outletsLoaded = true;
+        if (callback) callback();
+        return;
+      }
+      if (outletsLoading) {
+        const checkTimer = setInterval(() => {
+          if (typeof ALL_OUTLETS !== 'undefined' && ALL_OUTLETS && ALL_OUTLETS.length > 0) {
+            clearInterval(checkTimer);
+            outletsLoaded = true;
+            if (callback) callback();
+          }
+        }, 100);
+        return;
+      }
+      outletsLoading = true;
+      showToastNotification('⏳ Đang tải dữ liệu 59.4k điểm bán (11.8MB)...');
+
+      const s = document.createElement('script');
+      s.src = 'outlets_data.js';
+      s.onload = () => {
+        outletsLoaded = true;
+        outletsLoading = false;
+        showToastNotification('✅ Đã nạp thành công 59.4k điểm bán!');
+        console.log('Loaded ALL_OUTLETS:', ALL_OUTLETS.length);
+        applyFilters();
+        if (callback) callback();
+      };
+      s.onerror = () => {
+        outletsLoading = false;
+        showToastNotification('⚠️ Không thể tải file outlets_data.js');
+      };
+      document.body.appendChild(s);
+    }
+
     function toggleOutletVisibility() {
       const chk = document.getElementById('chkToggleOutlet');
       const lbl = document.getElementById('lblChkOutlet');
@@ -2608,8 +2669,10 @@
         if (lbl) lbl.classList.add('active-outlet');
         if (quickBtn) quickBtn.classList.add('active-quick-outlet');
         if (quickText) quickText.textContent = 'Ẩn Điểm Bán';
-        renderOutlets();
-        outletsLayer.addTo(map);
+        ensureOutletsLoaded(() => {
+          renderOutlets();
+          outletsLayer.addTo(map);
+        });
       } else {
         if (lbl) lbl.classList.remove('active-outlet');
         if (quickBtn) quickBtn.classList.remove('active-quick-outlet');
@@ -3596,10 +3659,10 @@
         const radMeters = flagData.radiusKm * 1000;
         for (let i = 0; i < ALL_OUTLETS.length; i++) {
           const o = ALL_OUTLETS[i];
-          const dist = map.distance([flagData.lat, flagData.lng], [o[2], o[3]]);
+          const dist = map.distance([flagData.lat, flagData.lng], [o[0], o[1]]);
           if (dist <= radMeters) {
             coveredOutlets++;
-            if (o[7] === 'DONG' || o[7] === 'BOTH') coldOutlets++;
+            if (o[11] === 'DONG' || o[11] === 'BOTH') coldOutlets++;
           }
         }
       }
@@ -3715,10 +3778,10 @@
         const radMeters = nextR * 1000;
         for (let i = 0; i < ALL_OUTLETS.length; i++) {
           const o = ALL_OUTLETS[i];
-          const dist = map.distance([flag.lat, flag.lng], [o[2], o[3]]);
+          const dist = map.distance([flag.lat, flag.lng], [o[0], o[1]]);
           if (dist <= radMeters) {
             coveredOutlets++;
-            if (o[7] === 'DONG' || o[7] === 'BOTH') coldOutlets++;
+            if (o[11] === 'DONG' || o[11] === 'BOTH') coldOutlets++;
           }
         }
       }
