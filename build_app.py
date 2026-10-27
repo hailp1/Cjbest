@@ -537,6 +537,31 @@ html_template = f'''<!DOCTYPE html>
       flex-shrink: 0;
     }}
 
+        /* Tooltip khi re chuot vao NPP */
+    .leaflet-tooltip.npp-hover-tooltip {{
+      background: rgba(15, 23, 42, 0.95) !important;
+      border: 1px solid rgba(16, 185, 129, 0.6) !important;
+      color: #f8fafc !important;
+      font-family: inherit !important;
+      font-size: 0.78rem !important;
+      font-weight: 700 !important;
+      padding: 5px 9px !important;
+      border-radius: 6px !important;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5) !important;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }}
+    .leaflet-tooltip.npp-hover-tooltip::before {{
+      border-top-color: rgba(15, 23, 42, 0.95) !important;
+    }}
+    .leaflet-tooltip.npp-hover-tooltip.tooltip-ksm {{
+      border-color: rgba(239, 68, 68, 0.6) !important;
+      color: #fca5a5 !important;
+    }}
+    .leaflet-tooltip.npp-hover-tooltip.tooltip-ksm::before {{
+      border-top-color: rgba(15, 23, 42, 0.95) !important;
+    }}
+
     /* Marker Custom */
     .custom-npp-icon {{
       display: flex;
@@ -2617,7 +2642,16 @@ html_template = f'''<!DOCTYPE html>
           }} else {{
             iconClass = 'npp-icon-co-sm';
             iconInner = 'fa-solid fa-user-tie';
-            iconTitle = `👤 NPP Có SM (${{n.so_nvbh_text || 'Giám sát'}})`;
+
+            // Định dạng hover: "NPP [Tên] ( X SM)" vd: "NPP Trần Điền ( 2SM)"
+            const rawName = n.short_name || n.name || '';
+            const prefixRegex = /^(CÔNG TY TNHH (MỘT THÀNH VIÊN|MTV|SX TM DV|SX TM|TM DV|THƯƠNG MẠI DỊCH VỤ|DỊCH VỤ VỆ SINH|THỰC PHẨM|DV PHÂN PHỐI|DV|TM|SX)?|CÔNG TY CP|CÔNG TY CỔ PHẦN|DOANH NGHIỆP TƯ NHÂN|DNTN|HỢP TÁC XÃ THƯƠNG MẠI- DỊCH VỤ PHƯỜNG 1- TP|HỢP TÁC XÃ|CTY TNHH|CTY CP)\\s*/i;
+            let cleanName = rawName.replace(prefixRegex, '').trim();
+            if (!cleanName.toUpperCase().startsWith('NPP')) {{
+              cleanName = 'NPP ' + cleanName;
+            }}
+            const soSM = n.so_nvbh || 1;
+            iconTitle = `${{cleanName}} ( ${{soSM}}SM)`;
           }}
         }}
 
@@ -2635,7 +2669,13 @@ html_template = f'''<!DOCTYPE html>
           popupAnchor: [0, -12]
         }});
 
-        const marker = L.marker([n.lat, n.lng], {{ icon: customIcon }});
+        const marker = L.marker([n.lat, n.lng], {{ icon: customIcon, title: iconTitle }});
+        marker.bindTooltip(iconTitle, {{
+          direction: 'top',
+          offset: [0, -14],
+          opacity: 0.96,
+          className: 'npp-hover-tooltip ' + (n.is_khong_sm ? 'tooltip-ksm' : '')
+        }});
 
         const outletCnt = n.outlet_count || 0;
         const remoteCnt = n.remote_count || 0;
