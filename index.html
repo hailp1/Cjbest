@@ -1742,14 +1742,23 @@
       <span style="font-size:0.75rem; font-weight:800; color:#34d399; margin-right:4px;">
         <i class="fa-solid fa-draw-polygon"></i> Khoanh Vùng:
       </span>
-      <button class="spatial-tool-btn active" id="btnToolPolygon" onclick="setSpatialTool('polygon')" title="Click các điểm trên bản đồ để vẽ vùng đa giác">
-        <i class="fa-solid fa-draw-polygon"></i> Đa giác (Lasso)
+      <button class="spatial-tool-btn active" id="btnToolBox" onclick="setSpatialTool('box')" title="Nhấn giữ và KÉO chuột để vẽ hộp khoanh vùng">
+        <i class="fa-solid fa-vector-square"></i> 🖱️ Kéo Chuột (Hộp)
       </button>
-      <button class="spatial-tool-btn" id="btnToolCircle" onclick="setSpatialTool('circle')" title="Click 1 điểm trung tâm và kéo bán kính">
-        <i class="fa-solid fa-circle-dot"></i> Bán kính (Vòng tròn)
+      <button class="spatial-tool-btn" id="btnToolFreehand" onclick="setSpatialTool('freehand')" title="Nhấn giữ và KÉO vẽ tự do bao quanh khu vực">
+        <i class="fa-solid fa-pen-nib"></i> ✏️ Vẽ Tự Do
       </button>
+      <button class="spatial-tool-btn" id="btnToolCircle" onclick="setSpatialTool('circle')" title="Click 1 điểm tâm và kéo/click điểm bán kính">
+        <i class="fa-solid fa-circle-dot"></i> ⭕ Bán Kính
+      </button>
+      <button class="spatial-tool-btn" id="btnToolPolygon" onclick="setSpatialTool('polygon')" title="Click lần lượt các đỉnh đa giác (click điểm đầu để đóng)">
+        <i class="fa-solid fa-draw-polygon"></i> 📐 Đa Giác
+      </button>
+      <span id="spatialToolInstruction" style="font-size:0.7rem; color:#fef08a; background:rgba(0,0,0,0.35); padding:3px 8px; border-radius:12px; margin:0 4px;">
+        🖱️ Nhấn giữ & KÉO chuột trên bản đồ để khoanh vùng
+      </span>
       <button class="spatial-tool-btn btn-danger-tool" onclick="clearSpatialSelection()" title="Xóa vùng đã khoanh">
-        <i class="fa-solid fa-trash-can"></i> Xóa vùng
+        <i class="fa-solid fa-trash-can"></i> Xóa
       </button>
       <button class="spatial-tool-btn" onclick="toggleSpatialSelectMode(false)" title="Thoát chế độ khoanh vùng">
         <i class="fa-solid fa-xmark"></i> Thoát
@@ -1760,7 +1769,7 @@
     <div id="spatialRevenuePanel">
       <div class="revenue-panel-header">
         <div class="revenue-panel-title">
-          <i class="fa-solid fa-chart-pie"></i> Doanh Số Nhóm NPP Khoanh Vùng (T9/2026)
+          <i class="fa-solid fa-chart-pie"></i> Tổng Hợp Doanh Số Vùng Khoanh (T9/2026)
         </div>
         <div style="display:flex; gap:6px; align-items:center;">
           <button onclick="exportSpatialRevenueCSV()" style="background:#059669; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:700; cursor:pointer;" title="Tải file CSV">
@@ -4129,16 +4138,25 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
 
     
     // ==========================================
-    // SPATIAL SELECTION & REVENUE ANALYTICS MODULE
+    // SPATIAL SELECTION & REVENUE ANALYTICS MODULE (KÉO CHUỘT KHOANH VÙNG)
     // ==========================================
     let isSpatialMode = false;
-    let spatialTool = 'polygon'; // 'polygon' or 'circle'
+    let spatialTool = 'box'; // 'box', 'freehand', 'circle', 'polygon'
     let spatialPoints = [];
     let spatialActivePolygon = null;
     let spatialActiveCircle = null;
+    let spatialActiveRect = null;
     let spatialTempMarkers = [];
     let spatialLayerGroup = L.layerGroup();
     let currentSpatialResult = null;
+    let activeSpatialTab = 'npp'; // 'npp' or 'outlet'
+
+    // Mouse drag state variables
+    let isSpatialMouseDown = false;
+    let spatialDragStartLatLng = null;
+    let spatialDragRectPreview = null;
+    let spatialFreehandPolyline = null;
+    let spatialFreehandPoints = [];
 
     function formatMoneyVND(num) {
       if (!num || isNaN(num)) return '0 đ';
@@ -4175,20 +4193,37 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         if (btn) btn.classList.add('active-inactive-btn');
         if (toolbar) toolbar.style.display = 'flex';
         if (mapElem) mapElem.classList.add('crosshair-cursor');
-        setSpatialTool('polygon');
+        
+        // Tự động nạp sẵn dữ liệu điểm bán trong nền
+        ensureOutletsLoaded();
+        
+        // Mặc định công cụ kéo chuột tạo hộp
+        setSpatialTool('box');
+        showToastNotification('🖱️ Nhấn giữ chuột và KÉO trên bản đồ để khoanh vùng tính doanh số!');
       } else {
         if (btn) btn.classList.remove('active-inactive-btn');
         if (toolbar) toolbar.style.display = 'none';
         if (mapElem) mapElem.classList.remove('crosshair-cursor');
         clearSpatialSelection();
+        map.dragging.enable();
         document.getElementById('spatialRevenuePanel').style.display = 'none';
       }
     }
 
     function setSpatialTool(toolName) {
       spatialTool = toolName;
-      document.getElementById('btnToolPolygon').classList.toggle('active', toolName === 'polygon');
-      document.getElementById('btnToolCircle').classList.toggle('active', toolName === 'circle');
+      if (document.getElementById('btnToolBox')) document.getElementById('btnToolBox').classList.toggle('active', toolName === 'box');
+      if (document.getElementById('btnToolFreehand')) document.getElementById('btnToolFreehand').classList.toggle('active', toolName === 'freehand');
+      if (document.getElementById('btnToolCircle')) document.getElementById('btnToolCircle').classList.toggle('active', toolName === 'circle');
+      if (document.getElementById('btnToolPolygon')) document.getElementById('btnToolPolygon').classList.toggle('active', toolName === 'polygon');
+
+      const instr = document.getElementById('spatialToolInstruction');
+      if (instr) {
+        if (toolName === 'box') instr.textContent = '🖱️ Nhấn giữ & KÉO chuột trên bản đồ để tạo hộp khoanh vùng';
+        else if (toolName === 'freehand') instr.textContent = '✏️ Nhấn giữ & KÉO vẽ tự do bao quanh khu vực';
+        else if (toolName === 'circle') instr.textContent = '⭕ Click 1 điểm tâm rồi click/kéo điểm bán kính';
+        else if (toolName === 'polygon') instr.textContent = '📐 Click các đỉnh đa giác (click điểm đầu để chốt)';
+      }
       clearSpatialSelection();
     }
 
@@ -4198,7 +4233,13 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       spatialTempMarkers = [];
       spatialActivePolygon = null;
       spatialActiveCircle = null;
+      spatialActiveRect = null;
+      spatialDragRectPreview = null;
+      spatialFreehandPolyline = null;
+      spatialFreehandPoints = [];
       currentSpatialResult = null;
+      isSpatialMouseDown = false;
+      map.dragging.enable();
       document.getElementById('spatialRevenuePanel').style.display = 'none';
     }
 
@@ -4225,9 +4266,95 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
-    // Map Click Handler for Spatial Selection
+    // ==========================================
+    // MOUSE DRAG EVENT HANDLERS (KÉO CHUỘT KHOANH VÙNG)
+    // ==========================================
+    map.on('mousedown', function(e) {
+      // Hỗ trợ cả khi bật Spatial Mode HOẶC giữ phím Shift khi kéo chuột
+      if (!isSpatialMode && (!e.originalEvent || !e.originalEvent.shiftKey)) return;
+
+      if (!isSpatialMode && e.originalEvent && e.originalEvent.shiftKey) {
+        toggleSpatialSelectMode(true);
+        setSpatialTool('box');
+      }
+
+      if (spatialTool === 'box') {
+        isSpatialMouseDown = true;
+        spatialDragStartLatLng = e.latlng;
+        map.dragging.disable();
+
+        if (spatialActiveRect) spatialLayerGroup.removeLayer(spatialActiveRect);
+        if (spatialDragRectPreview) spatialLayerGroup.removeLayer(spatialDragRectPreview);
+
+        spatialDragRectPreview = L.rectangle([spatialDragStartLatLng, spatialDragStartLatLng], {
+          color: '#10b981',
+          weight: 2,
+          fillColor: '#059669',
+          fillOpacity: 0.25,
+          dashArray: '5, 5'
+        });
+        spatialLayerGroup.addLayer(spatialDragRectPreview);
+      } else if (spatialTool === 'freehand') {
+        isSpatialMouseDown = true;
+        map.dragging.disable();
+        spatialFreehandPoints = [[e.latlng.lat, e.latlng.lng]];
+
+        if (spatialActivePolygon) spatialLayerGroup.removeLayer(spatialActivePolygon);
+        if (spatialFreehandPolyline) spatialLayerGroup.removeLayer(spatialFreehandPolyline);
+
+        spatialFreehandPolyline = L.polyline(spatialFreehandPoints, {
+          color: '#10b981',
+          weight: 3
+        });
+        spatialLayerGroup.addLayer(spatialFreehandPolyline);
+      }
+    });
+
+    map.on('mousemove', function(e) {
+      if (!isSpatialMode || !isSpatialMouseDown) return;
+
+      if (spatialTool === 'box' && spatialDragStartLatLng && spatialDragRectPreview) {
+        spatialDragRectPreview.setBounds(L.latLngBounds(spatialDragStartLatLng, e.latlng));
+      } else if (spatialTool === 'freehand' && spatialFreehandPolyline) {
+        spatialFreehandPoints.push([e.latlng.lat, e.latlng.lng]);
+        spatialFreehandPolyline.setLatLngs(spatialFreehandPoints);
+      }
+    });
+
+    map.on('mouseup', function(e) {
+      if (!isSpatialMode || !isSpatialMouseDown) return;
+      isSpatialMouseDown = false;
+      map.dragging.enable();
+
+      if (spatialTool === 'box' && spatialDragStartLatLng && spatialDragRectPreview) {
+        const bounds = L.latLngBounds(spatialDragStartLatLng, e.latlng);
+        const d = getDistanceKm(spatialDragStartLatLng.lat, spatialDragStartLatLng.lng, e.latlng.lat, e.latlng.lng);
+        if (d >= 0.15) {
+          spatialDragRectPreview.setStyle({ dashArray: null, weight: 3, fillOpacity: 0.2 });
+          spatialActiveRect = spatialDragRectPreview;
+          finishSpatialBox(bounds);
+        } else {
+          spatialLayerGroup.removeLayer(spatialDragRectPreview);
+          spatialDragRectPreview = null;
+        }
+      } else if (spatialTool === 'freehand' && spatialFreehandPoints.length >= 4) {
+        spatialLayerGroup.removeLayer(spatialFreehandPolyline);
+        spatialPoints = spatialFreehandPoints;
+        spatialActivePolygon = L.polygon(spatialPoints, {
+          color: '#10b981',
+          weight: 3,
+          fillColor: '#059669',
+          fillOpacity: 0.25
+        });
+        spatialLayerGroup.addLayer(spatialActivePolygon);
+        finishSpatialPolygon();
+      }
+    });
+
+    // Click handler for polygon / circle tools
     function onMapClickSpatial(e) {
       if (!isSpatialMode) return;
+      if (spatialTool === 'box' || spatialTool === 'freehand') return; // Handled by mousedown/mouseup
 
       const lat = e.latlng.lat;
       const lng = e.latlng.lng;
@@ -4235,7 +4362,6 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       if (spatialTool === 'polygon') {
         spatialPoints.push([lat, lng]);
 
-        // Draw point marker
         const ptMarker = L.circleMarker([lat, lng], {
           radius: 5,
           color: '#10b981',
@@ -4249,7 +4375,6 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         spatialLayerGroup.addLayer(ptMarker);
         spatialTempMarkers.push(ptMarker);
 
-        // Update polygon preview
         if (spatialActivePolygon) {
           spatialLayerGroup.removeLayer(spatialActivePolygon);
         }
@@ -4264,7 +4389,6 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
           spatialLayerGroup.addLayer(spatialActivePolygon);
         }
 
-        // Auto-close on 3+ points if clicked near start or double click
         if (spatialPoints.length >= 3) {
           const dStart = getDistanceKm(lat, lng, spatialPoints[0][0], spatialPoints[0][1]);
           if (dStart < 2.0 && spatialPoints.length > 3) {
@@ -4273,7 +4397,6 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         }
       } else if (spatialTool === 'circle') {
         if (spatialPoints.length === 0) {
-          // Center point
           spatialPoints.push([lat, lng]);
           const centerMarker = L.circleMarker([lat, lng], {
             radius: 6,
@@ -4285,7 +4408,6 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
           spatialLayerGroup.addLayer(centerMarker);
           spatialTempMarkers.push(centerMarker);
         } else {
-          // Radius point
           const center = spatialPoints[0];
           const distKm = getDistanceKm(center[0], center[1], lat, lng);
           const radiusMeters = distKm * 1000;
@@ -4307,34 +4429,51 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       }
     }
 
+    function finishSpatialBox(bounds) {
+      // Lọc NPP trong bounds
+      const selectedNpps = ALL_NPPS.filter(n => {
+        if (!n.lat || !n.lng) return false;
+        return bounds.contains([n.lat, n.lng]);
+      });
+
+      const sw = bounds.getSouthWest();
+      const ne = bounds.getNorthEast();
+      const boxPolygon = [
+        [sw.lat, sw.lng],
+        [ne.lat, sw.lng],
+        [ne.lat, ne.lng],
+        [sw.lat, ne.lng]
+      ];
+
+      processSpatialSelection(selectedNpps, 'Hộp chữ nhật kéo chuột', null, null, boxPolygon, bounds);
+    }
+
     function finishSpatialPolygon() {
       if (spatialPoints.length < 3) return;
       if (spatialActivePolygon) {
         spatialActivePolygon.setStyle({ dashArray: null, fillOpacity: 0.25, weight: 3 });
       }
 
-      // Filter NPPs inside polygon
       const selected = ALL_NPPS.filter(n => {
         if (!n.lat || !n.lng) return false;
         return isPointInsidePolygon(n.lat, n.lng, spatialPoints);
       });
 
-      processSpatialSelection(selected, 'Đa giác tự do', null, null, spatialPoints);
+      processSpatialSelection(selected, 'Đa giác tự do', null, null, spatialPoints, null);
     }
 
     function finishSpatialCircle(center, radiusKm) {
-      // Filter NPPs inside radius
       const selected = ALL_NPPS.filter(n => {
         if (!n.lat || !n.lng) return false;
         const d = getDistanceKm(center[0], center[1], n.lat, n.lng);
         return d <= radiusKm;
       });
 
-      processSpatialSelection(selected, `Vòng tròn bán kính ${radiusKm.toFixed(1)} km`, radiusKm, center, null);
-      spatialPoints = []; // ready for next
+      processSpatialSelection(selected, `Vòng tròn bán kính ${radiusKm.toFixed(1)} km`, radiusKm, center, null, null);
+      spatialPoints = [];
     }
 
-    function processSpatialSelection(nppList, zoneTitle, radiusKm, circleCenter, polyPoints) {
+    function processSpatialSelection(nppList, zoneTitle, radiusKm, circleCenter, polyPoints, bounds) {
       let totAmb = 0, totChi = 0, totFro = 0, totRev = 0;
       let activeCnt = 0, coSmCnt = 0;
 
@@ -4352,14 +4491,16 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       const froPct = totRev > 0 ? (totFro / totRev * 100).toFixed(1) : '0';
       const avgNpp = nppList.length > 0 ? (totRev / nppList.length) : 0;
 
-      // Thống kê Điểm Bán (Outlets) trong vùng khoanh nếu đã nạp ALL_OUTLETS
+      // Thống kê Điểm Bán (Outlets) trong vùng khoanh
       let selOutlets = [];
       let totOutletRev = 0;
       let equipOutletCnt = 0;
       let activeOutletCnt = 0;
 
       if (typeof ALL_OUTLETS !== 'undefined' && ALL_OUTLETS && ALL_OUTLETS.length > 0) {
-        if (circleCenter && radiusKm) {
+        if (bounds) {
+          selOutlets = ALL_OUTLETS.filter(o => o[0] && o[1] && bounds.contains([o[0], o[1]]));
+        } else if (circleCenter && radiusKm) {
           selOutlets = ALL_OUTLETS.filter(o => o[0] && o[1] && getDistanceKm(circleCenter[0], circleCenter[1], o[0], o[1]) <= radiusKm);
         } else if (polyPoints && polyPoints.length >= 3) {
           selOutlets = ALL_OUTLETS.filter(o => o[0] && o[1] && isPointInsidePolygon(o[0], o[1], polyPoints));
@@ -4372,6 +4513,8 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         });
       }
 
+      const totalZoneSales = totRev + totOutletRev;
+
       currentSpatialResult = {
         zoneTitle,
         nppList,
@@ -4381,9 +4524,19 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         totOutletRev,
         equipOutletCnt,
         activeOutletCnt,
-        selOutlets
+        totalZoneSales,
+        selOutlets,
+        bounds,
+        polyPoints,
+        circleCenter,
+        radiusKm
       };
 
+      renderSpatialRevenuePanel();
+    }
+
+    function switchSpatialTab(tabName) {
+      activeSpatialTab = tabName;
       renderSpatialRevenuePanel();
     }
 
@@ -4394,13 +4547,14 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       const body = document.getElementById('spatialRevenueBody');
       const panel = document.getElementById('spatialRevenuePanel');
 
-      let rowsHtml = '';
+      // Tạo bảng NPP
+      let rowsNppHtml = '';
       r.nppList.forEach(n => {
         const rev = n.sales_total || 0;
-        rowsHtml += `
+        rowsNppHtml += `
           <tr>
             <td style="font-weight:700; color:#38bdf8;">${n.code}</td>
-            <td style="max-width:140px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${n.name}">
+            <td style="max-width:130px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${n.name}">
               ${n.short_name || n.name}
             </td>
             <td>${n.province || ''}</td>
@@ -4413,17 +4567,74 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       });
 
       if (r.nppList.length === 0) {
-        rowsHtml = '<tr><td colspan="7" style="text-align:center; padding:12px; color:#94a3b8;">Không có NPP nào trong vùng khoanh này.</td></tr>';
+        rowsNppHtml = '<tr><td colspan="7" style="text-align:center; padding:12px; color:#94a3b8;">Không có trụ sở NPP trong vùng khoanh này (vùng chỉ có Điểm Bán Lẻ).</td></tr>';
+      }
+
+      // Tạo bảng Điểm Bán (Hiển thị Top 40 điểm có doanh số cao nhất hoặc có tủ)
+      let rowsOutletHtml = '';
+      const topOutlets = (r.selOutlets || [])
+        .slice()
+        .sort((a, b) => (b[12] || 0) - (a[12] || 0))
+        .slice(0, 50);
+
+      topOutlets.forEach(o => {
+        const sMtd = o[12] || 0;
+        const equip = o[13] || '';
+        const vpo = o[14] || '';
+        rowsOutletHtml += `
+          <tr>
+            <td style="font-weight:700; color:#cbd5e1;">${o[3]}</td>
+            <td style="max-width:140px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${o[2]}">
+              ${o[2]}
+            </td>
+            <td>
+              ${equip ? `<span style="color:#0284c7; font-weight:700; font-size:0.68rem;"><i class="fa-solid fa-snowflake"></i> ${equip}</span>` : '<span style="color:#64748b; font-size:0.68rem;">Chưa có</span>'}
+            </td>
+            <td style="color:#94a3b8; font-size:0.68rem;">${vpo || '-'}</td>
+            <td style="text-align:right; font-weight:700; color:${sMtd > 0 ? '#10b981':'#64748b'};">${formatMoneyVND(sMtd)}</td>
+          </tr>
+        `;
+      });
+
+      if (!r.selOutlets || r.selOutlets.length === 0) {
+        rowsOutletHtml = `
+          <tr>
+            <td colspan="5" style="text-align:center; padding:12px; color:#94a3b8;">
+              ${outletsLoaded ? 'Không có điểm bán nào trong vùng khoanh này.' : '⏳ Đang tải dữ liệu điểm bán... <a href="#" onclick="ensureOutletsLoaded(function(){processSpatialSelection(currentSpatialResult.nppList, currentSpatialResult.zoneTitle, currentSpatialResult.radiusKm, currentSpatialResult.circleCenter, currentSpatialResult.polyPoints, currentSpatialResult.bounds);}); return false;" style="color:#38bdf8; text-decoration:underline;">Bấm để tính lại ngay</a>'}
+            </td>
+          </tr>
+        `;
       }
 
       body.innerHTML = `
-        <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:8px;">
-          Khu vực: <b style="color:#e2e8f0;">${r.zoneTitle}</b>
+        <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+          <span>Vùng chọn: <b style="color:#e2e8f0;">${r.zoneTitle}</b></span>
+          <span style="color:#34d399; font-size:0.7rem;"><i class="fa-solid fa-check-circle"></i> Đã tính toán xong</span>
         </div>
 
+        <!-- HERO TỔNG DOANH SỐ TOÀN BỘ VÙNG KHOANH -->
+        <div style="background: linear-gradient(135deg, rgba(16,185,129,0.22), rgba(6,182,212,0.15)); border: 1px solid #10b981; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-size:0.68rem; color:#94a3b8; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">
+              TỔNG DOANH SỐ VÙNG KHOANH (T9/2026)
+            </div>
+            <div style="font-size:1.4rem; font-weight:900; color:#34d399; text-shadow:0 0 12px rgba(16,185,129,0.4);">
+              ${formatMoneyVND(r.totRev > 0 ? r.totRev : r.totOutletRev)}
+            </div>
+            <div style="font-size:0.68rem; color:#cbd5e1; margin-top:2px;">
+              ${r.totRev > 0 ? `Bao gồm <b>${formatMoneyShort(r.totRev)} đ</b> NPP Sell-in + <b>${formatMoneyShort(r.totOutletRev)} đ</b> Điểm Bán Sell-out` : `Tổng Sell-out từ <b>${r.totOutlets}</b> Điểm Bán Lẻ trong vùng`}
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.75rem; color:#cbd5e1;">NPP Sell-in: <b style="color:#10b981;">${formatMoneyVND(r.totRev)}</b></div>
+            <div style="font-size:0.75rem; color:#cbd5e1; margin-top:3px;">Điểm bán Sell-out: <b style="color:#38bdf8;">${formatMoneyVND(r.totOutletRev)}</b></div>
+          </div>
+        </div>
+
+        <!-- LƯỚI 4 THẺ KPI CHI TIẾT -->
         <div class="revenue-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));">
           <div class="revenue-kpi-card" style="border-left-color:#38bdf8;">
-            <div class="revenue-kpi-lbl">Số NPP</div>
+            <div class="revenue-kpi-lbl">Số NPP Trong Vùng</div>
             <div class="revenue-kpi-val" style="color:#38bdf8;">${r.nppList.length} <span style="font-size:0.7rem; font-weight:400; color:#94a3b8;">(${r.coSmCnt} Có SM)</span></div>
           </div>
           <div class="revenue-kpi-card" style="border-left-color:#10b981;">
@@ -4431,59 +4642,88 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
             <div class="revenue-kpi-val" style="color:#10b981;">${formatMoneyVND(r.totRev)}</div>
           </div>
           <div class="revenue-kpi-card" style="border-left-color:#06b6d4;">
-            <div class="revenue-kpi-lbl">DS Điểm Bán T9</div>
+            <div class="revenue-kpi-lbl">Số Điểm Bán (Outlets)</div>
             <div class="revenue-kpi-val" style="color:#06b6d4;">
-              ${r.totOutlets > 0 ? formatMoneyVND(r.totOutletRev) : (outletsLoaded ? '0 đ' : '<span style="font-size:0.75rem; color:#94a3b8;">Chưa nạp điểm</span>')}
+              ${r.totOutlets.toLocaleString('vi-VN')} <span style="font-size:0.7rem; color:#94a3b8;">(${r.activeOutletCnt} có DS)</span>
             </div>
           </div>
           <div class="revenue-kpi-card" style="border-left-color:#f59e0b;">
-            <div class="revenue-kpi-lbl">Điểm Bán & Tủ Đông</div>
-            <div class="revenue-kpi-val" style="color:#fbbf24; font-size:0.88rem;">
-              ${r.totOutlets > 0 ? `${r.totOutlets.toLocaleString('vi-VN')} <span style="font-size:0.7rem; color:#67e8f9;">(${r.equipOutletCnt} tủ)</span>` : (outletsLoaded ? '0 điểm' : '<a href="#" onclick="ensureOutletsLoaded(function(){finishSpatialPolygon();}); return false;" style="color:#38bdf8; font-size:0.72rem; text-decoration:underline;">Nạp 59k Điểm</a>')}
+            <div class="revenue-kpi-lbl">Tủ Đông/Mát Đầu Tư</div>
+            <div class="revenue-kpi-val" style="color:#fbbf24;">
+              ${r.equipOutletCnt} <span style="font-size:0.7rem; color:#67e8f9;">Tủ CJ</span>
             </div>
           </div>
         </div>
 
-        <!-- STACKED PROGRESS BAR THEO NHÓM SP -->
-        <div class="revenue-progress-container">
-          <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:#cbd5e1; margin-bottom:3px;">
-            <span><b>Phân bổ doanh số theo nhóm sản phẩm:</b></span>
-            <span>${r.ambPct}% Khô &bull; ${r.chiPct}% Mát &bull; ${r.froPct}% Đông</span>
+        <!-- STACKED PROGRESS BAR THEO NHÓM SP (NẾU CÓ NPP) -->
+        ${r.totRev > 0 ? `
+          <div class="revenue-progress-container">
+            <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:#cbd5e1; margin-bottom:3px;">
+              <span><b>Cơ cấu ngành hàng NPP:</b></span>
+              <span>${r.ambPct}% Khô &bull; ${r.chiPct}% Mát &bull; ${r.froPct}% Đông</span>
+            </div>
+            <div class="revenue-stacked-bar">
+              <div class="bar-ambient" style="width: ${r.ambPct}%;" title="Ambient: ${formatMoneyVND(r.totAmb)} (${r.ambPct}%)"></div>
+              <div class="bar-chilled" style="width: ${r.chiPct}%;" title="Chilled: ${formatMoneyVND(r.totChi)} (${r.chiPct}%)"></div>
+              <div class="bar-frozen"  style="width: ${r.froPct}%;" title="Frozen: ${formatMoneyVND(r.totFro)} (${r.froPct}%)"></div>
+            </div>
+            <div class="revenue-breakdown-legend">
+              <span style="color:#fbbf24;"><i class="fa-solid fa-square" style="color:#f59e0b;"></i> Ambient: <b>${formatMoneyShort(r.totAmb)} đ</b> (${r.ambPct}%)</span>
+              <span style="color:#34d399;"><i class="fa-solid fa-square" style="color:#10b981;"></i> Chilled: <b>${formatMoneyShort(r.totChi)} đ</b> (${r.chiPct}%)</span>
+              <span style="color:#38bdf8;"><i class="fa-solid fa-square" style="color:#38bdf8;"></i> Frozen: <b>${formatMoneyShort(r.totFro)} đ</b> (${r.froPct}%)</span>
+            </div>
           </div>
-          <div class="revenue-stacked-bar">
-            <div class="bar-ambient" style="width: ${r.ambPct}%;" title="Ambient: ${formatMoneyVND(r.totAmb)} (${r.ambPct}%)"></div>
-            <div class="bar-chilled" style="width: ${r.chiPct}%;" title="Chilled: ${formatMoneyVND(r.totChi)} (${r.chiPct}%)"></div>
-            <div class="bar-frozen"  style="width: ${r.froPct}%;" title="Frozen: ${formatMoneyVND(r.totFro)} (${r.froPct}%)"></div>
-          </div>
-          <div class="revenue-breakdown-legend">
-            <span style="color:#fbbf24;"><i class="fa-solid fa-square" style="color:#f59e0b;"></i> Ambient: <b>${formatMoneyShort(r.totAmb)} đ</b> (${r.ambPct}%)</span>
-            <span style="color:#34d399;"><i class="fa-solid fa-square" style="color:#10b981;"></i> Chilled: <b>${formatMoneyShort(r.totChi)} đ</b> (${r.chiPct}%)</span>
-            <span style="color:#38bdf8;"><i class="fa-solid fa-square" style="color:#38bdf8;"></i> Frozen: <b>${formatMoneyShort(r.totFro)} đ</b> (${r.froPct}%)</span>
-          </div>
+        ` : ''}
+
+        <!-- TABS CHUYỂN ĐỔI BẢNG NPP VÀ BẢNG ĐIỂM BÁN -->
+        <div style="display:flex; gap:6px; margin: 10px 0 6px 0; border-bottom:1px solid #334155; padding-bottom:6px;">
+          <button onclick="switchSpatialTab('npp')" style="background:${activeSpatialTab==='npp'?'#059669':'#1e293b'}; color:#fff; border:1px solid ${activeSpatialTab==='npp'?'#10b981':'#475569'}; border-radius:15px; padding:3px 12px; font-size:0.72rem; font-weight:700; cursor:pointer;">
+            🏢 Nhà Phân Phối (${r.nppList.length})
+          </button>
+          <button onclick="switchSpatialTab('outlet')" style="background:${activeSpatialTab==='outlet'?'#0284c7':'#1e293b'}; color:#fff; border:1px solid ${activeSpatialTab==='outlet'?'#38bdf8':'#475569'}; border-radius:15px; padding:3px 12px; font-size:0.72rem; font-weight:700; cursor:pointer;">
+            🏪 Điểm Bán Lẻ (${r.totOutlets})
+          </button>
         </div>
 
-        <!-- DANH SÁCH CHI TIẾT NPP TRONG VÙNG -->
-        <div style="font-size:0.75rem; font-weight:700; color:#e2e8f0; margin-bottom:4px;">
-          Danh Sách NPP Trong Vùng (${r.nppList.length}):
-        </div>
-        <div class="revenue-table-wrapper">
-          <table class="revenue-table">
-            <thead>
-              <tr>
-                <th>Mã</th>
-                <th>Tên NPP</th>
-                <th>Tỉnh</th>
-                <th style="text-align:right;">Ambient</th>
-                <th style="text-align:right;">Chilled</th>
-                <th style="text-align:right;">Frozen</th>
-                <th style="text-align:right;">Tổng Doanh Số</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${rowsHtml}
-            </tbody>
-          </table>
-        </div>
+        <!-- BẢNG DANH SÁCH THEO TAB -->
+        ${activeSpatialTab === 'npp' ? `
+          <div class="revenue-table-wrapper">
+            <table class="revenue-table">
+              <thead>
+                <tr>
+                  <th>Mã</th>
+                  <th>Tên NPP</th>
+                  <th>Tỉnh</th>
+                  <th style="text-align:right;">Ambient</th>
+                  <th style="text-align:right;">Chilled</th>
+                  <th style="text-align:right;">Frozen</th>
+                  <th style="text-align:right;">Tổng NPP</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsNppHtml}
+              </tbody>
+            </table>
+          </div>
+        ` : `
+          <div class="revenue-table-wrapper">
+            <table class="revenue-table">
+              <thead>
+                <tr>
+                  <th>Mã Cửa Hàng</th>
+                  <th>Tên Điểm Bán</th>
+                  <th>Thiết Bị</th>
+                  <th>Phân Khúc</th>
+                  <th style="text-align:right;">DS T9 (MTD)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsOutletHtml}
+              </tbody>
+            </table>
+          </div>
+          ${r.selOutlets && r.selOutlets.length > 50 ? `<div style="font-size:0.68rem; color:#94a3b8; text-align:center; margin-top:4px;">(Đang hiển thị 50 điểm có doanh số cao nhất. Bấm "Xuất CSV" để tải đủ ${r.selOutlets.length} điểm)</div>` : ''}
+        `}
       `;
 
       panel.style.display = 'flex';
@@ -4491,36 +4731,66 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
 
     function exportSpatialRevenueCSV() {
       const r = currentSpatialResult;
-      if (!r || !r.nppList || r.nppList.length === 0) {
-        alert('Chưa có dữ liệu NPP trong vùng khoanh để xuất.');
+      if (!r) {
+        alert('Chưa có vùng khoanh nào được chọn.');
         return;
       }
 
       const lines = [];
-      lines.push('"Mã NPP","Tên NPP","Tỉnh","Miền","Trạng Thái","Giám Sát","Ambient (VNĐ)","Chilled (VNĐ)","Frozen (VNĐ)","Tổng Doanh Số (VNĐ)"');
-      
-      r.nppList.forEach(n => {
-        const row = [
-          n.code,
-          (n.name || '').replace(/"/g, '""'),
-          n.province || '',
-          n.region || '',
-          n.status || '',
-          n.is_khong_sm ? 'Không SM' : `Có SM (${n.so_nvbh} NV)`,
-          Math.round(n.sales_ambient || 0),
-          Math.round(n.sales_chilled || 0),
-          Math.round(n.sales_frozen || 0),
-          Math.round(n.sales_total || 0)
-        ];
-        lines.push(row.map(v => `"${v}"`).join(','));
-      });
+      let filename = 'Bao_Cao_Doanh_So_Vung_Khoanh_T9_2026.csv';
+
+      // Nếu đang ở Tab Điểm Bán hoặc vùng khoanh chỉ có Điểm Bán
+      if (activeSpatialTab === 'outlet' || (r.nppList.length === 0 && r.selOutlets && r.selOutlets.length > 0)) {
+        filename = 'Danh_Sach_Diem_Ban_Vung_Khoanh_T9_2026.csv';
+        lines.push('"Mã Cửa Hàng","Tên Điểm Bán","Mã NPP","Tỉnh Thành","Địa Chỉ","Cự Ly (km)","Phân Loại","Doanh Số T9 MTD (VNĐ)","Doanh Số T8 M-1 (VNĐ)","Thiết Bị Đầu Tư","Phân Khúc VPO","Hành Động Đề Xuất","NVBH Phụ Trách","Tuyến Bán Hàng"');
+        
+        r.selOutlets.forEach(o => {
+          const row = [
+            o[3] || '',
+            (o[2] || '').replace(/"/g, '""'),
+            o[4] || '',
+            o[5] || '',
+            (o[9] || '').replace(/"/g, '""'),
+            o[10] || 0,
+            o[11] || '',
+            Math.round(o[12] || 0),
+            Math.round(o[17] || 0),
+            (o[13] || 'Chưa có').replace(/"/g, '""'),
+            o[14] || '',
+            (o[15] || '').replace(/"/g, '""'),
+            (o[16] || '').replace(/"/g, '""'),
+            (o[18] || '').replace(/"/g, '""')
+          ];
+          lines.push(row.map(v => `"${v}"`).join(','));
+        });
+      } else {
+        // Xuất báo cáo NPP
+        filename = 'Doanh_So_Nhom_NPP_Khoanh_Vung_T9_2026.csv';
+        lines.push('"Mã NPP","Tên NPP","Tỉnh","Miền","Trạng Thái","Giám Sát","Ambient (VNĐ)","Chilled (VNĐ)","Frozen (VNĐ)","Tổng Doanh Số (VNĐ)"');
+        
+        r.nppList.forEach(n => {
+          const row = [
+            n.code,
+            (n.name || '').replace(/"/g, '""'),
+            n.province || '',
+            n.region || '',
+            n.status || '',
+            n.is_khong_sm ? 'Không SM' : `Có SM (${n.so_nvbh} NV)`,
+            Math.round(n.sales_ambient || 0),
+            Math.round(n.sales_chilled || 0),
+            Math.round(n.sales_frozen || 0),
+            Math.round(n.sales_total || 0)
+          ];
+          lines.push(row.map(v => `"${v}"`).join(','));
+        });
+      }
 
       const csvContent = '﻿' + lines.join(String.fromCharCode(10));
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.setAttribute('href', url);
-      link.setAttribute('download', 'Doanh_So_Nhom_NPP_Khoanh_Vung_T9_2026.csv');
+      link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

@@ -61,18 +61,19 @@ Dự án nhằm giải quyết bài toán tối ưu hóa mạng lưới phân ph
 * **Chức năng:** Click vào vị trí bất kỳ trên bản đồ để cắm cờ mở trạm C1 với hiệu ứng sóng radar tỏa ra (`radar-pulse-flag`).
 * **Tiện ích:** Điều chỉnh bán kính phục vụ (10km - 50km), có sẵn 4 Preset khu vực Mekong (Cai Lậy 25km, Đức Hòa 25km, Trà Vinh 30km, Ba Tri 25km), lưu trạng thái trong `localStorage`.
 
-### 3.3. Tính Năng Khoanh Vùng Phân Tích Doanh Số (Spatial Revenue Selection)
-* **Nút bấm:** `[📐 Khoanh Vùng Doanh Số]` (`btnSpatialSelect`).
-* **Chế độ khoanh vùng:**
-  1. **Đa giác tự do (Polygon/Lasso):** Click các đỉnh trên bản đồ để vẽ bao quanh cụm NPP, click đúp hoặc click điểm đầu để chốt vùng.
-  2. **Bán kính (Circle):** Click 1 tâm điểm và click điểm thứ 2 để kéo bán kính (km).
-  3. **Xóa vùng & Thoát.**
+### 3.3. Tính Năng Kéo Chuột Khoanh Vùng Doanh Số (Spatial Drag Selection)
+* **Nút bấm:** `[📐 Khoanh Vùng Doanh Số]` (`btnSpatialSelect`) hoặc giữ phím **`Shift` + Kéo chuột** trực tiếp trên bản đồ.
+* **4 chế độ khoanh vùng linh hoạt:**
+  1. **🖱️ Kéo chuột hộp (Box Drag - Mặc định):** Nhấn giữ chuột trái và kéo hộp chữ nhật trên bản đồ -> thả chuột là hoàn tất ngay lập tức.
+  2. **✏️ Kéo vẽ tự do (Freehand Lasso):** Nhấn giữ chuột và vẽ tự do uốn lượn quanh cụm thị trường/khu dân cư -> thả chuột tự động khép kín vùng.
+  3. **⭕ Bán kính (Circle):** Click tâm điểm và kéo/click điểm bán kính.
+  4. **📐 Đa giác đỉnh (Polygon):** Click lần lượt từng đỉnh đa giác.
 * **Bảng điều khiển nổi phân tích doanh số (`#spatialRevenuePanel`):**
-  - Tự động lọc toàn bộ NPP nằm trong vùng khoanh (thuật toán Ray-Casting & Haversine).
-  - Thống kê: Số NPP (Có SM / Không SM), Tổng doanh số T9/2026, Doanh số TB/NPP.
-  - Stacked Progress Bar trực quan: Tỷ lệ % và giá trị tiền của **Ambient**, **Chilled**, **Frozen**.
-  - Bảng danh sách chi tiết các NPP trong vùng.
-  - **Nút "Xuất CSV":** Tải ngay báo cáo UTF-8 chi tiết cho nhóm NPP vừa khoanh.
+  - **Banner Tổng Doanh Số Nổi Bật (Hero Banner):** Tổng hợp toàn bộ doanh số trong vùng khoanh (NPP Sell-in + Điểm bán Sell-out).
+  - **Lưới KPI:** Số NPP trong vùng, Doanh số NPP T9, Số Điểm Bán Lẻ trong vùng, Số lượng Tủ đông/mát đầu tư của CJ Foods.
+  - **Stacked Progress Bar:** Tỷ lệ % và giá trị tiền của Ambient, Chilled, Frozen.
+  - **Tabs chuyển đổi 2 bảng:** Tab `[🏢 Nhà Phân Phối]` và Tab `[🏪 Điểm Bán Lẻ]`.
+  - **Nút "Xuất CSV" thông minh:** Tự động tải báo cáo chi tiết theo tab đang xem (báo cáo NPP hoặc danh sách điểm bán kèm doanh số và loại tủ).
 
 ### 3.4. Dữ Liệu Doanh Số Điểm Bán (Sell-out) & Thiết Bị Đầu Tư (Tủ Đông / Mát)
 * **File nguồn:** `DoanhsoOUTLET_t92026.xlsx` -> `outlet_sales_clean.csv` -> Nhúng trực tiếp vào `outlets_data.js`.
