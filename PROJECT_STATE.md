@@ -1,5 +1,5 @@
 # TÀI LIỆU HIỆN TRẠNG DỰ ÁN RTM SPATIAL MODEL (HANDOVER & RESTART CHEAT SHEET)
-> **Cập nhật lúc:** 23/10/2026 20:10  
+> **Cập nhật lúc:** 27/10/2026 15:00  
 > **Repository Git:** https://github.com/hailp1/Cjbest.git (Branch: `main`)  
 > **Production Live URL:** https://rtm.bestcj.com/  
 > **Nền tảng Hosting:** Vercel (Auto-deployment khi push commit vào nhánh `main`)
@@ -7,131 +7,112 @@
 ---
 
 ## 1. MỤC TIÊU & BÀI TOÁN KINH DOANH (BUSINESS CONTEXT)
-Dự án nhằm giải quyết bài toán tối ưu hóa mạng lưới phân phối Route-To-Market (RTM) toàn quốc cho hệ thống hàng tiêu dùng / thực phẩm:
+Dự án nhằm giải quyết bài toán tối ưu hóa mạng lưới phân phối Route-To-Market (RTM) toàn quốc cho hệ thống thực phẩm CJ Foods:
 1. **Đo lường cự ly giao hàng thực tế:** Tính toán khoảng cách (km) theo công thức Haversine giữa tọa độ GPS của từng Nhà Phân Phối (NPP) và các Điểm Bán Lẻ (Outlets) do NPP đó quản lý.
-2. **Xác định các "Điểm nóng chảy máu chi phí logistics":** Các khách hàng có cự ly > 45km, khiến chi phí giao hàng cao, thời gian quay vòng xe dài và biên lợi nhuận bị bào mòn.
-3. **Bài toán mở Đại lý chuyển tiếp (Cross-dock / Sub-depot):**
-   - Đánh giá xem tại các khu vực xa (>45km), nên mở trạm trung chuyển **HÀNG ĐÔNG (Cold Chain)** hay **HÀNG KHÔ (Dry Chain)**.
-   - Hàng đông lạnh bắt buộc giới hạn cự ly <25-30km bằng xe máy thùng xốp để tránh rã đông; cự ly xa >45km bắt buộc phải có kho đệm đông lạnh (Sub-depot).
-4. **Trực quan hóa không gian (GIS):** Bản đồ tương tác Leaflet 100% mã nguồn mở (không cần Google API key), hỗ trợ bộ lọc đa tầng, dấu tick bật/tắt lớp, tia nối mạng lưới (Spider lines), tối ưu hóa hoàn toàn cho thiết bị di động (Smartphone).
+2. **Xác định các điểm nóng chi phí logistics:** Các khách hàng có cự ly > 45km, khiến chi phí giao hàng cao, rủi ro rã đông hàng lạnh.
+3. **Phân tích Vùng Trắng & Đề xuất mở NPP C1:**
+   - Đánh giá các vùng lõm phân phối xa NPP hiện hữu (>25-35km), mật độ Golden Stores cao nhưng chưa được bao phủ trực tiếp.
+   - 4 khu vực ưu tiên Mekong: **Cai Lậy** (Tiền Giang), **Đức Hòa** (Long An), **TP. Trà Vinh** (Trà Vinh), **Ba Tri** (Bến Tre).
+4. **Phân loại & Giám sát quản trị nhân sự NPP (Có SM vs Không SM):**
+   - Giám sát 119 NPP có nhân viên thị trường (Có SM) và 96 NPP chưa có giám sát (Không SM), cần củng cố lực lượng bán hàng.
+5. **Khoanh vùng phân tích doanh số không gian (Spatial Revenue Analytics):**
+   - Cho phép người dùng vẽ vùng tự do (Polygon) hoặc vòng tròn bán kính trên bản đồ để tính tổng doanh số và cơ cấu ngành hàng (**Ambient - Chilled - Frozen**) của nhóm NPP trong vùng khoanh từ dữ liệu T9/2026.
+   - Sẵn sàng mở rộng tích hợp phân tích doanh số chi tiết theo từng Điểm bán (Outlet) trong các phiên làm việc tiếp theo.
 
 ---
 
-## 2. KẾT QUẢ PHÂN TÍCH CHUỖI CUNG ỨNG (SUPPLY CHAIN ANALYTICS)
+## 2. DỮ LIỆU ĐÃ TÍCH HỢP (DATA SOURCES)
 
-### 2.1. Thống kê toàn mạng lưới:
-* **Tổng số NPP trong hệ thống:** 391 NPP
-  - 🟢 **Đang hoạt động:** 215 NPP (Quản lý 58.926 điểm bán thực tế)
-  - 🔴 **Ngưng hoạt động:** 176 NPP (Có nút tick lọc bỏ nhanh trên bản đồ)
-* **Tổng số Điểm Bán (Outlets):** 59.366 điểm bán có tọa độ GPS hợp lệ
-* **Cự ly giao hàng toàn quốc:**
-  - Cự ly trung bình (Mean): **13.9 km**
-  - Cự ly trung vị (Median): **7.5 km** (50% khách hàng nằm trong bán kính 7.5km)
-  - Phân vị 90% (P90): **28.5 km**
-* **Phân bố khoảng cách:**
-  - `< 15 km (Vùng an toàn giao trong ngày):` 43.197 điểm (**72.8%**)
-  - `15 - 30 km (Vùng giao hàng bình thường):` 10.863 điểm (**18.3%**)
-  - `30 - 45 km (Vùng chi phí cao):` 2.850 điểm (**4.8%**)
-  - `> 45 km (Điểm nóng cần mở trạm trung chuyển):` 2.454 điểm (**4.2%**)
-* **Phân loại theo nhóm sản phẩm:**
-  - Điểm bán có mua **Hàng Đông (Cold Chain):** 16.205 điểm (**27.5%**)
-  - Điểm bán có mua **Hàng Khô (Dry):** 56.740 điểm (**96.3%**)
-
-### 2.2. Các Điểm nóng cần mở trạm trung chuyển gấp:
-1. **Hải Phòng (NPP 1057559 - Thực Phẩm Hà Hải):**
-   - 440 khách hàng, có tới **438 khách >45km (99.5%)**, cự ly TB 60.8 km, Max 78.3 km.
-   - **61.4% là HÀNG ĐÔNG.**
-   - 👉 **ƯU TIÊN SỐ 1: BẮT BUỘC MỞ TRẠM CHUYỂN TIẾP HÀNG ĐÔNG (COLD HUB).**
-2. **Tuyên Quang (NPP 1065021 - TM & DV Tuyên Quang):**
-   - 138 khách hàng, có **100 khách >45km (72.5%)**, cự ly TB 48.1 km, Max 111.9 km.
-   - **84.8% là HÀNG ĐÔNG**, địa hình đèo dốc hiểm trở.
-   - 👉 **BẮT BUỘC MỞ TRẠM TRUNG CHUYỂN HÀNG ĐÔNG (TỦ ĐÔNG ĐỆM).**
-3. **Cà Mau (NPP 1064388 - Dịch Vụ Vệ Sinh T):**
-   - 322 khách hàng, có **298 khách >45km (92.5%)**, cự ly TB 58.9 km, Max 95.2 km.
-   - Hàng đông chỉ chiếm 16.5%, chủ yếu là hàng khô (83.5%).
-   - 👉 **ĐỀ XUẤT: MỞ ĐẠI LÝ CHUYỂN TIẾP HÀNG KHÔ (DRY HUB/TRANSIT AGENT).**
-4. **Cần Thơ (NPP 1061282 & 1029740):**
-   - Hơn 410 khách hàng >45km, cự ly Max 92.2 km. Hàng đông dưới 4%, chủ yếu là hàng khô.
-   - 👉 **ĐỀ XUẤT: MÔ HÌNH CHUYỂN TẢI HÀNG KHÔ VỆ TINH.**
+| Tên Dữ Liệu | Nguồn File Gốc | File Đã Chuẩn Hóa | Số Lượng Bản Ghi | Trạng Thái / Ghi Chú |
+|:---|:---|:---|:---:|:---|
+| **Danh Sách NPP** | `final_combined_391_map_data.json` | Nhúng trực tiếp trong `ALL_NPPS` | **391 NPP** | 215 Active, 176 Inactive, đầy đủ Lat/Lng, địa chỉ, tỉnh thành, miền. |
+| **Phân Loại NPP & Nhân Sự** | `loaiNPP.xlsx` (Fasoo DRM) | `loai_npp.csv` | **391 NPP** | 119 Có SM, 96 Không SM. Chứa Tên GSBH, ASM/RSM, Office, Top 50, Số NVBH. |
+| **Dữ Liệu Điểm Bán (Outlets)** | `Shop_all.csv` (Fasoo DRM) | `outlets_data.js` | **59,366 Outlets** | Đầy đủ tọa độ GPS, mã cửa hàng, loại hàng (Đông/Khô), cự ly đến NPP. |
+| **Census Cửa Hàng Mekong** | `shop.csv` / Báo cáo Census | Trực tiếp trong phân tích | **56,878 Cửa hàng** | 639 Golden Stores (Hạng S, A, B), tăng lên khi lấy thêm nhóm C. |
+| **Doanh Số T9/2026 NPP** | `Doanhso_t92026.xlsx` (Fasoo DRM) | `doanh_so_t92026_clean.csv` | **159 NPP** | Khớp 100% với NPP trên bản đồ. Tổng doanh số: **134.3 Tỷ VNĐ** (Ambient 40.1 Tỷ, Chilled 6.95 Tỷ, Frozen 87.2 Tỷ). |
 
 ---
 
-## 3. KIẾN TRÚC DỰ ÁN & CÁC FILE QUAN TRỌNG
+## 3. CÁC TÍNH NĂNG ĐÃ HOÀN THIỆN TRÊN HỆ THỐNG
 
+### 3.1. Bản Đồ Không Gian Phân Phối (`index.html` & `ban_do_khong_gian_rtm_mekong.html`)
+* **Kiến trúc Leaflet GIS:** Chạy 100% offline/tự chủ, không phụ thuộc API key trả phí.
+* **Bộ lọc đa tầng:**
+  - Lọc theo Miền, Vùng, Tỉnh/Thành phố.
+  - Lọc theo trạng thái hoạt động: Nút `[Bỏ NPP Ngưng]` lọc bỏ 176 NPP ngưng hoạt động.
+  - Lọc theo nhân sự giám sát: Nút `[Bỏ NPP Không SM]` (`btnQuickHideKhongSM`), khi bấm sẽ ẩn hoàn toàn 96 NPP không có nhân viên thị trường và toàn bộ điểm bán của các NPP này.
+  - Lọc điểm bán theo ngành hàng: Hàng Đông (`DONG`), Hàng Khô (`KHO`), hoặc cả hai.
+  - Lọc điểm bán xa: `Chỉ hiện điểm xa >45km`.
+* **Hiển thị Marker & Phân Biệt Màu Sắc Trực Quan:**
+  - 🟢 **NPP Có SM:** Màu xanh ngọc lục bảo (`#059669`) + icon `fa-user-tie`.
+  - 🔴 **NPP Không SM:** Màu đỏ cảnh báo (`#dc2626`) + icon `fa-user-slash` + hiệu ứng vòng nhấp nháy `pulse-sm-warning`.
+  - ⚫ **NPP Ngưng Hoạt Động:** Màu xám đậm (`#475569`) + icon `fa-lock`.
+* **Hiển thị Tooltip Rê Chuột (Hover):**
+  - NPP Có SM: Hiển thị `NPP [Tên NPP] ( X SM)` (ví dụ: `NPP TRẦN ĐIỀN ( 3SM)`).
+  - NPP Không SM: Giữ nguyên `⚠️ NPP Không Có SM (Cần giám sát)`.
+  - NPP Ngưng: `NPP Ngưng Hoạt Động`.
+* **Thẻ Thông Tin Popup Chi Tiết:**
+  - Popup NPP: Hiển thị ngắn gọn tình trạng nhân sự: `⚠️ Không có nhân viên (0 NV)` hoặc `👤 Có X nhân viên`. Hiển thị thêm **Doanh số T9/2026** (Ambient, Chilled, Frozen, Tổng cộng).
+  - Popup Điểm bán: Hiển thị rõ **Tên NPP Quản lý** kèm **Mã NPP**.
+
+### 3.2. Tính Năng Cắm Cờ Dự Kiến Mở NPP / C1
+* **Nút bấm:** `[🚩 Cắm Cờ Dự Kiến]`.
+* **Chức năng:** Click vào vị trí bất kỳ trên bản đồ để cắm cờ mở trạm C1 với hiệu ứng sóng radar tỏa ra (`radar-pulse-flag`).
+* **Tiện ích:** Điều chỉnh bán kính phục vụ (10km - 50km), có sẵn 4 Preset khu vực Mekong (Cai Lậy 25km, Đức Hòa 25km, Trà Vinh 30km, Ba Tri 25km), lưu trạng thái trong `localStorage`.
+
+### 3.3. Tính Năng Khoanh Vùng Phân Tích Doanh Số (Spatial Revenue Selection)
+* **Nút bấm:** `[📐 Khoanh Vùng Doanh Số]` (`btnSpatialSelect`).
+* **Chế độ khoanh vùng:**
+  1. **Đa giác tự do (Polygon/Lasso):** Click các đỉnh trên bản đồ để vẽ bao quanh cụm NPP, click đúp hoặc click điểm đầu để chốt vùng.
+  2. **Bán kính (Circle):** Click 1 tâm điểm và click điểm thứ 2 để kéo bán kính (km).
+  3. **Xóa vùng & Thoát.**
+* **Bảng điều khiển nổi phân tích doanh số (`#spatialRevenuePanel`):**
+  - Tự động lọc toàn bộ NPP nằm trong vùng khoanh (thuật toán Ray-Casting & Haversine).
+  - Thống kê: Số NPP (Có SM / Không SM), Tổng doanh số T9/2026, Doanh số TB/NPP.
+  - Stacked Progress Bar trực quan: Tỷ lệ % và giá trị tiền của **Ambient**, **Chilled**, **Frozen**.
+  - Bảng danh sách chi tiết các NPP trong vùng.
+  - **Nút "Xuất CSV":** Tải ngay báo cáo UTF-8 chi tiết cho nhóm NPP vừa khoanh.
+
+### 3.4. Slide Báo Cáo Chiến Lược Mekong 2027
+* **File:** [slide_mekong_rtm_2027.html](file:///d:/SE_Project/RTM_Model/slide_mekong_rtm_2027.html) (12 slides tương tác, có chế độ thuyết trình phím mũi tên).
+* **Báo cáo phân tích chuyên sâu:** [BAO_CAO_PHAN_TICH_RTM_VUNG_TRANG_VA_DE_XUAT_C1.md](file:///d:/SE_Project/RTM_Model/BAO_CAO_PHAN_TICH_RTM_VUNG_TRANG_VA_DE_XUAT_C1.md).
+* **Bản PowerPoint gốc:** `Regional Initiative_MKD_v2.pptx`.
+
+---
+
+## 4. QUY TRÌNH BUILD & RELEASE MÃ NGUỒN
+
+Tất cả các thay đổi giao diện và dữ liệu bản đồ đều được sinh tự động thông qua script `build_app.py`:
+
+```bash
+# 1. Chạy script build để tạo đồng bộ index.html và ban_do_khong_gian_rtm_mekong.html
+python build_app.py
+
+# 2. Kiểm tra trạng thái git
+git status
+
+# 3. Stage và commit
+git add build_app.py index.html ban_do_khong_gian_rtm_mekong.html doanh_so_t92026_clean.csv PROJECT_STATE.md README.md
+git commit -m "feat/fix: mô tả nội dung commit"
+
+# 4. Push lên GitHub (Vercel tự động build & deploy lên production rtm.bestcj.com trong 30 giây)
+git push origin main
 ```
-d:\SE_Project\RTM_Model/
-│
-├── index.html                           # Entrypoint chính (Vercel phục vụ tại /)
-├── ban_do_khong_gian_rtm_mekong.html    # Bản đồ GIS Leaflet toàn quốc (cùng nội dung index.html)
-├── rtm_dashboard_mien_tay.html          # Dashboard thống kê RTM miền Tây
-├── vercel.json                          # Cấu hình Vercel Headers (Content-Type, Content-Disposition, Cache-Control)
-│
-├── outlets_data.js                      # Dữ liệu nén 59.366 outlets dạng mảng compact (~11.8MB, nạp defer)
-│                                        # Cấu trúc phần tử: [lat, lng, name, code, npp_code, tinh, vung, mien, channel, addr, dist, ptype]
-├── npp_analytics_data.js                # Dữ liệu phân tích cự ly & hub 388 NPP (~170KB, nạp defer)
-│                                        # Cấu trúc: [{npp_code, npp_name, status, is_active, province, total_outlets, avg_dist, max_dist, remote_outlets_45km, cold_pct, farthest_outlet}]
-├── chart.min.js                         # Thư viện Chart.js local
-│
-├── Raw Data Danh Sách Nhà Phân Phối...  # File nguồn NPP (.xlsb)
-├── Raw Data Danh Sách Profile Khách Hàng... # File nguồn Profile khách hàng (.xlsb)
-│
-├── PROJECT_STATE.md                     # Tài liệu này (Lưu giữ hiện trạng dự án)
-└── README.md                            # Hướng dẫn sử dụng & tổng quan
-```
 
-### Thư mục Scratch & Script tái tạo dữ liệu (khi cần build lại):
-Được lưu tại: `C:\Users\IT-Backup\.gemini\antigravity-ide\brain\05b5759a-74ee-4579-a357-dad63829fe76\scratch\`
-* `final_combined_391_map_data.json`: File JSON chứa thông tin chi tiết 391 NPP đã làm sạch.
-* `cleaned_customers.json`: 59.367 khách hàng đã tính toán cự ly.
-* `generate_npp_analytics.py`: Script tính toán trung bình cự ly, khách hàng xa nhất và tạo `npp_analytics_data.js`.
-* `build_complete_app_with_analytics.py`: Script biên dịch và sinh ra `index.html` và `ban_do_khong_gian_rtm_mekong.html`.
+> [!NOTE]
+> **Lưu ý khi mở file Excel Fasoo DRM:**
+> Các file gốc nội bộ của công ty (`.xlsx`, `.csv`) được bảo vệ bằng Fasoo DRM. Khi cần đọc các file mới do người dùng cung cấp (ví dụ: file doanh số outlet sau này), hãy sử dụng script PowerShell qua Excel COM object (như mẫu trong `scratch/export_doanhso_csv.ps1`) để chuyển sang CSV UTF-8 sạch trước khi nạp vào Python.
 
 ---
 
-## 4. CÁC TÍNH NĂNG ĐÃ TRIỂN KHAI HOÀN TẤT TRÊN WEB & MOBILE
+## 5. KẾ HOẠCH CHO PHIÊN LÀM VIỆC TIẾP THEO (NEXT STEPS)
 
-1. **Khắc phục triệt để lỗi tải file `document.txt` trên điện thoại:**
-   - Đã cấu hình chuẩn `Content-Type: text/html; charset=utf-8` và `Content-Disposition: inline` trong `vercel.json`.
-   - Cơ chế tải nạp bất đồng bộ (`defer` + polling check): Màn hình và 391 NPP hiển thị trong 0.2s, 59.4k outlets tải ngầm không làm đơ giật máy.
-2. **Bộ lọc Trạng thái NPP & Nút tích Bỏ NPP Ngưng hoạt động:**
-   - Dropdown chọn trạng thái: `Tất cả Trạng thái (391)` / `🟢 Đang Hoạt Động (215)` / `🔴 Ngưng Hoạt Động (176)`.
-   - **Nút tích `[x] 🚫 Bỏ NPP Ngưng (176)`** trên thanh công cụ: Chạm vào là ẩn ngay lập tức 176 NPP ngưng và các điểm bán của họ.
-   - **Nút bấm 1 chạm trên bản đồ:** Nút nổi `🚫 Bỏ NPP Ngưng` rất tiện cho ngón tay cái khi lướt điện thoại.
-3. **Giao Diện Đánh Giá Chiến Lược 6 Vùng & Khuyến Nghị RTM (`📋 Đánh Giá 6 Vùng`):**
-   - **Nút bấm trực tiếp trên Header (`📋 Đánh Giá 6 Vùng`) & Nút nổi trên bản đồ:** Mở ngay Tab 1 phân tích chiến lược.
-   - **Bảng Ma Trận So Sánh Toàn Diện 6 Vùng:** So sánh chi tiết Số NPP (Chạy/Ngưng), Tổng điểm bán, Tỷ lệ đông lạnh, Cự ly TB gia quyền, Cự ly Max, Điểm nóng >45km, Đánh giá rủi ro (🔴 Cực kỳ cao / 🟡 Trung bình / 🟢 An toàn) và nút bấm 1 chạm để lọc nhanh các NPP của từng vùng.
-   - **6 Thẻ Phân Tích Chuyên Sâu Từng Vùng (Regional Deep-dive Cards):** Chỉ rõ các điểm nghẽn nguy cấp (NPP Hà Hải ở Hải Phòng, NPP Hưng Lộc Phát & Trần Điền ở Miền Tây, NPP Duy Thúy ở Tuyên Quang) kèm lời khuyên RTM hành động thực tế (Mở Cold Hub, Mở Dry Hub, Thiết lập MOQ & Tần suất, Re-zoning ranh giới).
-   - **Lộ trình 3 Giai Đoạn Tái Cấu Trúc Toàn Quốc:** Giai đoạn 1 (Cấp bách chuỗi lạnh) -> Giai đoạn 2 (Tái cấu trúc cước Miền Tây) -> Giai đoạn 3 (Tối ưu hóa & Chống chồng lấn).
-4. **Bảng Phân Tích Cự Ly & Hub Chi Tiết 388 NPP (`📊 Cự Ly & Hub` - Tab 2):**
-   - Tích hợp hệ thống chuyển Tab mượt mà giữa Đánh giá chiến lược và Bảng chi tiết 388 NPP.
-   - Bộ lọc theo Vùng & Miền, 4 Thẻ KPI động, nút "Xem" khách xa nhất và nút "Hiện Outlet" mở nhanh toàn bộ điểm bán của NPP đó.
-5. **Nút Hiện Outlet & Quản lý hiển thị điểm bán đa tầng:**
-   - **Nút nổi trên bản đồ:** `[🏪 Hiện/Ẩn Điểm Bán]` trên thanh điều khiển nhanh `map-quick-controls`, bấm 1 chạm để bật/tắt toàn bộ điểm bán toàn quốc (đồng bộ checkbox thanh lọc).
-   - **Nút trên Popup NPP:** `[🏪 Hiện Điểm Bán (X)]` cho phép lọc nhanh chỉ hiển thị các điểm bán của NPP đó, vẽ tia nối và zoom vừa vặn cụm outlets.
-   - **Thanh Banner nổi khôi phục:** Khi đang xem riêng điểm bán của 1 NPP, xuất hiện thanh thông báo nổi trên đầu bản đồ với nút `[Hiện Tất Cả]` để quay lại góc nhìn tổng thể.
-   - **Nút trên từng thẻ NPP ở Sidebar & Mobile Drawer:** Xem nhanh tia nối hoặc bật các điểm bán trực thuộc.
-6. **Bộ dấu tick hiển thị lớp (Layer Visibility Toggles):**
-   - `☑️ NPP (391)`: Bật/tắt hiển thị NPP.
-   - `☑️ Điểm Bán (59.4k)`: Bật/tắt hiển thị khách hàng.
-   - `☑️ Tia Nối`: Vẽ mạng lưới liên kết NPP -> Khách hàng.
-   - `☑️ Hàng Đông` / `☑️ Hàng Khô`: Lọc theo phân loại sản phẩm.
-   - `☑️ Cự Ly > 45km`: Điểm sáng các vị trí cần mở hub trung chuyển.
-
----
-
-## 5. HƯỚNG DẪN DÀNH CHO AGENT TIẾP THEO (DEVELOPER WORKFLOW)
-
-Khi restart lại Antigravity, **KHÔNG CẦN ĐỌC LẠI TOÀN BỘ CODE**, chỉ cần làm theo các bước sau:
-
-1. **Để chỉnh sửa hoặc biên dịch lại bản đồ:**
-   - Script build chính thức đặt trực tiếp tại: `d:\SE_Project\RTM_Model\build_app.py`
-   - Chạy: `python d:\SE_Project\RTM_Model\build_app.py` (Script tự động ghi đè chuẩn xác vào cả `index.html` và `ban_do_khong_gian_rtm_mekong.html`).
-2. **Để commit và deploy lên Vercel:**
-   ```powershell
-   git add ban_do_khong_gian_rtm_mekong.html index.html vercel.json npp_analytics_data.js build_app.py PROJECT_STATE.md README.md
-   git commit -m "feat: filter cu ly hub theo vung va lay lai nut hien outlet"
-   git push origin main
-   ```
-   *(Lưu ý trên Windows PowerShell dùng `;` để phân tách lệnh, không dùng `&&`)*.
-3. **Kiểm tra live:**
-   Truy cập `https://rtm.bestcj.com/`. Vercel tự động build và cập nhật trong 10-15 giây.
+Khi người dùng quay lại trong phiên tiếp theo, các công việc đã được chuẩn bị sẵn:
+1. **Tích hợp file chi tiết doanh số theo Điểm bán (Outlet-level Sales Data):**
+   - Khi người dùng gửi file doanh số chi tiết từng Outlet, nạp dữ liệu vào cấu trúc `filteredOutlets`.
+   - Hàm `processSpatialSelection` trong `build_app.py` đã sẵn sàng module hóa để tính đồng thời cả doanh số NPP lẫn doanh số các Điểm bán nằm trong vùng khoanh.
+2. **Nâng cấp công cụ khoanh vùng:**
+   - Bổ sung tùy chọn chọn trực tiếp các NPP bằng cách giữ phím Shift + Click trên bản đồ (Multi-select NPPs).
+   - Thêm bộ lọc doanh số (ví dụ: Chỉ khoanh các NPP có doanh số > 500 triệu/tháng).
+3. **Mở rộng báo cáo đề xuất C1 Mekong:**
+   - Kết hợp doanh số T9/2026 vào từng vùng trắng (Cai Lậy, Đức Hòa, Trà Vinh, Ba Tri) để dự phóng doanh thu khi chuyển đổi các cửa hàng sang C1 trực thuộc.
