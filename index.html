@@ -1446,15 +1446,15 @@
       
       <!-- BỘ LỌC TRẠNG THÁI SM -->
       <div class="filter-group">
-        <label class="filter-label"><i class="fa-solid fa-user-tie"></i> Giám Sát Bán Hàng (SM / NVBH):</label>
-        <select id="filterSM" class="filter-select" onchange="onFilterSMSelectChange()">
-          <option value="ALL">Tất cả (Có & Không SM)</option>
-          <option value="CO_SM">👤 Chỉ NPP Có SM Giám Sát</option>
-          <option value="KHONG_SM">⚠️ Chỉ NPP Không Có SM</option>
+        <label class="filter-label"><i class="fa-solid fa-user-tie"></i> Nhân Sự & Giám Sát (SM):</label>
+        <select id="filterSM" class="filter-select" onchange="applyFilters()">
+          <option value="ALL">Tất cả (Có SM & Không SM)</option>
+          <option value="CO_SM">👤 Chỉ NPP Có Nhân Viên (Ẩn Không SM)</option>
+          <option value="KHONG_SM">⚠️ Chỉ NPP Không Có Nhân Viên</option>
         </select>
-        <label style="display:flex; align-items:center; gap:6px; font-size:0.75rem; color:#fca5a5; cursor:pointer; margin-top:5px; user-select:none;">
-          <input type="checkbox" id="chkOnlyKhongSM" onchange="syncKhongSMCheckbox(this.checked)" style="accent-color:#ef4444; width:15px; height:15px; cursor:pointer;">
-          <span><strong>Chỉ hiện NPP Không Có SM</strong></span>
+        <label style="display:flex; align-items:center; gap:6px; font-size:0.75rem; color:#fca5a5; cursor:pointer; margin-top:6px; user-select:none;">
+          <input type="checkbox" id="chkHideKhongSM" onchange="syncHideKhongSMFromCheckbox(this.checked)" style="accent-color:#ef4444; width:15px; height:15px; cursor:pointer;">
+          <span id="lblChkHideKhongSM"><strong>Ẩn các NPP Không Có SM (Không hiển thị)</strong></span>
         </label>
       </div>
 
@@ -1550,9 +1550,9 @@
       
       <!-- NÚT CẮM CỜ NPP / C1 DỰ KIẾN MỞ -->
       
-      <!-- NÚT LỌC NHANH NPP KHÔNG CÓ SM -->
-      <button class="quick-btn" id="btnQuickFilterKhongSM" onclick="toggleQuickKhongSM()" style="border-color: rgba(239, 68, 68, 0.7); color: #fca5a5;">
-        <i class="fa-solid fa-user-slash" style="color:#ef4444;"></i> <span id="btnQuickKhongSMText">⚠️ Lọc NPP Không SM</span>
+      <!-- NÚT BỎ / ẨN NPP KHÔNG CÓ SM -->
+      <button class="quick-btn" id="btnQuickHideKhongSM" onclick="toggleHideKhongSMQuick()" style="border-color: rgba(239, 68, 68, 0.7); color: #fca5a5;" title="Bấm để ẩn hoặc hiện toàn bộ các NPP không có nhân viên giám sát">
+        <i class="fa-solid fa-user-slash" style="color:#ef4444;"></i> <span id="btnQuickHideKhongSMText">Bỏ NPP Không SM</span>
       </button>
 
       <button class="quick-btn" id="btnTogglePinMode" onclick="togglePinMode()" style="border-color: #f59e0b; color: #fef08a; background: rgba(245, 158, 11, 0.15);">
@@ -2395,8 +2395,19 @@
       const tinhVal = document.getElementById('filterTinh').value;
       const statusVal = document.getElementById('filterStatus') ? document.getElementById('filterStatus').value : 'ALL';
       const hideInactive = document.getElementById('chkHideInactive') ? document.getElementById('chkHideInactive').checked : false;
+      const hideKhongSM = document.getElementById('chkHideKhongSM') ? document.getElementById('chkHideKhongSM').checked : false;
       const smVal = document.getElementById('filterSM') ? document.getElementById('filterSM').value : 'ALL';
       const searchVal = document.getElementById('filterSearch').value.toLowerCase().trim();
+
+      // Đồng bộ trạng thái visual nút Bỏ NPP Không SM trên bản đồ
+      const btnQuickKSM = document.getElementById('btnQuickHideKhongSM');
+      const textQuickKSM = document.getElementById('btnQuickHideKhongSMText');
+      if (btnQuickKSM) {
+        btnQuickKSM.classList.toggle('active-inactive-btn', hideKhongSM || smVal === 'CO_SM');
+        if (textQuickKSM) {
+          textQuickKSM.textContent = (hideKhongSM || smVal === 'CO_SM') ? 'Đã Ẩn NPP Không SM' : 'Bỏ NPP Không SM';
+        }
+      }
 
       const allowCold = document.getElementById('chkToggleCold').checked;
       const allowDry = document.getElementById('chkToggleDry').checked;
@@ -2424,6 +2435,11 @@
         // Bỏ NPP ngưng hoạt động khi nút tích Bỏ NPP Ngưng được chọn
         if (hideInactive && !n.status.includes('Đang')) return false;
 
+        // Ẩn hoàn toàn NPP không có SM nếu chọn Bỏ NPP Không SM hoặc lọc Chỉ Có SM
+        if (hideKhongSM && n.is_khong_sm) return false;
+        if (smVal === 'CO_SM' && n.is_khong_sm) return false;
+        if (smVal === 'KHONG_SM' && !n.is_khong_sm) return false;
+
         const matchStatus = (statusVal === 'ALL') || 
                             (statusVal === 'ACTIVE' && n.status.includes('Đang')) || 
                             (statusVal === 'INACTIVE' && !n.status.includes('Đang'));
@@ -2445,8 +2461,8 @@
         if (vungVal !== 'ALL' && o[6] !== vungVal) return false;
         if (tinhVal !== 'ALL' && o[5] !== tinhVal) return false;
 
-        // Nếu bỏ NPP ngưng hoặc lọc theo trạng thái, ẩn luôn các outlet thuộc NPP bị loại bỏ
-        if ((hideInactive || statusVal !== 'ALL') && !matchingNppCodeSet.has(String(o[4]))) return false;
+        // Tự động ẩn toàn bộ điểm bán nếu NPP của điểm bán đó bị ẩn (do lọc vùng, ngưng hoạt động, hoặc không có SM)
+        if (!matchingNppCodeSet.has(String(o[4]))) return false;
         if (remoteOnly && o[10] < 45) return false;
 
         const ptype = o[11];
@@ -3612,57 +3628,36 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
 
 
     // ==========================================
-    // SM FILTER HANDLERS (CÓ SM VS KHÔNG SM)
+        // ==========================================
+    // BỘ LỌC ẨN / HIỆN NPP KHÔNG CÓ SM
     // ==========================================
-    function toggleQuickKhongSM() {
+    function toggleHideKhongSMQuick() {
+      const chk = document.getElementById('chkHideKhongSM');
       const smSelect = document.getElementById('filterSM');
-      const btn = document.getElementById('btnQuickFilterKhongSM');
-      const chk = document.getElementById('chkOnlyKhongSM');
 
-      if (!smSelect) return;
-
-      if (smSelect.value === 'KHONG_SM') {
-        smSelect.value = 'ALL';
-        if (chk) chk.checked = false;
-        if (btn) btn.classList.remove('active-khong-sm');
-      } else {
-        smSelect.value = 'KHONG_SM';
-        if (chk) chk.checked = true;
-        if (btn) btn.classList.add('active-khong-sm');
-      }
-      applyFilters();
-    }
-
-    function onFilterSMSelectChange() {
-      const smSelect = document.getElementById('filterSM');
-      const btn = document.getElementById('btnQuickFilterKhongSM');
-      const chk = document.getElementById('chkOnlyKhongSM');
-
-      if (smSelect) {
-        const isKSM = smSelect.value === 'KHONG_SM';
-        if (chk) chk.checked = isKSM;
-        if (btn) {
-          if (isKSM) btn.classList.add('active-khong-sm');
-          else btn.classList.remove('active-khong-sm');
+      if (chk) {
+        chk.checked = !chk.checked;
+        if (chk.checked) {
+          if (smSelect) smSelect.value = 'CO_SM';
+        } else {
+          if (smSelect && smSelect.value === 'CO_SM') smSelect.value = 'ALL';
         }
       }
       applyFilters();
     }
 
-    function syncKhongSMCheckbox(isChecked) {
+    function syncHideKhongSMFromCheckbox(isChecked) {
       const smSelect = document.getElementById('filterSM');
-      const btn = document.getElementById('btnQuickFilterKhongSM');
-
       if (smSelect) {
-        smSelect.value = isChecked ? 'KHONG_SM' : 'ALL';
-      }
-      if (btn) {
-        if (isChecked) btn.classList.add('active-khong-sm');
-        else btn.classList.remove('active-khong-sm');
+        if (isChecked) {
+          smSelect.value = 'CO_SM';
+        } else {
+          if (smSelect.value === 'CO_SM') smSelect.value = 'ALL';
+        }
       }
       applyFilters();
     }
 
-</script>
+    </script>
 </body>
 </html>
