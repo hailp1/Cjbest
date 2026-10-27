@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>RTM Spatial Model - Bản Đồ Phân Phối Toàn Quốc & Phân Tích Cự Ly Giao Hàng</title>
@@ -4346,8 +4347,9 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         return;
       }
 
-      let csvContent = '﻿"Mã NPP","Tên NPP","Tỉnh","Miền","Trạng Thái","Giám Sát","Ambient (VNĐ)","Chilled (VNĐ)","Frozen (VNĐ)","Tổng Doanh Số (VNĐ)"
-';
+      const lines = [];
+      lines.push('"Mã NPP","Tên NPP","Tỉnh","Miền","Trạng Thái","Giám Sát","Ambient (VNĐ)","Chilled (VNĐ)","Frozen (VNĐ)","Tổng Doanh Số (VNĐ)"');
+      
       r.nppList.forEach(n => {
         const row = [
           n.code,
@@ -4361,15 +4363,15 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
           Math.round(n.sales_frozen || 0),
           Math.round(n.sales_total || 0)
         ];
-        csvContent += row.map(v => `"${v}"`).join(',') + '
-';
+        lines.push(row.map(v => `"${v}"`).join(','));
       });
 
+      const csvContent = '﻿' + lines.join(String.fromCharCode(10));
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.setAttribute('href', url);
-      link.setAttribute('download', `Doanh_So_Nhom_NPP_Khoanh_Vung_T9_2026.csv`);
+      link.setAttribute('download', 'Doanh_So_Nhom_NPP_Khoanh_Vung_T9_2026.csv');
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

@@ -138,6 +138,7 @@ html_template = f'''<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>RTM Spatial Model - Bản Đồ Phân Phối Toàn Quốc & Phân Tích Cự Ly Giao Hàng</title>
@@ -4475,7 +4476,9 @@ html_template = f'''<!DOCTYPE html>
         return;
       }}
 
-      let csvContent = '\uFEFF"Mã NPP","Tên NPP","Tỉnh","Miền","Trạng Thái","Giám Sát","Ambient (VNĐ)","Chilled (VNĐ)","Frozen (VNĐ)","Tổng Doanh Số (VNĐ)"\n';
+      const lines = [];
+      lines.push('"Mã NPP","Tên NPP","Tỉnh","Miền","Trạng Thái","Giám Sát","Ambient (VNĐ)","Chilled (VNĐ)","Frozen (VNĐ)","Tổng Doanh Số (VNĐ)"');
+      
       r.nppList.forEach(n => {{
         const row = [
           n.code,
@@ -4489,14 +4492,15 @@ html_template = f'''<!DOCTYPE html>
           Math.round(n.sales_frozen || 0),
           Math.round(n.sales_total || 0)
         ];
-        csvContent += row.map(v => `"${{v}}"`).join(',') + '\n';
+        lines.push(row.map(v => `"${{v}}"`).join(','));
       }});
 
+      const csvContent = '\uFEFF' + lines.join(String.fromCharCode(10));
       const blob = new Blob([csvContent], {{ type: 'text/csv;charset=utf-8;' }});
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.setAttribute('href', url);
-      link.setAttribute('download', `Doanh_So_Nhom_NPP_Khoanh_Vung_T9_2026.csv`);
+      link.setAttribute('download', 'Doanh_So_Nhom_NPP_Khoanh_Vung_T9_2026.csv');
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
