@@ -24,6 +24,62 @@ active_count = sum(1 for n in npps if 'Đang' in n.get('status', ''))
 inactive_count = total_count - active_count
 print(f"Loaded {total_count} NPPs ({active_count} active, {inactive_count} inactive).")
 
+# 1.1 Enrich NPPs with SM and Sales Rep info from loai_npp.csv
+loai_csv_path = 'd:/SE_Project/RTM_Model/loai_npp.csv'
+loai_dict = {}
+if os.path.exists(loai_csv_path):
+    import csv
+    with open(loai_csv_path, 'r', encoding='utf-8') as lf:
+        reader = csv.DictReader(lf)
+        for r in reader:
+            raw_code = r.get('MaNPP', '').strip()
+            if not raw_code:
+                continue
+            try:
+                c = str(int(float(raw_code)))
+            except:
+                c = raw_code
+            so_nvbh_raw = r.get('SoNVBH', '').strip()
+            is_ksm = so_nvbh_raw.lower() in ['không sm', 'khong sm', '0', '', 'nan', 'none']
+            top50_raw = r.get('Top50', '').strip()
+            loai_dict[c] = {
+                'so_nvbh': 0 if is_ksm else (int(so_nvbh_raw) if so_nvbh_raw.isdigit() else 1),
+                'so_nvbh_text': 'Không SM' if is_ksm else f"{so_nvbh_raw} NVBH",
+                'is_khong_sm': is_ksm,
+                'sm_status': 'Không SM' if is_ksm else 'Có SM',
+                'top50': 1 if top50_raw == '1' else 0,
+                'gsbh': r.get('TenGSBH', '').strip(),
+                'asm_rsm': r.get('ASM_RSM', '').strip(),
+                'office': r.get('Office', '').strip()
+            }
+
+for n in npps:
+    c = str(n.get('code', '')).strip()
+    if c in loai_dict:
+        info = loai_dict[c]
+        n['so_nvbh'] = info['so_nvbh']
+        n['so_nvbh_text'] = info['so_nvbh_text']
+        n['is_khong_sm'] = info['is_khong_sm']
+        n['sm_status'] = info['sm_status']
+        n['top50'] = info['top50']
+        n['gsbh'] = info['gsbh']
+        n['asm_rsm'] = info['asm_rsm']
+        n['office'] = info['office']
+    else:
+        is_inact = not n.get('status', '').startswith('Đang')
+        n['so_nvbh'] = 0
+        n['so_nvbh_text'] = 'Chưa gán SM' if not is_inact else 'Ngưng hoạt động'
+        n['is_khong_sm'] = True
+        n['sm_status'] = 'Không SM'
+        n['top50'] = 0
+        n['gsbh'] = ''
+        n['asm_rsm'] = ''
+        n['office'] = ''
+
+ksm_active = sum(1 for n in npps if n.get('status', '').startswith('Đang') and n.get('is_khong_sm'))
+csm_active = sum(1 for n in npps if n.get('status', '').startswith('Đang') and not n.get('is_khong_sm'))
+print(f"Enriched SM status: {csm_active} Active Có SM, {ksm_active} Active Không SM.")
+
 # 2. Build complete HTML
 npps_json_str = json.dumps(npps, ensure_ascii=False)
 
@@ -1368,6 +1424,46 @@ html_template = f'''<!DOCTYPE html>
       cursor: crosshair !important;
     }}
 
+
+    /* ===== PHÂN BIỆT 2 LOẠI NPP (CÓ SM VS KHÔNG SM) ===== */
+    /* 1. NPP CÓ SM (Xanh Ngọc / Emerald Green) */
+    .npp-icon-co-sm {{
+      background: #059669 !important;
+      border: 2px solid #34d399 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5) !important;
+    }}
+    .npp-icon-co-sm:hover {{
+      transform: scale(1.25);
+      z-index: 1000 !important;
+    }}
+
+    /* 2. NPP KHÔNG CÓ SM (Cam Đỏ / Amber-Red Warning) */
+    .npp-icon-khong-sm {{
+      background: #dc2626 !important;
+      border: 2px solid #fca5a5 !important;
+      color: #fef08a !important;
+      box-shadow: 0 0 14px rgba(239, 68, 68, 0.75) !important;
+      animation: pulse-sm-warning 2.2s infinite ease-in-out;
+    }}
+    .npp-icon-khong-sm:hover {{
+      transform: scale(1.25);
+      z-index: 1000 !important;
+    }}
+
+    @keyframes pulse-sm-warning {{
+      0%, 100% {{ box-shadow: 0 0 8px rgba(239, 68, 68, 0.6); }}
+      50% {{ box-shadow: 0 0 18px rgba(239, 68, 68, 0.95); }}
+    }}
+
+    /* Quick button active state for Không SM */
+    .quick-btn.active-khong-sm {{
+      background: rgba(239, 68, 68, 0.35) !important;
+      border-color: #ef4444 !important;
+      color: #fca5a5 !important;
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.5) !important;
+    }}
+
 </style>
 </head>
 <body>
@@ -1430,6 +1526,21 @@ html_template = f'''<!DOCTYPE html>
           <option value="ACTIVE">🟢 Đang Hoạt Động (215 NPP)</option>
           <option value="INACTIVE">🔴 Ngưng Hoạt Động (176 NPP)</option>
         </select>
+      </div>
+
+      
+      <!-- BỘ LỌC TRẠNG THÁI SM -->
+      <div class="filter-group">
+        <label class="filter-label"><i class="fa-solid fa-user-tie"></i> Giám Sát Bán Hàng (SM / NVBH):</label>
+        <select id="filterSM" class="filter-select" onchange="onFilterSMSelectChange()">
+          <option value="ALL">Tất cả (Có & Không SM)</option>
+          <option value="CO_SM">👤 Chỉ NPP Có SM Giám Sát</option>
+          <option value="KHONG_SM">⚠️ Chỉ NPP Không Có SM</option>
+        </select>
+        <label style="display:flex; align-items:center; gap:6px; font-size:0.75rem; color:#fca5a5; cursor:pointer; margin-top:5px; user-select:none;">
+          <input type="checkbox" id="chkOnlyKhongSM" onchange="syncKhongSMCheckbox(this.checked)" style="accent-color:#ef4444; width:15px; height:15px; cursor:pointer;">
+          <span><strong>Chỉ hiện NPP Không Có SM</strong></span>
+        </label>
       </div>
 
       <div class="filter-group" style="flex: 1; min-width: 160px;">
@@ -1523,6 +1634,12 @@ html_template = f'''<!DOCTYPE html>
       <!-- NÚT HIỆN / ẨN OUTLET TRỰC TIẾP TRÊN BẢN ĐỒ -->
       
       <!-- NÚT CẮM CỜ NPP / C1 DỰ KIẾN MỞ -->
+      
+      <!-- NÚT LỌC NHANH NPP KHÔNG CÓ SM -->
+      <button class="quick-btn" id="btnQuickFilterKhongSM" onclick="toggleQuickKhongSM()" style="border-color: rgba(239, 68, 68, 0.7); color: #fca5a5;">
+        <i class="fa-solid fa-user-slash" style="color:#ef4444;"></i> <span id="btnQuickKhongSMText">⚠️ Lọc NPP Không SM</span>
+      </button>
+
       <button class="quick-btn" id="btnTogglePinMode" onclick="togglePinMode()" style="border-color: #f59e0b; color: #fef08a; background: rgba(245, 158, 11, 0.15);">
         <i class="fa-solid fa-flag" style="color:#f59e0b;"></i> <span id="btnPinText">Cắm Cờ Mở NPP</span>
       </button>
@@ -1644,8 +1761,10 @@ html_template = f'''<!DOCTYPE html>
 
     <!-- Legend -->
     <div class="map-legend">
-      <div style="font-weight:800; font-size: 0.7rem; color: #94a3b8; margin-bottom: 2px;">CHÚ GIẢI GIAO HÀNG</div>
-      <div class="legend-item"><span class="legend-dot" style="background: #059669;"></span> NPP Đang Hoạt Động</div>
+      <div style="font-weight:800; font-size: 0.7rem; color: #94a3b8; margin-bottom: 3px;">CHÚ GIẢI PHÂN PHỐI & SM</div>
+      <div class="legend-item"><span class="legend-dot" style="background: #059669; border:1.5px solid #34d399;"></span> <i class="fa-solid fa-user-tie" style="color:#34d399; font-size:0.65rem;"></i> NPP Có SM Giám Sát</div>
+      <div class="legend-item"><span class="legend-dot" style="background: #dc2626; border:1.5px solid #f87171;"></span> <i class="fa-solid fa-user-slash" style="color:#f87171; font-size:0.65rem;"></i> ⚠️ NPP Không Có SM</div>
+      <div class="legend-item"><span class="legend-dot" style="background: #475569;"></span> <i class="fa-solid fa-lock" style="color:#94a3b8; font-size:0.65rem;"></i> NPP Ngưng Hoạt Động</div>
       <div class="legend-item"><span class="legend-dot" style="background: #dc2626;"></span> NPP Ngưng Hoạt Động</div>
       <div class="legend-item"><span class="legend-dot" style="background: #0284c7; width:7px; height:7px;"></span> Điểm Hàng Đông (Cold Chain)</div>
       <div class="legend-item"><span class="legend-dot" style="background: #f59e0b; width:7px; height:7px;"></span> Điểm Hàng Khô (Dry Chain)</div>
@@ -2361,6 +2480,7 @@ html_template = f'''<!DOCTYPE html>
       const tinhVal = document.getElementById('filterTinh').value;
       const statusVal = document.getElementById('filterStatus') ? document.getElementById('filterStatus').value : 'ALL';
       const hideInactive = document.getElementById('chkHideInactive') ? document.getElementById('chkHideInactive').checked : false;
+      const smVal = document.getElementById('filterSM') ? document.getElementById('filterSM').value : 'ALL';
       const searchVal = document.getElementById('filterSearch').value.toLowerCase().trim();
 
       const allowCold = document.getElementById('chkToggleCold').checked;
@@ -2469,10 +2589,25 @@ html_template = f'''<!DOCTYPE html>
         if (!n.lat || !n.lng) return;
 
         const isActive = n.status.includes('Đang');
-        const iconClass = isActive ? 'npp-icon-active' : 'npp-icon-inactive';
+        let iconClass = 'npp-icon-inactive';
+        let iconInner = 'fa-solid fa-lock';
+        let iconTitle = 'NPP Ngưng Hoạt Động';
+
+        if (isActive) {{
+          if (n.is_khong_sm) {{
+            iconClass = 'npp-icon-khong-sm';
+            iconInner = 'fa-solid fa-user-slash';
+            iconTitle = '⚠️ NPP Không Có SM (Cần giám sát)';
+          }} else {{
+            iconClass = 'npp-icon-co-sm';
+            iconInner = 'fa-solid fa-user-tie';
+            iconTitle = `👤 NPP Có SM (${{n.so_nvbh_text || 'Giám sát'}})`;
+          }}
+        }}
+
         const iconHtml = `
-          <div class="custom-npp-icon ${{iconClass}}" style="width: 24px; height: 24px;">
-            <i class="fa-solid fa-warehouse npp-icon-inner"></i>
+          <div class="custom-npp-icon ${{iconClass}}" style="width: 26px; height: 26px;" title="${{iconTitle}}">
+            <i class="${{iconInner}} npp-icon-inner"></i>
           </div>
         `;
 
@@ -2495,6 +2630,10 @@ html_template = f'''<!DOCTYPE html>
           <div class="popup-card">
             <div class="popup-header">
               <span class="popup-tag ${{isActive ? 'badge-active' : 'badge-inactive'}}">${{n.status}}</span>
+              <span class="popup-tag" style="background:${{n.is_khong_sm ? '#fee2e2' : '#d1fae5'}}; color:${{n.is_khong_sm ? '#991b1b' : '#065f46'}}; font-weight:800; margin-left:4px;">
+                ${{n.is_khong_sm ? '⚠️ Không SM' : '👤 ' + (n.so_nvbh_text || 'Có SM')}}
+              </span>
+              ${{n.top50 ? '<span class="popup-tag" style="background:#fef3c7; color:#92400e; font-weight:800; margin-left:4px;">⭐ Top 50</span>' : ''}}
               <div class="popup-title">${{n.name}}</div>
               <div style="font-size:0.68rem; color:#94a3b8; margin-top:2px;">Mã: ${{n.code}} &bull; ${{n.region}} &bull; ${{n.province}}</div>
             </div>
@@ -2620,7 +2759,10 @@ html_template = f'''<!DOCTYPE html>
         card.innerHTML = `
           <div class="npp-header-row">
             <span class="npp-code">${{n.code}}</span>
-            <span class="badge-status ${{isActive ? 'badge-active' : 'badge-inactive'}}">${{n.status}}</span>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <span class="badge-status ${{isActive ? 'badge-active' : 'badge-inactive'}}">${{n.status}}</span>
+              ${{isActive ? `<span class="badge-status" style="background:${{n.is_khong_sm ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)'}}; color:${{n.is_khong_sm ? '#fca5a5' : '#6ee7b7'}}; border:1px solid ${{n.is_khong_sm ? '#ef4444' : '#10b981'}};">${{n.is_khong_sm ? '⚠️ Không SM' : '👤 ' + n.so_nvbh_text}}</span>` : ''}}
+            </div>
           </div>
           <div class="npp-title">${{n.name}}</div>
           <div class="npp-meta">
@@ -3504,6 +3646,59 @@ html_template = f'''<!DOCTYPE html>
       map.flyTo([10.25, 106.25], 9, {{ animate: true, duration: 1.2 }});
 
       alert(`Đã nạp thành công 4 cờ C1 trọng điểm vùng trắng Mekong:\n1. C1 Cai Lậy (Tiền Giang)\n2. C1 Đức Hòa (Long An)\n3. C1 TP. Trà Vinh\n4. C1 Ba Tri (Bến Tre)\n\nCác cờ được hiển thị nổi bật với hiệu ứng radar phát sóng và vòng tròn bán kính.`);
+    }}
+
+
+    // ==========================================
+    // SM FILTER HANDLERS (CÓ SM VS KHÔNG SM)
+    // ==========================================
+    function toggleQuickKhongSM() {{
+      const smSelect = document.getElementById('filterSM');
+      const btn = document.getElementById('btnQuickFilterKhongSM');
+      const chk = document.getElementById('chkOnlyKhongSM');
+
+      if (!smSelect) return;
+
+      if (smSelect.value === 'KHONG_SM') {{
+        smSelect.value = 'ALL';
+        if (chk) chk.checked = false;
+        if (btn) btn.classList.remove('active-khong-sm');
+      }} else {{
+        smSelect.value = 'KHONG_SM';
+        if (chk) chk.checked = true;
+        if (btn) btn.classList.add('active-khong-sm');
+      }}
+      applyFilters();
+    }}
+
+    function onFilterSMSelectChange() {{
+      const smSelect = document.getElementById('filterSM');
+      const btn = document.getElementById('btnQuickFilterKhongSM');
+      const chk = document.getElementById('chkOnlyKhongSM');
+
+      if (smSelect) {{
+        const isKSM = smSelect.value === 'KHONG_SM';
+        if (chk) chk.checked = isKSM;
+        if (btn) {{
+          if (isKSM) btn.classList.add('active-khong-sm');
+          else btn.classList.remove('active-khong-sm');
+        }}
+      }}
+      applyFilters();
+    }}
+
+    function syncKhongSMCheckbox(isChecked) {{
+      const smSelect = document.getElementById('filterSM');
+      const btn = document.getElementById('btnQuickFilterKhongSM');
+
+      if (smSelect) {{
+        smSelect.value = isChecked ? 'KHONG_SM' : 'ALL';
+      }}
+      if (btn) {{
+        if (isChecked) btn.classList.add('active-khong-sm');
+        else btn.classList.remove('active-khong-sm');
+      }}
+      applyFilters();
     }}
 
 </script>
