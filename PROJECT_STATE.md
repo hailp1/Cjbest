@@ -1,5 +1,5 @@
 # TÀI LIỆU HIỆN TRẠNG DỰ ÁN RTM SPATIAL MODEL (HANDOVER & RESTART CHEAT SHEET)
-> **Cập nhật lúc:** 27/10/2026 15:00  
+> **Cập nhật lúc:** 27/10/2026 16:30  
 > **Repository Git:** https://github.com/hailp1/Cjbest.git (Branch: `main`)  
 > **Production Live URL:** https://rtm.bestcj.com/  
 > **Nền tảng Hosting:** Vercel (Auto-deployment khi push commit vào nhánh `main`)
@@ -30,6 +30,7 @@ Dự án nhằm giải quyết bài toán tối ưu hóa mạng lưới phân ph
 | **Dữ Liệu Điểm Bán (Outlets)** | `Shop_all.csv` (Fasoo DRM) | `outlets_data.js` | **59,366 Outlets** | Đầy đủ tọa độ GPS, mã cửa hàng, loại hàng (Đông/Khô), cự ly đến NPP. |
 | **Census Cửa Hàng Mekong** | `shop.csv` / Báo cáo Census | Trực tiếp trong phân tích | **56,878 Cửa hàng** | 639 Golden Stores (Hạng S, A, B), tăng lên khi lấy thêm nhóm C. |
 | **Doanh Số T9/2026 NPP** | `Doanhso_t92026.xlsx` (Fasoo DRM) | `doanh_so_t92026_clean.csv` | **159 NPP** | Khớp 100% với NPP trên bản đồ. Tổng doanh số: **134.3 Tỷ VNĐ** (Ambient 40.1 Tỷ, Chilled 6.95 Tỷ, Frozen 87.2 Tỷ). |
+| **Doanh Số & Thiết Bị Điểm Bán T9/2026** | `DoanhsoOUTLET_t92026.xlsx` (Fasoo DRM) | `outlet_sales_clean.csv` -> nhúng `outlets_data.js` | **53,441 Điểm Bán** | Khớp 50,342 điểm (84.8% điểm bán trên bản đồ). Tổng DS MTD: **38.33 Tỷ VNĐ**. **2,598 điểm có Tủ đông/mát** (Sanaky, Alaska). |
 
 ---
 
@@ -73,7 +74,17 @@ Dự án nhằm giải quyết bài toán tối ưu hóa mạng lưới phân ph
   - Bảng danh sách chi tiết các NPP trong vùng.
   - **Nút "Xuất CSV":** Tải ngay báo cáo UTF-8 chi tiết cho nhóm NPP vừa khoanh.
 
-### 3.4. Slide Báo Cáo Chiến Lược Mekong 2027
+### 3.4. Dữ Liệu Doanh Số Điểm Bán (Sell-out) & Thiết Bị Đầu Tư (Tủ Đông / Mát)
+* **File nguồn:** `DoanhsoOUTLET_t92026.xlsx` -> `outlet_sales_clean.csv` -> Nhúng trực tiếp vào `outlets_data.js`.
+* **Chỉ số tích hợp vào từng điểm bán:**
+  - **Doanh số T9 (MTD) & Doanh số T8 (M-1):** Đo lường sell-out thực tế của cửa hàng.
+  - **Thiết Bị Đầu Tư:** Phân loại thiết bị tủ đông/tủ mát (Sanaky 330L, Alaska 550L, Sanaky 300L, Alaska 300L,... hoặc "Chưa đầu tư tủ"). 2,598 điểm có tủ được hiển thị nổi bật với viền vàng kim (`#eab308`) và bán kính lớn hơn.
+  - **Phân Khúc VPO & Đề Xuất Hành Động:** Duy trì (🟢), Xóa MCP (🔴), Kích hoạt lại (🟡), Cảnh báo (🟡), Thu hồi Tủ (🟠 - 163 điểm nguy cơ).
+  - **Nhân Sự Bán Hàng:** Tên NVBH phụ trách và Tuyến bán hàng trực tiếp.
+* **Nút bấm lọc nhanh:** `[❄️ Điểm Có Tủ (2.6k)]` (`btnQuickOnlyEquip`) trên thanh công cụ cho phép sales manager lọc và hiển thị riêng các điểm bán có trang bị tủ của CJ Foods chỉ với 1 click.
+* **Tích hợp Khoanh Vùng:** Khi khoanh vùng (Polygon/Circle), hệ thống tự động tổng hợp cả **Doanh số Điểm bán T9**, **Số lượng Điểm bán** và **Số lượng Tủ đông đầu tư** bên cạnh Doanh số NPP.
+
+### 3.5. Slide Báo Cáo Chiến Lược Mekong 2027
 * **File:** [slide_mekong_rtm_2027.html](file:///d:/SE_Project/RTM_Model/slide_mekong_rtm_2027.html) (12 slides tương tác, có chế độ thuyết trình phím mũi tên).
 * **Báo cáo phân tích chuyên sâu:** [BAO_CAO_PHAN_TICH_RTM_VUNG_TRANG_VA_DE_XUAT_C1.md](file:///d:/SE_Project/RTM_Model/BAO_CAO_PHAN_TICH_RTM_VUNG_TRANG_VA_DE_XUAT_C1.md).
 * **Bản PowerPoint gốc:** `Regional Initiative_MKD_v2.pptx`.

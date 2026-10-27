@@ -1948,6 +1948,10 @@ html_template = f'''<!DOCTYPE html>
         <i class="fa-solid fa-store" style="color:#f59e0b;"></i> <span id="btnQuickOutletText">🏪 Hiện Điểm Bán</span>
       </button>
 
+      <button class="quick-btn" id="btnQuickOnlyEquip" onclick="toggleOnlyEquipQuick()" style="border-color: #38bdf8; color: #7dd3fc; background: rgba(56, 189, 248, 0.12);" title="Chỉ lọc và hiển thị 2,598 điểm bán có trang bị Tủ đông / Tủ mát CJ Foods">
+        <i class="fa-solid fa-snowflake" style="color:#38bdf8;"></i> <span id="btnQuickOnlyEquipText">❄️ Điểm Có Tủ (2.6k)</span>
+      </button>
+
       <button class="quick-btn" id="btnQuickHideInactive" onclick="toggleHideInactiveQuick()" style="border-color: rgba(239, 68, 68, 0.6);"><i class="fa-solid fa-ban" style="color:#ef4444;"></i> Bỏ NPP Ngưng</button>
       <button class="quick-btn" onclick="openStrategicModal()" style="border-color:#38bdf8; color:#7dd3fc;"><i class="fa-solid fa-compass-drafting"></i> Đánh Giá 6 Vùng</button>
       <button class="quick-btn" onclick="openAnalyticsModal()" style="border-color:#a78bfa; color:#c4b5fd;"><i class="fa-solid fa-chart-pie"></i> Báo Cáo Cự Ly</button>
@@ -2566,6 +2570,7 @@ html_template = f'''<!DOCTYPE html>
 
     let showNPP = true;
     let showOutlets = false;
+    let showOnlyEquip = false;
     let showSpiderLines = false;
     let showRadius = false;
 
@@ -2816,6 +2821,29 @@ html_template = f'''<!DOCTYPE html>
         map.removeLayer(outletsLayer);
       }}
     }}
+
+    function toggleOnlyEquipQuick() {{
+      showOnlyEquip = !showOnlyEquip;
+      const btn = document.getElementById('btnQuickOnlyEquip');
+      if (btn) {{
+        btn.classList.toggle('active-inactive-btn', showOnlyEquip);
+      }}
+      if (showOnlyEquip) {{
+        showOutlets = true;
+        const chk = document.getElementById('chkToggleOutlet');
+        if (chk) chk.checked = true;
+        const quickText = document.getElementById('btnQuickOutletText');
+        if (quickText) quickText.textContent = 'Ẩn Điểm Bán';
+        ensureOutletsLoaded(() => {{
+          renderOutlets();
+          outletsLayer.addTo(map);
+          showToastNotification('❄️ Đang hiển thị 2,598 điểm bán có Tủ đông/Tủ mát!');
+        }});
+      }} else {{
+        renderOutlets();
+      }}
+    }}
+
 
     function toggleOutletQuick() {{
       const chk = document.getElementById('chkToggleOutlet');
@@ -3116,7 +3144,7 @@ html_template = f'''<!DOCTYPE html>
     // Render Outlets as Lightweight Circle Markers
     function renderOutlets() {{
       outletsLayer.clearLayers();
-      if (!showOutlets) return;
+      if (!showOutlets && !showOnlyEquip) return;
 
       // Tra cứu nhanh Tên NPP theo Mã NPP
       const nppNameMap = new Map();
@@ -3124,8 +3152,12 @@ html_template = f'''<!DOCTYPE html>
         nppNameMap.set(String(n.code), n.short_name || n.name);
       }});
 
-      const maxRender = 12000;
-      const toRender = filteredOutlets.slice(0, maxRender);
+      const maxRender = 15000;
+      let toRender = filteredOutlets;
+      if (showOnlyEquip) {{
+        toRender = toRender.filter(o => o[13] && o[13].length > 0);
+      }}
+      toRender = toRender.slice(0, maxRender);
 
       toRender.forEach(o => {{
         const lat = o[0];
@@ -3141,35 +3173,89 @@ html_template = f'''<!DOCTYPE html>
         const ptype = o[11];
         const isRemote = dist >= 45;
 
+        // Dữ liệu Doanh số & Thiết bị đầu tư T9/2026
+        const salesMtd = o[12] || 0;
+        const equip = o[13] || '';
+        const vpo = o[14] || '';
+        const action = o[15] || '';
+        const salesRep = o[16] || '';
+        const salesM1 = o[17] || 0;
+        const route = o[18] || '';
+
+        const hasEquip = equip && equip.length > 0;
+
         let color = '#f59e0b';
         if (ptype === 'DONG') color = '#0284c7';
         else if (ptype === 'BOTH') color = '#8b5cf6';
         if (isRemote) color = '#dc2626';
 
+        // Điểm có tủ: bán kính 5, viền vàng kim (#eab308) nổi bật
         const circleMarker = L.circleMarker([lat, lng], {{
-          radius: isRemote ? 4 : 3,
-          fillColor: color,
-          color: '#ffffff',
-          weight: 0.8,
-          opacity: 0.9,
+          radius: hasEquip ? 5 : (isRemote ? 4 : 3),
+          fillColor: hasEquip ? '#0284c7' : color,
+          color: hasEquip ? '#eab308' : '#ffffff',
+          weight: hasEquip ? 2.2 : 0.8,
+          opacity: 0.95,
           fillOpacity: 0.85
         }});
 
         circleMarker.bindPopup(`
-          <div style="font-size:0.75rem; padding:4px 6px; min-width:240px; color:#0f172a;">
-            <div style="font-weight:800; font-size:0.82rem; color:#0f172a; border-bottom:1px solid #cbd5e1; padding-bottom:3px; margin-bottom:4px;">
-              ${{storeName}} <span style="font-weight:600; color:#64748b; font-size:0.7rem;">(#${{storeCode}})</span>
+          <div style="font-size:0.75rem; padding:4px 6px; min-width:260px; color:#0f172a;">
+            <div style="font-weight:800; font-size:0.85rem; color:#0f172a; border-bottom:1px solid #cbd5e1; padding-bottom:4px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;">
+              <span>${{storeName}}</span>
+              <span style="font-weight:600; color:#64748b; font-size:0.7rem;">#${{storeCode}}</span>
             </div>
+
+            ${{hasEquip ? `
+              <div style="margin-bottom:6px; padding:4px 7px; background:#eff6ff; border:1px solid #93c5fd; border-radius:5px; color:#1e40af; font-size:0.73rem; font-weight:700; display:flex; align-items:center; gap:5px;">
+                <i class="fa-solid fa-snowflake" style="color:#0284c7;"></i>
+                <span>Thiết bị: <b>${{equip}}</b></span>
+              </div>
+            ` : `
+              <div style="margin-bottom:4px; font-size:0.7rem; color:#64748b;">
+                <i class="fa-solid fa-box" style="color:#94a3b8;"></i> Thiết bị: <i>Chưa đầu tư tủ</i>
+              </div>
+            `}}
+
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:5px; padding:4px 6px; margin-bottom:5px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
+                <span style="color:#64748b;">Doanh số T9 (MTD):</span>
+                <b style="color:${{salesMtd > 0 ? '#10b981' : '#64748b'}};">${{salesMtd > 0 ? formatMoneyVND(salesMtd) : '0 đ (Chưa có đơn)'}}</b>
+              </div>
+              ${{salesM1 > 0 ? `
+                <div style="display:flex; justify-content:space-between; font-size:0.68rem;">
+                  <span style="color:#94a3b8;">Doanh số T8 (M-1):</span>
+                  <span style="color:#475569; font-weight:600;">${{formatMoneyVND(salesM1)}}</span>
+                </div>
+              ` : ''}}
+              ${{vpo ? `
+                <div style="display:flex; justify-content:space-between; font-size:0.68rem; margin-top:2px; border-top:1px dashed #cbd5e1; padding-top:2px;">
+                  <span style="color:#64748b;">Phân khúc VPO:</span>
+                  <span style="color:#0f172a; font-weight:600;">${{vpo}} ${{action ? `<b style="margin-left:4px;">${{action}}</b>` : ''}}</span>
+                </div>
+              ` : ''}}
+            </div>
+
+            ${{salesRep ? `
+              <div style="margin-bottom:3px; font-size:0.7rem;">
+                <i class="fa-solid fa-user-tie" style="color:#64748b;"></i> NVBH: <b style="color:#0f172a;">${{salesRep}}</b>
+                ${{route ? `<span style="color:#64748b; font-size:0.66rem;"> (${{route}})</span>` : ''}}
+              </div>
+            ` : ''}}
+
             <div style="margin-bottom:3px;">
-              <span style="color:#64748b;">NPP Quản lý:</span> <b style="color:#0284c7;">${{nppName}}</b> <span style="color:#64748b; font-size:0.68rem;">(Mã: ${{nppCode}})</span>
+              <span style="color:#64748b;">NPP Quản lý:</span> <b style="color:#0284c7;">${{nppName}}</b> <span style="color:#64748b; font-size:0.68rem;">(#${{nppCode}})</span>
             </div>
+
             <div style="margin-bottom:3px;">
               <span style="color:#64748b;">Khoảng cách đến NPP:</span> <b style="color:${{isRemote ? '#dc2626':'#059669'}};">${{dist}} km</b>
               ${{isRemote ? '<span style="color:#dc2626; font-size:0.65rem; font-weight:700; margin-left:3px;">(⚠️ Giao xa >45km)</span>' : ''}}
             </div>
+
             <div style="margin-bottom:3px;">
               <span style="color:#64748b;">Phân loại hàng:</span> <b>${{ptype === 'DONG' ? '❄️ Hàng Đông' : (ptype === 'BOTH' ? '❄️🌾 Cả 2' : '🌾 Hàng Khô')}}</b>
             </div>
+
             <div style="color:#475569; font-size:0.7rem; line-height:1.3; margin-top:3px; padding-top:3px; border-top:1px dashed #e2e8f0;">
               <i class="fa-solid fa-location-dot" style="color:#94a3b8;"></i> ${{address}}
             </div>
@@ -4332,7 +4418,7 @@ html_template = f'''<!DOCTYPE html>
         return isPointInsidePolygon(n.lat, n.lng, spatialPoints);
       }});
 
-      processSpatialSelection(selected, 'Đa giác tự do');
+      processSpatialSelection(selected, 'Đa giác tự do', null, null, spatialPoints);
     }}
 
     function finishSpatialCircle(center, radiusKm) {{
@@ -4343,11 +4429,11 @@ html_template = f'''<!DOCTYPE html>
         return d <= radiusKm;
       }});
 
-      processSpatialSelection(selected, `Vòng tròn bán kính ${{radiusKm.toFixed(1)}} km`);
+      processSpatialSelection(selected, `Vòng tròn bán kính ${{radiusKm.toFixed(1)}} km`, radiusKm, center, null);
       spatialPoints = []; // ready for next
     }}
 
-    function processSpatialSelection(nppList, zoneTitle) {{
+    function processSpatialSelection(nppList, zoneTitle, radiusKm, circleCenter, polyPoints) {{
       let totAmb = 0, totChi = 0, totFro = 0, totRev = 0;
       let activeCnt = 0, coSmCnt = 0;
 
@@ -4365,11 +4451,36 @@ html_template = f'''<!DOCTYPE html>
       const froPct = totRev > 0 ? (totFro / totRev * 100).toFixed(1) : '0';
       const avgNpp = nppList.length > 0 ? (totRev / nppList.length) : 0;
 
+      // Thống kê Điểm Bán (Outlets) trong vùng khoanh nếu đã nạp ALL_OUTLETS
+      let selOutlets = [];
+      let totOutletRev = 0;
+      let equipOutletCnt = 0;
+      let activeOutletCnt = 0;
+
+      if (typeof ALL_OUTLETS !== 'undefined' && ALL_OUTLETS && ALL_OUTLETS.length > 0) {{
+        if (circleCenter && radiusKm) {{
+          selOutlets = ALL_OUTLETS.filter(o => o[0] && o[1] && getDistanceKm(circleCenter[0], circleCenter[1], o[0], o[1]) <= radiusKm);
+        }} else if (polyPoints && polyPoints.length >= 3) {{
+          selOutlets = ALL_OUTLETS.filter(o => o[0] && o[1] && isPointInsidePolygon(o[0], o[1], polyPoints));
+        }}
+        selOutlets.forEach(o => {{
+          const s = o[12] || 0;
+          totOutletRev += s;
+          if (s > 0) activeOutletCnt++;
+          if (o[13] && o[13].length > 0) equipOutletCnt++;
+        }});
+      }}
+
       currentSpatialResult = {{
         zoneTitle,
         nppList,
         totAmb, totChi, totFro, totRev,
-        activeCnt, coSmCnt, ambPct, chiPct, froPct, avgNpp
+        activeCnt, coSmCnt, ambPct, chiPct, froPct, avgNpp,
+        totOutlets: selOutlets.length,
+        totOutletRev,
+        equipOutletCnt,
+        activeOutletCnt,
+        selOutlets
       }};
 
       renderSpatialRevenuePanel();
@@ -4409,18 +4520,26 @@ html_template = f'''<!DOCTYPE html>
           Khu vực: <b style="color:#e2e8f0;">${{r.zoneTitle}}</b>
         </div>
 
-        <div class="revenue-kpi-grid">
+        <div class="revenue-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));">
           <div class="revenue-kpi-card" style="border-left-color:#38bdf8;">
             <div class="revenue-kpi-lbl">Số NPP</div>
             <div class="revenue-kpi-val" style="color:#38bdf8;">${{r.nppList.length}} <span style="font-size:0.7rem; font-weight:400; color:#94a3b8;">(${{r.coSmCnt}} Có SM)</span></div>
           </div>
           <div class="revenue-kpi-card" style="border-left-color:#10b981;">
-            <div class="revenue-kpi-lbl">Tổng Doanh Số T9</div>
+            <div class="revenue-kpi-lbl">Doanh Số NPP T9</div>
             <div class="revenue-kpi-val" style="color:#10b981;">${{formatMoneyVND(r.totRev)}}</div>
           </div>
+          <div class="revenue-kpi-card" style="border-left-color:#06b6d4;">
+            <div class="revenue-kpi-lbl">DS Điểm Bán T9</div>
+            <div class="revenue-kpi-val" style="color:#06b6d4;">
+              ${{r.totOutlets > 0 ? formatMoneyVND(r.totOutletRev) : (outletsLoaded ? '0 đ' : '<span style="font-size:0.75rem; color:#94a3b8;">Chưa nạp điểm</span>')}}
+            </div>
+          </div>
           <div class="revenue-kpi-card" style="border-left-color:#f59e0b;">
-            <div class="revenue-kpi-lbl">Doanh Số TB/NPP</div>
-            <div class="revenue-kpi-val" style="color:#fbbf24;">${{formatMoneyShort(r.avgNpp)}} đ</div>
+            <div class="revenue-kpi-lbl">Điểm Bán & Tủ Đông</div>
+            <div class="revenue-kpi-val" style="color:#fbbf24; font-size:0.88rem;">
+              ${{r.totOutlets > 0 ? `${{r.totOutlets.toLocaleString('vi-VN')}} <span style="font-size:0.7rem; color:#67e8f9;">(${{r.equipOutletCnt}} tủ)</span>` : (outletsLoaded ? '0 điểm' : '<a href="#" onclick="ensureOutletsLoaded(function(){{finishSpatialPolygon();}}); return false;" style="color:#38bdf8; font-size:0.72rem; text-decoration:underline;">Nạp 59k Điểm</a>')}}
+            </div>
           </div>
         </div>
 
