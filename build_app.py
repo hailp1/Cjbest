@@ -2629,20 +2629,50 @@ html_template = f'''<!DOCTYPE html>
         const popupContent = `
           <div class="popup-card">
             <div class="popup-header">
-              <span class="popup-tag ${{isActive ? 'badge-active' : 'badge-inactive'}}">${{n.status}}</span>
-              <span class="popup-tag" style="background:${{n.is_khong_sm ? '#fee2e2' : '#d1fae5'}}; color:${{n.is_khong_sm ? '#991b1b' : '#065f46'}}; font-weight:800; margin-left:4px;">
-                ${{n.is_khong_sm ? '⚠️ Không SM' : '👤 ' + (n.so_nvbh_text || 'Có SM')}}
-              </span>
-              ${{n.top50 ? '<span class="popup-tag" style="background:#fef3c7; color:#92400e; font-weight:800; margin-left:4px;">⭐ Top 50</span>' : ''}}
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:3px;">
+                <span class="popup-tag ${{isActive ? 'badge-active' : 'badge-inactive'}}">${{n.status}}</span>
+                <div style="display:flex; gap:3px;">
+                  <span class="popup-tag" style="background:${{n.is_khong_sm ? '#fee2e2' : '#d1fae5'}}; color:${{n.is_khong_sm ? '#991b1b' : '#065f46'}}; font-weight:800;">
+                    ${{n.is_khong_sm ? '⚠️ Không SM' : '👤 ' + (n.so_nvbh_text || 'Có SM')}}
+                  </span>
+                  ${{n.top50 ? '<span class="popup-tag" style="background:#fef3c7; color:#92400e; font-weight:800;">⭐ Top 50</span>' : ''}}
+                </div>
+              </div>
               <div class="popup-title">${{n.name}}</div>
-              <div style="font-size:0.68rem; color:#94a3b8; margin-top:2px;">Mã: ${{n.code}} &bull; ${{n.region}} &bull; ${{n.province}}</div>
+              <div style="font-size:0.68rem; color:#94a3b8; margin-top:2px;">Mã: <b>${{n.code}}</b> &bull; ${{n.region}} &bull; ${{n.province}}</div>
             </div>
+
             <div class="popup-body">
-              <div class="popup-row"><i class="fa-solid fa-location-dot"></i><span>${{n.address || 'Đang cập nhật'}}</span></div>
+              <!-- KHỐI THÔNG TIN NHÂN SỰ & GIÁM SÁT BÁN HÀNG -->
+              <div class="popup-personnel-box" style="background:#1e293b; border-radius:6px; padding:7px 9px; margin-bottom:6px; border-left:3px solid ${{n.is_khong_sm ? '#ef4444' : '#10b981'}};">
+                <div style="font-size:0.65rem; font-weight:800; color:#cbd5e1; text-transform:uppercase; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
+                  <span><i class="fa-solid fa-users" style="color:${{n.is_khong_sm ? '#ef4444' : '#34d399'}};"></i> Đội Ngũ Bán Hàng & Giám Sát</span>
+                  <span style="font-weight:700; color:${{n.is_khong_sm ? '#fca5a5' : '#6ee7b7'}}; font-size:0.62rem;">${{n.is_khong_sm ? '⚠️ Thiếu Giám Sát' : '👤 ' + n.so_nvbh_text}}</span>
+                </div>
+                ${{!n.is_khong_sm ? `
+                  <div style="font-size:0.7rem; color:#e2e8f0; display:flex; flex-direction:column; gap:2.5px;">
+                    <div><i class="fa-solid fa-user-tie" style="color:#38bdf8; width:13px;"></i> Giám sát (GSBH/SM): <b style="color:#fef08a;">${{n.gsbh || 'Chưa gán'}}</b></div>
+                    <div><i class="fa-solid fa-person-walking" style="color:#34d399; width:13px;"></i> Lực lượng bán hàng: <b style="color:#34d399;">${{n.so_nvbh}} NVBH trực tiếp</b></div>
+                    ${{n.asm_rsm ? `<div><i class="fa-solid fa-user-shield" style="color:#a78bfa; width:13px;"></i> Quản lý Vùng (ASM/RSM): <b style="color:#f1f5f9;">${{n.asm_rsm}}</b></div>` : ''}}
+                    ${{n.office ? `<div><i class="fa-solid fa-building" style="color:#94a3b8; width:13px;"></i> Văn phòng quản lý: <b style="color:#cbd5e1;">${{n.office}}</b></div>` : ''}}
+                  </div>
+                ` : `
+                  <div style="font-size:0.68rem; color:#fca5a5; line-height:1.35;">
+                    <i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;"></i> <b>Chưa có SM / NVBH phụ trách trực tiếp.</b><br>
+                    <span style="color:#94a3b8;">NPP tự vận hành ngoài thực địa, cần điều chuyển bổ sung nhân sự giám sát.</span>
+                    ${{n.asm_rsm ? `<div style="color:#cbd5e1; margin-top:3px;"><i class="fa-solid fa-user-shield" style="color:#a78bfa; width:13px;"></i> ASM phụ trách vùng: <b style="color:#fff;">${{n.asm_rsm}}</b></div>` : ''}}
+                  </div>
+                `}}
+              </div>
+
+              <!-- THÔNG TIN VẬN HÀNH & CỰ LY GIAO HÀNG -->
+              <div class="popup-row"><i class="fa-solid fa-location-dot" style="color:#60a5fa;"></i><span>${{n.address || 'Đang cập nhật'}}</span></div>
+              ${{n.phone && n.phone !== '0000000000' && n.phone !== '123456' ? `<div class="popup-row"><i class="fa-solid fa-phone" style="color:#34d399;"></i><span>Liên hệ: <b style="color:#e2e8f0;">${{n.phone}}</b></span></div>` : ''}}
               <div class="popup-row"><i class="fa-solid fa-store" style="color:#f59e0b;"></i><span><b>${{outletCnt}}</b> Điểm bán (${{dongCnt}} hàng đông)</span></div>
-              <div class="popup-row"><i class="fa-solid fa-arrows-left-right" style="color:#38bdf8;"></i><span>Cự ly Max: <b>${{maxDist}} km</b></span></div>
+              <div class="popup-row"><i class="fa-solid fa-arrows-left-right" style="color:#38bdf8;"></i><span>Cự ly Max: <b>${{maxDist}} km</b> &bull; Cự ly TB: <b>${{n.avg_dist || 0}} km</b></span></div>
               ${{remoteCnt > 0 ? `<div class="popup-row"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;"></i><span style="color:#ef4444; font-weight:700;">${{remoteCnt}} điểm cự ly > 45km</span></div>` : ''}}
             </div>
+
             <div class="popup-actions">
               <button class="btn-action btn-spider" onclick="focusNPPAndSpider('${{n.code}}')"><i class="fa-solid fa-share-nodes"></i> Tia nối</button>
               <button class="btn-action btn-primary" onclick="zoomToNPP('${{n.code}}')"><i class="fa-solid fa-crosshairs"></i> Phóng to</button>
@@ -2651,7 +2681,7 @@ html_template = f'''<!DOCTYPE html>
               </button>
             </div>
           </div>
-        `;
+        `
 
         marker.bindPopup(popupContent);
         marker.on('click', () => selectNPP(n.code, false));
