@@ -3441,14 +3441,15 @@ function toggleUnifiedNppLayer() {
     }
 
     function applyFilters() {
-      const mienVal = document.getElementById('filterMien').value;
-      const vungVal = document.getElementById('filterVung').value;
-      const tinhVal = document.getElementById('filterTinh').value;
+      const mienVal = document.getElementById('filterMien') ? document.getElementById('filterMien').value : 'ALL';
+      const vungVal = document.getElementById('filterVung') ? document.getElementById('filterVung').value : 'ALL';
+      const filterTinhEl = document.getElementById('filterTinh');
+      const tinhVal = filterTinhEl ? filterTinhEl.value : 'ALL';
       const statusVal = document.getElementById('filterStatus') ? document.getElementById('filterStatus').value : 'ALL';
       const hideInactive = document.getElementById('chkHideInactive') ? document.getElementById('chkHideInactive').checked : false;
       const hideKhongSM = document.getElementById('chkHideKhongSM') ? document.getElementById('chkHideKhongSM').checked : false;
       const smVal = document.getElementById('filterSM') ? document.getElementById('filterSM').value : 'ALL';
-      const searchVal = document.getElementById('filterSearch').value.toLowerCase().trim();
+      const searchVal = document.getElementById('filterSearch') ? document.getElementById('filterSearch').value.toLowerCase().trim() : '';
 
       // Đồng bộ trạng thái visual nút Bỏ NPP Không SM trên bản đồ
       const btnQuickKSM = document.getElementById('btnQuickHideKhongSM');
@@ -3460,14 +3461,20 @@ function toggleUnifiedNppLayer() {
         }
       }
 
-      const allowCold = document.getElementById('chkToggleCold').checked;
-      const allowDry = document.getElementById('chkToggleDry').checked;
-      const remoteOnly = document.getElementById('chkToggleRemoteOnly').checked;
+      const chkColdEl = document.getElementById('chkToggleCold');
+      const allowCold = chkColdEl ? chkColdEl.checked : (outletFilterStatus !== 'DRY_ONLY');
+      const chkDryEl = document.getElementById('chkToggleDry');
+      const allowDry = chkDryEl ? chkDryEl.checked : (outletFilterStatus !== 'COLD_ONLY');
+      const chkRemoteEl = document.getElementById('chkToggleRemoteOnly');
+      const remoteOnly = chkRemoteEl ? chkRemoteEl.checked : (outletFilterStatus === 'REMOTE_45');
 
       // Update toggle visual active states
-      document.getElementById('lblChkCold').classList.toggle('active-cold', allowCold);
-      document.getElementById('lblChkDry').classList.toggle('active-dry', allowDry);
-      document.getElementById('lblChkRemoteOnly').classList.toggle('active-remote', remoteOnly);
+      const lblCold = document.getElementById('lblChkCold');
+      if (lblCold) lblCold.classList.toggle('active-cold', allowCold);
+      const lblDry = document.getElementById('lblChkDry');
+      if (lblDry) lblDry.classList.toggle('active-dry', allowDry);
+      const lblRemote = document.getElementById('lblChkRemoteOnly');
+      if (lblRemote) lblRemote.classList.toggle('active-remote', remoteOnly);
 
       const lblInactive = document.getElementById('lblChkHideInactive');
       if (lblInactive) lblInactive.classList.toggle('active-hide-inactive', hideInactive);
@@ -3477,12 +3484,14 @@ function toggleUnifiedNppLayer() {
         btnQuickInactive.classList.toggle('active-inactive-btn', hideInactive);
       }
 
+      // Xác định trạng thái Multi-Select Tỉnh/Thành
+      const allTinhCount = document.querySelectorAll('.tinh-checkbox').length;
+      const hasProvinceFilter = (selectedProvinces.size > 0 && selectedProvinces.size < allTinhCount);
+
       // 1. Filter NPPs
       filteredNPPs = ALL_NPPS.filter(n => {
         const matchMien = (mienVal === 'ALL' || n.region === mienVal);
         const matchVung = (vungVal === 'ALL' || n.area === vungVal);
-        const allTinhCount = document.querySelectorAll('.tinh-checkbox').length;
-        const hasProvinceFilter = (selectedProvinces.size > 0 && selectedProvinces.size < allTinhCount);
         const matchTinh = !hasProvinceFilter || selectedProvinces.has(n.province);
 
         // Bỏ NPP ngưng hoạt động khi nút tích Bỏ NPP Ngưng được chọn
@@ -3562,18 +3571,29 @@ function toggleUnifiedNppLayer() {
       const totalOutlets = filteredOutlets.length;
       const remoteCount = filteredOutlets.filter(o => o[10] >= 45).length;
 
-      document.getElementById('kpiCount').textContent = totalNpp;
-      if (document.getElementById('kpiActive')) document.getElementById('kpiActive').textContent = `${activeNpp} Chạy`;
-      if (document.getElementById('kpiInactive')) document.getElementById('kpiInactive').textContent = `${inactiveNpp} Ngưng`;
-      document.getElementById('kpiOutlets').textContent = totalOutlets.toLocaleString('vi-VN');
-      document.getElementById('kpiRemote').textContent = remoteCount.toLocaleString('vi-VN');
-      document.getElementById('sidebarCount').textContent = totalNpp;
-      if (document.getElementById('mobileCount')) document.getElementById('mobileCount').textContent = totalNpp;
+      const kpiCountEl = document.getElementById('kpiCount');
+      if (kpiCountEl) kpiCountEl.textContent = totalNpp;
+      const kpiActiveEl = document.getElementById('kpiActive');
+      if (kpiActiveEl) kpiActiveEl.textContent = `${activeNpp} Chạy`;
+      const kpiInactiveEl = document.getElementById('kpiInactive');
+      if (kpiInactiveEl) kpiInactiveEl.textContent = `${inactiveNpp} Ngưng`;
+      const kpiOutletsEl = document.getElementById('kpiOutlets');
+      if (kpiOutletsEl) kpiOutletsEl.textContent = totalOutlets.toLocaleString('vi-VN');
+      const kpiRemoteEl = document.getElementById('kpiRemote');
+      if (kpiRemoteEl) kpiRemoteEl.textContent = remoteCount.toLocaleString('vi-VN');
+      const sidebarCountEl = document.getElementById('sidebarCount');
+      if (sidebarCountEl) sidebarCountEl.textContent = totalNpp;
+      const mobileCountEl = document.getElementById('mobileCount');
+      if (mobileCountEl) mobileCountEl.textContent = totalNpp;
 
       const totalFilteredSales = filteredNPPs.reduce((acc, n) => acc + (n.sales_total || 0), 0);
+      const totalAmb = filteredNPPs.reduce((acc, n) => acc + (n.sales_ambient || 0), 0);
+      const totalChi = filteredNPPs.reduce((acc, n) => acc + (n.sales_chilled || 0), 0);
+      const totalFro = filteredNPPs.reduce((acc, n) => acc + (n.sales_frozen || 0), 0);
       const salesElem = document.getElementById('sidebarTotalSales');
       if (salesElem) {
         salesElem.textContent = formatMoneyVND(totalFilteredSales);
+        salesElem.title = `Khô (Ambient): ${formatMoneyVND(totalAmb)} | Mát (Chilled): ${formatMoneyVND(totalChi)} | Đông (Frozen): ${formatMoneyVND(totalFro)}`;
       }
 
       const outletSalesElem = document.getElementById('sidebarOutletSales');
@@ -3581,13 +3601,16 @@ function toggleUnifiedNppLayer() {
         if (typeof ALL_OUTLETS !== 'undefined' && ALL_OUTLETS && ALL_OUTLETS.length > 0 && filteredOutlets && filteredOutlets.length > 0) {
           const totalOutletMtd = filteredOutlets.reduce((acc, o) => acc + (o[12] || 0), 0);
           outletSalesElem.textContent = formatMoneyVND(totalOutletMtd);
+          outletSalesElem.title = `Tổng Sell-out thực tế của ${filteredOutlets.length.toLocaleString()} điểm bán GT đang hiển thị`;
         } else {
           outletSalesElem.textContent = (typeof ALL_OUTLETS !== 'undefined' && ALL_OUTLETS && ALL_OUTLETS.length > 0) ? '0 đ' : 'Bật Điểm Bán';
         }
       }
 
-      document.getElementById('chkNppCount').textContent = totalNpp;
-      document.getElementById('chkOutletCount').textContent = totalOutlets >= 1000 ? (totalOutlets/1000).toFixed(1) + 'k' : totalOutlets;
+      const chkNppCountEl = document.getElementById('chkNppCount');
+      if (chkNppCountEl) chkNppCountEl.textContent = totalNpp;
+      const chkOutletCountEl = document.getElementById('chkOutletCount');
+      if (chkOutletCountEl) chkOutletCountEl.textContent = totalOutlets >= 1000 ? (totalOutlets/1000).toFixed(1) + 'k' : totalOutlets;
       updateOutletTriggerLabel();
     }
 
