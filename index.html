@@ -628,8 +628,17 @@
     /* ==========================================
        SPATIAL SELECTION & REVENUE ANALYTICS CSS
        ========================================== */
-    .crosshair-cursor {
+    .crosshair-cursor,
+    .crosshair-cursor .leaflet-grab,
+    .crosshair-cursor .leaflet-interactive {
       cursor: crosshair !important;
+    }
+    .spatial-mode-active .leaflet-marker-pane,
+    .spatial-mode-active .leaflet-overlay-pane {
+      pointer-events: none !important;
+    }
+    .spatial-mode-active .leaflet-pane.leaflet-spatial-pane {
+      pointer-events: auto !important;
     }
 
     /* Floating Toolbar on Top of Map */
@@ -2835,6 +2844,10 @@
     const radiusLayer = L.layerGroup();
     const outletsLayer = L.layerGroup().addTo(map);
     const spiderLayer = L.layerGroup().addTo(map);
+
+    // Dedicated pane for spatial selections so it renders above all standard layers
+    map.createPane('spatialPane');
+    map.getPane('spatialPane').style.zIndex = '650';
 
     // Poll data loaded from deferred script
     let checkTimer = setInterval(() => {
@@ -5065,7 +5078,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
     let spatialActiveCircle = null;
     let spatialActiveRect = null;
     let spatialTempMarkers = [];
-    let spatialLayerGroup = L.layerGroup();
+    let spatialLayerGroup = L.layerGroup([], { pane: 'spatialPane' }).addTo(map);
     let currentSpatialResult = null;
     let activeSpatialTab = 'npp'; // 'npp' or 'outlet'
 
@@ -5110,21 +5123,29 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       if (isSpatialMode) {
         if (btn) { btn.classList.add('active-spatial'); const t = document.getElementById('btnSpatialSelectText'); if (t) t.textContent = '❌ Đóng Khoanh Vùng'; }
         if (toolbar) toolbar.style.display = 'flex';
-        if (mapElem) mapElem.classList.add('crosshair-cursor');
+        if (mapElem) {
+          mapElem.classList.add('crosshair-cursor');
+          mapElem.classList.add('spatial-mode-active');
+        }
         
         // Tự động nạp sẵn dữ liệu điểm bán trong nền
         ensureOutletsLoaded();
         
         // Mặc định công cụ kéo chuột tạo hộp
         setSpatialTool('box');
+        map.dragging.disable();
         showToastNotification('🖱️ Nhấn giữ chuột và KÉO trên bản đồ để khoanh vùng tính doanh số!');
       } else {
         if (btn) { btn.classList.remove('active-spatial'); const t = document.getElementById('btnSpatialSelectText'); if (t) t.textContent = '📐 Khoanh Vùng Doanh Số'; }
         if (toolbar) toolbar.style.display = 'none';
-        if (mapElem) mapElem.classList.remove('crosshair-cursor');
+        if (mapElem) {
+          mapElem.classList.remove('crosshair-cursor');
+          mapElem.classList.remove('spatial-mode-active');
+        }
         clearSpatialSelection();
         map.dragging.enable();
-        document.getElementById('spatialRevenuePanel').style.display = 'none';
+        const p = document.getElementById('spatialRevenuePanel');
+        if (p) p.style.display = 'none';
       }
     }
 
@@ -5135,6 +5156,12 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       if (document.getElementById('btnToolCircle')) document.getElementById('btnToolCircle').classList.toggle('active', toolName === 'circle');
       if (document.getElementById('btnToolPolygon')) document.getElementById('btnToolPolygon').classList.toggle('active', toolName === 'polygon');
 
+      if (toolName === 'box' || toolName === 'freehand') {
+        map.dragging.disable();
+      } else {
+        map.dragging.enable();
+      }
+
       const instr = document.getElementById('spatialToolInstruction');
       if (instr) {
         if (toolName === 'box') instr.textContent = '🖱️ Nhấn giữ & KÉO chuột trên bản đồ để tạo hộp khoanh vùng';
@@ -5143,6 +5170,9 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         else if (toolName === 'polygon') instr.textContent = '📐 Click các đỉnh đa giác (click điểm đầu để chốt)';
       }
       clearSpatialSelection();
+      if (isSpatialMode && (spatialTool === 'box' || spatialTool === 'freehand')) {
+        map.dragging.disable();
+      }
     }
 
     function clearSpatialSelection() {
@@ -5157,8 +5187,13 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       spatialFreehandPoints = [];
       currentSpatialResult = null;
       isSpatialMouseDown = false;
-      map.dragging.enable();
-      document.getElementById('spatialRevenuePanel').style.display = 'none';
+      if (!isSpatialMode || (spatialTool !== 'box' && spatialTool !== 'freehand')) {
+        map.dragging.enable();
+      } else {
+        map.dragging.disable();
+      }
+      const p = document.getElementById('spatialRevenuePanel');
+      if (p) p.style.display = 'none';
     }
 
     // Point in polygon math (Ray-casting)
@@ -5196,35 +5231,43 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         setSpatialTool('box');
       }
 
-      if (spatialTool === 'box') {
+      if (spatialTool === 'box' || spatialTool === 'freehand') {
         isSpatialMouseDown = true;
         spatialDragStartLatLng = e.latlng;
         map.dragging.disable();
 
-        if (spatialActiveRect) spatialLayerGroup.removeLayer(spatialActiveRect);
-        if (spatialDragRectPreview) spatialLayerGroup.removeLayer(spatialDragRectPreview);
+        if (e.originalEvent && e.originalEvent.preventDefault) {
+          e.originalEvent.preventDefault();
+        }
 
-        spatialDragRectPreview = L.rectangle([spatialDragStartLatLng, spatialDragStartLatLng], {
-          color: '#10b981',
-          weight: 2,
-          fillColor: '#059669',
-          fillOpacity: 0.25,
-          dashArray: '5, 5'
-        });
-        spatialLayerGroup.addLayer(spatialDragRectPreview);
-      } else if (spatialTool === 'freehand') {
-        isSpatialMouseDown = true;
-        map.dragging.disable();
-        spatialFreehandPoints = [[e.latlng.lat, e.latlng.lng]];
+        if (spatialTool === 'box') {
+          if (spatialActiveRect) spatialLayerGroup.removeLayer(spatialActiveRect);
+          if (spatialDragRectPreview) spatialLayerGroup.removeLayer(spatialDragRectPreview);
 
-        if (spatialActivePolygon) spatialLayerGroup.removeLayer(spatialActivePolygon);
-        if (spatialFreehandPolyline) spatialLayerGroup.removeLayer(spatialFreehandPolyline);
+          spatialDragRectPreview = L.rectangle([spatialDragStartLatLng, spatialDragStartLatLng], {
+            pane: 'spatialPane',
+            color: '#10b981',
+            weight: 2.5,
+            fillColor: '#059669',
+            fillOpacity: 0.28,
+            dashArray: '6, 6',
+            interactive: false
+          });
+          spatialLayerGroup.addLayer(spatialDragRectPreview);
+        } else if (spatialTool === 'freehand') {
+          spatialFreehandPoints = [[e.latlng.lat, e.latlng.lng]];
 
-        spatialFreehandPolyline = L.polyline(spatialFreehandPoints, {
-          color: '#10b981',
-          weight: 3
-        });
-        spatialLayerGroup.addLayer(spatialFreehandPolyline);
+          if (spatialActivePolygon) spatialLayerGroup.removeLayer(spatialActivePolygon);
+          if (spatialFreehandPolyline) spatialLayerGroup.removeLayer(spatialFreehandPolyline);
+
+          spatialFreehandPolyline = L.polyline(spatialFreehandPoints, {
+            pane: 'spatialPane',
+            color: '#10b981',
+            weight: 3.5,
+            interactive: false
+          });
+          spatialLayerGroup.addLayer(spatialFreehandPolyline);
+        }
       }
     });
 
@@ -5233,22 +5276,45 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
 
       if (spatialTool === 'box' && spatialDragStartLatLng && spatialDragRectPreview) {
         spatialDragRectPreview.setBounds(L.latLngBounds(spatialDragStartLatLng, e.latlng));
+        const instr = document.getElementById('spatialToolInstruction');
+        if (instr) {
+          const dKm = getDistanceKm(spatialDragStartLatLng.lat, spatialDragStartLatLng.lng, e.latlng.lat, e.latlng.lng);
+          instr.innerHTML = `📐 Đang khoanh vùng: <b>~${dKm.toFixed(1)} km</b> (Thả chuột để chốt tính toán)`;
+        }
       } else if (spatialTool === 'freehand' && spatialFreehandPolyline) {
         spatialFreehandPoints.push([e.latlng.lat, e.latlng.lng]);
         spatialFreehandPolyline.setLatLngs(spatialFreehandPoints);
+        const instr = document.getElementById('spatialToolInstruction');
+        if (instr) {
+          instr.innerHTML = `✏️ Đang vẽ tự do: <b>${spatialFreehandPoints.length} điểm</b> (Thả chuột để chốt vùng)`;
+        }
       }
     });
 
-    map.on('mouseup', function(e) {
+    function handleSpatialMouseUp(e) {
       if (!isSpatialMode || !isSpatialMouseDown) return;
       isSpatialMouseDown = false;
-      map.dragging.enable();
+      if (spatialTool !== 'box' && spatialTool !== 'freehand') {
+        map.dragging.enable();
+      }
 
-      if (spatialTool === 'box' && spatialDragStartLatLng && spatialDragRectPreview) {
-        const bounds = L.latLngBounds(spatialDragStartLatLng, e.latlng);
-        const d = getDistanceKm(spatialDragStartLatLng.lat, spatialDragStartLatLng.lng, e.latlng.lat, e.latlng.lng);
-        if (d >= 0.15) {
-          spatialDragRectPreview.setStyle({ dashArray: null, weight: 3, fillOpacity: 0.2 });
+      const instr = document.getElementById('spatialToolInstruction');
+      if (instr) {
+        if (spatialTool === 'box') instr.textContent = '🖱️ Nhấn giữ & KÉO chuột trên bản đồ để tạo hộp khoanh vùng';
+        else if (spatialTool === 'freehand') instr.textContent = '✏️ Nhấn giữ & KÉO vẽ tự do bao quanh khu vực';
+      }
+
+      const endLatLng = e.latlng || (e.clientX ? map.mouseEventToLatLng(e) : spatialDragStartLatLng);
+      if (!endLatLng || !spatialDragStartLatLng) return;
+
+      if (spatialTool === 'box' && spatialDragRectPreview) {
+        const bounds = L.latLngBounds(spatialDragStartLatLng, endLatLng);
+        const p1 = map.latLngToContainerPoint(spatialDragStartLatLng);
+        const p2 = map.latLngToContainerPoint(endLatLng);
+        const pixelDist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+
+        if (pixelDist >= 15) {
+          spatialDragRectPreview.setStyle({ dashArray: null, weight: 3, fillOpacity: 0.22 });
           spatialActiveRect = spatialDragRectPreview;
           finishSpatialBox(bounds);
         } else {
@@ -5256,9 +5322,10 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
           spatialDragRectPreview = null;
         }
       } else if (spatialTool === 'freehand' && spatialFreehandPoints.length >= 4) {
-        spatialLayerGroup.removeLayer(spatialFreehandPolyline);
+        if (spatialFreehandPolyline) spatialLayerGroup.removeLayer(spatialFreehandPolyline);
         spatialPoints = spatialFreehandPoints;
         spatialActivePolygon = L.polygon(spatialPoints, {
+          pane: 'spatialPane',
           color: '#10b981',
           weight: 3,
           fillColor: '#059669',
@@ -5266,6 +5333,13 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         });
         spatialLayerGroup.addLayer(spatialActivePolygon);
         finishSpatialPolygon();
+      }
+    }
+
+    map.on('mouseup', handleSpatialMouseUp);
+    window.addEventListener('mouseup', function(e) {
+      if (isSpatialMode && isSpatialMouseDown) {
+        handleSpatialMouseUp(e);
       }
     });
 
@@ -5281,10 +5355,11 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         spatialPoints.push([lat, lng]);
 
         const ptMarker = L.circleMarker([lat, lng], {
-          radius: 5,
+          pane: 'spatialPane',
+          radius: 6,
           color: '#10b981',
           fillColor: '#34d399',
-          fillOpacity: 0.9,
+          fillOpacity: 0.95,
           weight: 2
         });
         ptMarker.on('click', () => {
@@ -5298,6 +5373,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         }
         if (spatialPoints.length >= 2) {
           spatialActivePolygon = L.polygon(spatialPoints, {
+            pane: 'spatialPane',
             color: '#10b981',
             weight: 2,
             dashArray: '5, 5',
@@ -5317,7 +5393,8 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         if (spatialPoints.length === 0) {
           spatialPoints.push([lat, lng]);
           const centerMarker = L.circleMarker([lat, lng], {
-            radius: 6,
+            pane: 'spatialPane',
+            radius: 7,
             color: '#38bdf8',
             fillColor: '#60a5fa',
             fillOpacity: 1,
@@ -5334,6 +5411,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
             spatialLayerGroup.removeLayer(spatialActiveCircle);
           }
           spatialActiveCircle = L.circle(center, {
+            pane: 'spatialPane',
             radius: radiusMeters,
             color: '#38bdf8',
             weight: 2,
@@ -5346,6 +5424,8 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         }
       }
     }
+
+    map.on('click', onMapClickSpatial);
 
     function finishSpatialBox(bounds) {
       // Lọc NPP trong bounds
