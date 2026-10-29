@@ -3501,13 +3501,114 @@
       `;
     }
 
-    function renderGoldenOutlets() {
-      goldenLayer.clearLayers();
-      if (!showGolden || goldenGradeFilter === 'OFF') return;
+    // BẢNG TRA CỨU ĐỒNG BỘ 63 TỈNH THÀNH GOLDEN THEO VÙNG & MIỀN CỦA CJ
+    const GOLDEN_PROV_CJ_MAP = {
+      // Area: Hà Nội (Hà Nội) - Miền Bắc
+      'hà nội': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'cao bằng': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'bắc kạn': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'bắc giang': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'lào cai': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'lai châu': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'điện biên': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'sơn la': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'hoà bình': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'hòa bình': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'phú thọ': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'thái nguyên': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'tuyên quang': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'hà giang': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'yên bái': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'vĩnh phúc': { area: 'Hà Nội', region: 'MIỀN BẮC' },
 
+      // Area: Hải Phòng (Hải Phòng) - Miền Bắc
+      'hải phòng': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'hải dương': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'hưng yên': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'bắc ninh': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'quảng ninh': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'lạng sơn': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'hà nam': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'nam định': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'ninh bình': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'thái bình': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'thanh hoá': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'thanh hóa': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'nghệ an': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'hà tĩnh': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+
+      // Area: Đà Nẵng - Miền Bắc / Miền Trung
+      'đà nẵng': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'thừa thiên huế': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'huế': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'quảng bình': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'quảng trị': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'quảng nam': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'quảng ngãi': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'bình định': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'phú yên': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'gia lai': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'kon tum': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+
+      // Area: Nha Trang - Miền Nam
+      'khánh hoà': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'khánh hòa': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'ninh thuận': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'bình thuận': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'đăk lăk': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'đắk lắk': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'đăk nông': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'đắk nông': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'lâm đồng': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'bình phước': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'tây ninh': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'đồng nai': { area: 'Nha Trang', region: 'MIỀN NAM' },
+
+      // Area: HCM - Miền Nam
+      'hồ chí minh': { area: 'HCM', region: 'MIỀN NAM' },
+      'bình dương': { area: 'HCM', region: 'MIỀN NAM' },
+      'bà rịa': { area: 'HCM', region: 'MIỀN NAM' },
+      'bà rịa - vũng tàu': { area: 'HCM', region: 'MIỀN NAM' },
+      'vũng tàu': { area: 'HCM', region: 'MIỀN NAM' },
+
+      // Area: Cần Thơ (Cần Thơ) - Miền Nam
+      'cần thơ': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'long an': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'tiền giang': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'bến tre': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'trà vinh': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'vĩnh long': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'đồng tháp': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'an giang': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'kiên giang': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'hậu giang': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'sóc trăng': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'bạc liêu': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'cà mau': { area: 'Cần Thơ', region: 'MIỀN NAM' }
+    };
+
+    function getGoldenCJRegionArea(provName) {
+      if (!provName) return { area: '', region: '' };
+      const clean = cleanProvName(provName);
+      const match = GOLDEN_PROV_CJ_MAP[clean];
+      if (match) {
+        return {
+          area: match.area.normalize('NFC'),
+          region: match.region.normalize('NFC')
+        };
+      }
+      return { area: '', region: '' };
+    }
+
+    function getFilteredGoldenOutlets() {
       const goldenData = window.ALL_GOLDEN || window.GOLDEN_OUTLETS || [];
-      if (!goldenData || goldenData.length === 0) return;
+      if (!goldenData || goldenData.length === 0) return [];
 
+      // 1. Lấy giá trị bộ lọc Miền & Vùng hiện tại của CJ
+      const mienVal = document.getElementById('filterMien') ? document.getElementById('filterMien').value : 'ALL';
+      const vungVal = document.getElementById('filterVung') ? (document.getElementById('filterVung').value || 'ALL').normalize('NFC') : 'ALL';
+
+      // 2. Lấy bộ lọc Tỉnh/Thành multi-select
       const allTinhCount = document.querySelectorAll('.tinh-checkbox').length;
       const hasProvinceFilter = (selectedProvinces && selectedProvinces.size > 0 && selectedProvinces.size < allTinhCount);
 
@@ -3516,23 +3617,60 @@
         selectedProvinces.forEach(p => selectedProvNorm.add(cleanProvName(p)));
       }
 
-      let toRender = goldenData.filter(g => {
+      // 3. Lấy ô tìm kiếm từ khóa
+      const searchVal = document.getElementById('filterSearch') ? document.getElementById('filterSearch').value.toLowerCase().trim() : '';
+
+      return goldenData.filter(g => {
         const grade = g[4];
         if (goldenGradeFilter === 'A' && grade !== 'A') return false;
         if (goldenGradeFilter === 'B' && grade !== 'B') return false;
 
+        const prov = g[5] || '';
+        const provNorm = cleanProvName(prov);
+        const cjInfo = getGoldenCJRegionArea(prov);
+
+        // Lọc theo Miền CJ
+        if (mienVal !== 'ALL' && cjInfo.region !== mienVal) return false;
+
+        // Lọc theo Vùng CJ
+        if (vungVal !== 'ALL') {
+          const vungNorm = vungVal.toLowerCase().trim();
+          const areaNorm = (cjInfo.area || '').toLowerCase().trim();
+          if (areaNorm !== vungNorm) return false;
+        }
+
+        // Lọc theo Tỉnh/Thành được chọn
         if (hasProvinceFilter) {
-          const provNorm = cleanProvName(g[5]);
           if (!selectedProvNorm.has(provNorm)) return false;
+        }
+
+        // Lọc theo từ khóa tìm kiếm
+        if (searchVal) {
+          const matchSearch = (g[2] || '').toLowerCase().includes(searchVal) ||
+                              (g[3] || '').toLowerCase().includes(searchVal) ||
+                              prov.toLowerCase().includes(searchVal) ||
+                              (g[6] || '').toLowerCase().includes(searchVal) ||
+                              (g[8] || '').toLowerCase().includes(searchVal);
+          if (!matchSearch) return false;
         }
 
         return true;
       });
+    }
 
+    function updateGoldenCounter() {
       const countEl = document.getElementById('chkGoldenCount');
-      if (countEl) {
-        countEl.textContent = toRender.length >= 1000 ? (toRender.length / 1000).toFixed(1) + 'k' : toRender.length;
-      }
+      if (!countEl) return;
+      const count = getFilteredGoldenOutlets().length;
+      countEl.textContent = count >= 1000 ? (count / 1000).toFixed(1) + 'k' : count;
+    }
+
+    function renderGoldenOutlets() {
+      goldenLayer.clearLayers();
+      updateGoldenCounter();
+      if (!showGolden || goldenGradeFilter === 'OFF') return;
+
+      const toRender = getFilteredGoldenOutlets();
 
       toRender.forEach(g => {
         const lat = g[0];
@@ -4017,7 +4155,11 @@ function toggleUnifiedNppLayer() {
       renderMapMarkers();
       renderOutlets();
       if (showSpiderLines) renderSpiderLines();
-      if (showGolden) renderGoldenOutlets();
+      if (showGolden) {
+        renderGoldenOutlets();
+      } else {
+        updateGoldenCounter();
+      }
       renderSidebarList();
       updateKPIs();
     }
