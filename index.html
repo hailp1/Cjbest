@@ -221,6 +221,16 @@
       border-color: #f59e0b !important;
       color: #fef08a !important;
     }
+    .island-btn.active-golden {
+      background: rgba(234, 179, 8, 0.28) !important;
+      border-color: #facc15 !important;
+      color: #fef08a !important;
+      box-shadow: 0 0 10px rgba(234, 179, 8, 0.35) !important;
+    }
+    .select-golden {
+      border-color: #eab308 !important;
+      color: #fef08a !important;
+    }
     .island-btn-hero {
       background: linear-gradient(135deg, #059669 0%, #10b981 100%);
       color: #ffffff !important;
@@ -2020,6 +2030,23 @@
       </div>
     </div>
 
+    <!-- CỤM 3.5: KHÁCH HÀNG GOLDEN (EXTERNAL POTENTIAL SHOPS) -->
+    <div class="toolbar-cluster golden-cluster">
+      <button id="btnUnifiedGoldenToggle" class="island-btn" onclick="toggleUnifiedGoldenLayer()" title="Bật/Tắt rải 9.1k Khách Hàng Golden (Hạng A & B)">
+        <i class="fa-solid fa-crown" style="color:#facc15;"></i>
+        <span>Golden: <strong id="chkGoldenCount" style="color:#fde047;">9.1k</strong></span>
+      </button>
+
+      <div class="toolbar-item" title="Lọc hiển thị khách hàng Golden Hạng A hoặc Hạng B">
+        <select id="filterUnifiedGoldenGrade" class="island-select select-golden" onchange="onUnifiedGoldenGradeChange(this.value)">
+          <option value="ALL">⭐ Tất Cả A & B (9.1k)</option>
+          <option value="A">🥇 Chỉ Hạng A (4.7k)</option>
+          <option value="B">🥈 Chỉ Hạng B (4.4k)</option>
+          <option value="OFF">❌ Ẩn Lớp Golden</option>
+        </select>
+      </div>
+    </div>
+
     <!-- CỤM 4: CÔNG CỤ PHÂN TÍCH & THAO TÁC (ANALYTICS & ACTIONS) -->
     <div class="toolbar-cluster tools-cluster">
       <!-- NÚT KHOANH VÙNG DOANH SỐ NỔI BẬT NHẤT -->
@@ -2305,9 +2332,10 @@
       <div class="legend-item"><span class="legend-dot" style="background: #059669; border:1.5px solid #34d399;"></span> <i class="fa-solid fa-user-tie" style="color:#34d399; font-size:0.65rem;"></i> NPP Có SM Giám Sát</div>
       <div class="legend-item"><span class="legend-dot" style="background: #dc2626; border:1.5px solid #f87171;"></span> <i class="fa-solid fa-user-slash" style="color:#f87171; font-size:0.65rem;"></i> ⚠️ NPP Không Có SM</div>
       <div class="legend-item"><span class="legend-dot" style="background: #475569;"></span> <i class="fa-solid fa-lock" style="color:#94a3b8; font-size:0.65rem;"></i> NPP Ngưng Hoạt Động</div>
-      <div class="legend-item"><span class="legend-dot" style="background: #dc2626;"></span> NPP Ngưng Hoạt Động</div>
-      <div class="legend-item"><span class="legend-dot" style="background: #0284c7; width:7px; height:7px;"></span> Điểm Hàng Đông (Cold Chain)</div>
-      <div class="legend-item"><span class="legend-dot" style="background: #f59e0b; width:7px; height:7px;"></span> Điểm Hàng Khô (Dry Chain)</div>
+      <div class="legend-item"><span class="legend-dot" style="background: #0284c7; width:7px; height:7px;"></span> Điểm Bán Đông (Cold Chain)</div>
+      <div class="legend-item"><span class="legend-dot" style="background: #f59e0b; width:7px; height:7px;"></span> Điểm Bán Khô (Dry Chain)</div>
+      <div class="legend-item"><span class="legend-dot" style="background: #facc15; border:1.5px solid #b45309; width:8px; height:8px;"></span> <i class="fa-solid fa-crown" style="color:#fde047; font-size:0.65rem;"></i> Golden Hạng A (Quy mô lớn)</div>
+      <div class="legend-item"><span class="legend-dot" style="background: #fb923c; border:1px solid #9a3412; width:7px; height:7px;"></span> <i class="fa-solid fa-star" style="color:#fb923c; font-size:0.65rem;"></i> Golden Hạng B (Tiềm năng)</div>
       <div class="legend-item"><span class="legend-dot" style="background: #dc2626; width:7px; height:7px;"></span> Cự ly > 45km (Cần mở Hub)</div>
     </div>
 
@@ -2844,6 +2872,13 @@
     const radiusLayer = L.layerGroup();
     const outletsLayer = L.layerGroup().addTo(map);
     const spiderLayer = L.layerGroup().addTo(map);
+    const goldenLayer = L.layerGroup().addTo(map);
+
+    let showGolden = false;
+    let goldenGradeFilter = 'ALL'; // 'ALL', 'A', 'B', 'OFF'
+    let goldenLoaded = false;
+    let goldenLoading = false;
+    window.ALL_GOLDEN = [];
 
     // Dedicated pane for spatial selections so it renders above all standard layers
     map.createPane('spatialPane');
@@ -3264,6 +3299,276 @@
         const btn = document.getElementById('btnUnifiedOutletToggle');
         if (btn) btn.classList.toggle('active-outlet', chk.checked);
       }
+    }
+
+    // ==========================================
+    // GOLDEN OUTLETS LAYER (KHÁCH HÀNG TIỀM NĂNG HẠNG A & B)
+    // ==========================================
+    function ensureGoldenLoaded(callback) {
+      if (window.ALL_GOLDEN && window.ALL_GOLDEN.length > 0) {
+        goldenLoaded = true;
+        goldenLoading = false;
+        if (callback) callback();
+        return;
+      }
+      if (window.GOLDEN_OUTLETS && window.GOLDEN_OUTLETS.length > 0) {
+        window.ALL_GOLDEN = window.GOLDEN_OUTLETS;
+        goldenLoaded = true;
+        goldenLoading = false;
+        if (callback) callback();
+        return;
+      }
+      if (goldenLoading) {
+        const timer = setInterval(() => {
+          if (window.GOLDEN_OUTLETS && window.GOLDEN_OUTLETS.length > 0) {
+            clearInterval(timer);
+            window.ALL_GOLDEN = window.GOLDEN_OUTLETS;
+            goldenLoaded = true;
+            goldenLoading = false;
+            if (callback) callback();
+          }
+        }, 100);
+        return;
+      }
+      goldenLoading = true;
+      showToastNotification('⏳ Đang nạp 9,056 Khách Hàng Golden (Hạng A & B)...');
+      
+      const s = document.createElement('script');
+      s.id = 'rtmGoldenScript';
+      s.src = 'golden_outlets_data.js?v=' + Date.now();
+      s.onload = () => {
+        window.ALL_GOLDEN = window.GOLDEN_OUTLETS || [];
+        goldenLoaded = true;
+        goldenLoading = false;
+        if (callback) callback();
+      };
+      document.body.appendChild(s);
+    }
+
+    function toggleUnifiedGoldenLayer() {
+      showGolden = !showGolden;
+      const btn = document.getElementById('btnUnifiedGoldenToggle');
+      const select = document.getElementById('filterUnifiedGoldenGrade');
+      
+      if (showGolden) {
+        if (btn) btn.classList.add('active-golden');
+        if (select && select.value === 'OFF') select.value = 'ALL';
+        goldenGradeFilter = select ? select.value : 'ALL';
+        ensureGoldenLoaded(() => {
+          renderGoldenOutlets();
+          showToastNotification(`⭐ Đang hiển thị Khách Hàng Golden (${goldenGradeFilter === 'ALL' ? 'Tất cả A & B' : 'Hạng ' + goldenGradeFilter})!`);
+        });
+      } else {
+        if (btn) btn.classList.remove('active-golden');
+        if (select) select.value = 'OFF';
+        goldenGradeFilter = 'OFF';
+        goldenLayer.clearLayers();
+        showToastNotification('Đã ẩn lớp Khách Hàng Golden.');
+      }
+    }
+
+    function onUnifiedGoldenGradeChange(val) {
+      const btn = document.getElementById('btnUnifiedGoldenToggle');
+      if (val === 'OFF') {
+        showGolden = false;
+        goldenGradeFilter = 'OFF';
+        if (btn) btn.classList.remove('active-golden');
+        goldenLayer.clearLayers();
+        showToastNotification('Đã ẩn lớp Khách Hàng Golden.');
+        return;
+      }
+      
+      showGolden = true;
+      goldenGradeFilter = val;
+      if (btn) btn.classList.add('active-golden');
+      
+      ensureGoldenLoaded(() => {
+        renderGoldenOutlets();
+        if (val === 'ALL') {
+          showToastNotification('⭐ Đang hiển thị 9,056 Khách Hàng Golden (Hạng A & B)!');
+        } else if (val === 'A') {
+          showToastNotification('🥇 Đang hiển thị 4,706 Khách Hàng Golden Hạng A (Quy mô lớn nhất)!');
+        } else if (val === 'B') {
+          showToastNotification('🥈 Đang hiển thị 4,350 Khách Hàng Golden Hạng B!');
+        }
+      });
+    }
+
+    function cleanProvName(p) {
+      if (!p) return '';
+      return p.toLowerCase()
+        .replace(/^tp\.?\s*/i, '')
+        .replace(/^tỉnh\s*/i, '')
+        .replace(/^thành phố\s*/i, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .normalize('NFC');
+    }
+
+    function findNearestNpp(lat, lon) {
+      let nearest = null;
+      let minDist = Infinity;
+      if (typeof ALL_NPPS !== 'undefined' && ALL_NPPS) {
+        for (let i = 0; i < ALL_NPPS.length; i++) {
+          const n = ALL_NPPS[i];
+          if (!n.lat || !n.lng) continue;
+          const d = getDistanceKm(lat, lon, n.lat, n.lng);
+          if (d < minDist) {
+            minDist = d;
+            nearest = { npp: n, distKm: d };
+          }
+        }
+      }
+      return nearest;
+    }
+
+    function createGoldenPopup(g) {
+      const lat = g[0];
+      const lon = g[1];
+      const name = g[2];
+      const code = g[3];
+      const grade = g[4];
+      const prov = g[5];
+      const dist = g[6];
+      const ward = g[7];
+      const addr = g[8];
+      const shopType = g[9] || 'Điểm bán lẻ';
+      const sellout = g[10] || 0;
+      const gradeSnack = g[11];
+      const sm = g[12];
+      const route = g[13];
+
+      const nearest = findNearestNpp(lat, lon);
+      const nppName = nearest && nearest.npp ? (nearest.npp.short_name || nearest.npp.name) : 'N/A';
+      const nppDist = nearest ? nearest.distKm.toFixed(1) : '-';
+      const isFar = nearest && nearest.distKm > 45;
+
+      return `
+        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; min-width:250px; max-width:300px; padding:2px;">
+          <div style="background:linear-gradient(135deg, #d97706, #b45309); padding:7px 10px; border-radius:6px 6px 0 0; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:900; font-size:0.75rem; letter-spacing:0.3px;">
+              <i class="fa-solid fa-crown" style="color:#fde047;"></i> KHÁCH HÀNG GOLDEN
+            </span>
+            <span style="background:${grade === 'A' ? '#f59e0b' : '#38bdf8'}; color:#fff; font-size:0.65rem; font-weight:800; padding:1px 6px; border-radius:10px; border:1px solid rgba(255,255,255,0.4);">
+              HẠNG ${grade}
+            </span>
+          </div>
+          
+          <div style="padding:10px 10px 6px 10px; background:#0f172a; border:1px solid #334155; border-top:none; border-radius:0 0 6px 6px; color:#e2e8f0;">
+            <div style="font-weight:800; font-size:0.9rem; color:#fef08a; margin-bottom:3px;">
+              ${name}
+            </div>
+            <div style="font-size:0.7rem; color:#94a3b8; margin-bottom:8px;">
+              Mã Census: <strong style="color:#38bdf8;">#${code}</strong> &bull; Loại: <strong style="color:#e2e8f0;">${shopType}</strong>
+            </div>
+
+            <div style="background:#1e293b; border:1px solid #334155; border-radius:6px; padding:7px 9px; margin-bottom:8px;">
+              <div style="font-size:0.68rem; color:#94a3b8; text-transform:uppercase;">Doanh Số Sell-out Ước Tính (Census)</div>
+              <div style="font-size:1.15rem; font-weight:900; color:#34d399; margin-top:2px;">
+                ${formatMoneyVND(sellout)} <span style="font-size:0.7rem; font-weight:500; color:#94a3b8;">/ tháng</span>
+              </div>
+              ${gradeSnack ? `<div style="font-size:0.68rem; color:#cbd5e1; margin-top:3px;">Phân hạng Snack: <b>${gradeSnack}</b></div>` : ''}
+            </div>
+
+            <div style="font-size:0.72rem; color:#cbd5e1; margin-bottom:6px; line-height:1.35;">
+              <i class="fa-solid fa-location-dot" style="color:#f59e0b; margin-right:4px;"></i>
+              ${addr ? addr + ', ' : ''}${ward ? ward + ', ' : ''}${dist ? dist + ', ' : ''}<b>${prov}</b>
+            </div>
+
+            <div style="background:${isFar ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)'}; border:1px solid ${isFar ? '#ef4444' : '#10b981'}; border-radius:5px; padding:6px 8px; font-size:0.7rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:#94a3b8;">NPP CJ gần nhất:</span>
+                <b style="color:#ffffff;">${nppName}</b>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                <span style="color:#94a3b8;">Cự ly đến tiệm:</span>
+                <b style="color:${isFar ? '#f87171' : '#34d399'}; font-size:0.78rem;">${nppDist} km</b>
+              </div>
+              <div style="margin-top:4px; font-size:0.67rem; font-weight:700; color:${isFar ? '#fca5a5' : '#86efac'};">
+                ${isFar ? '⚠️ Ngoài bán kính (>45km - Vùng trắng cần mở C1)' : '🟢 Trong bán kính phục vụ chuẩn (≤45km)'}
+              </div>
+            </div>
+
+            ${sm ? `
+              <div style="font-size:0.68rem; color:#94a3b8; margin-top:6px; text-align:right;">
+                Tuyến: <b style="color:#cbd5e1;">${route || '-'}</b> &bull; SM: <b style="color:#cbd5e1;">${sm}</b>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderGoldenOutlets() {
+      goldenLayer.clearLayers();
+      if (!showGolden || goldenGradeFilter === 'OFF') return;
+
+      const goldenData = window.ALL_GOLDEN || window.GOLDEN_OUTLETS || [];
+      if (!goldenData || goldenData.length === 0) return;
+
+      const allTinhCount = document.querySelectorAll('.tinh-checkbox').length;
+      const hasProvinceFilter = (selectedProvinces && selectedProvinces.size > 0 && selectedProvinces.size < allTinhCount);
+
+      const selectedProvNorm = new Set();
+      if (hasProvinceFilter) {
+        selectedProvinces.forEach(p => selectedProvNorm.add(cleanProvName(p)));
+      }
+
+      let toRender = goldenData.filter(g => {
+        const grade = g[4];
+        if (goldenGradeFilter === 'A' && grade !== 'A') return false;
+        if (goldenGradeFilter === 'B' && grade !== 'B') return false;
+
+        if (hasProvinceFilter) {
+          const provNorm = cleanProvName(g[5]);
+          if (!selectedProvNorm.has(provNorm)) return false;
+        }
+
+        return true;
+      });
+
+      const countEl = document.getElementById('chkGoldenCount');
+      if (countEl) {
+        countEl.textContent = toRender.length >= 1000 ? (toRender.length / 1000).toFixed(1) + 'k' : toRender.length;
+      }
+
+      toRender.forEach(g => {
+        const lat = g[0];
+        const lon = g[1];
+        if (!lat || !lon) return;
+
+        const name = g[2];
+        const grade = g[4];
+        const sellout = g[10] || 0;
+
+        const isGradeA = (grade === 'A');
+        const markerColor = isGradeA ? '#facc15' : '#fb923c';
+        const borderColor = isGradeA ? '#b45309' : '#9a3412';
+        const radius = isGradeA ? 5.5 : 4.5;
+        const weight = isGradeA ? 2 : 1.5;
+
+        const marker = L.circleMarker([lat, lon], {
+          radius: radius,
+          fillColor: markerColor,
+          color: borderColor,
+          weight: weight,
+          opacity: 0.95,
+          fillOpacity: 0.88
+        });
+
+        marker.bindTooltip(`
+          <div style="font-size:0.75rem; font-weight:700;">
+            <span style="color:${markerColor};">⭐ [Hạng ${grade}]</span> ${name}
+            <div style="font-size:0.68rem; color:#cbd5e1; font-weight:400;">Sell-out: <b>${formatMoneyShort(sellout)} đ/tháng</b></div>
+          </div>
+        `, { direction: 'top', offset: [0, -4] });
+
+        marker.on('click', () => {
+          marker.bindPopup(createGoldenPopup(g)).openPopup();
+        });
+
+        goldenLayer.addLayer(marker);
+      });
     }
 
 
@@ -3710,6 +4015,7 @@ function toggleUnifiedNppLayer() {
       renderMapMarkers();
       renderOutlets();
       if (showSpiderLines) renderSpiderLines();
+      if (showGolden) renderGoldenOutlets();
       renderSidebarList();
       updateKPIs();
     }
@@ -5511,6 +5817,27 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         });
       }
 
+      // Thống kê Khách Hàng Golden (External Census) trong vùng khoanh
+      let selGolden = [];
+      let totGoldenSellout = 0;
+      let goldenACnt = 0;
+      let goldenBCnt = 0;
+      const goldenData = window.ALL_GOLDEN || window.GOLDEN_OUTLETS || [];
+      if (goldenData && goldenData.length > 0) {
+        if (bounds) {
+          selGolden = goldenData.filter(g => g[0] && g[1] && bounds.contains([g[0], g[1]]));
+        } else if (circleCenter && radiusKm) {
+          selGolden = goldenData.filter(g => g[0] && g[1] && getDistanceKm(circleCenter[0], circleCenter[1], g[0], g[1]) <= radiusKm);
+        } else if (polyPoints && polyPoints.length >= 3) {
+          selGolden = goldenData.filter(g => g[0] && g[1] && isPointInsidePolygon(g[0], g[1], polyPoints));
+        }
+        selGolden.forEach(g => {
+          if (g[4] === 'A') goldenACnt++;
+          else if (g[4] === 'B') goldenBCnt++;
+          totGoldenSellout += (g[10] || 0);
+        });
+      }
+
       const totalZoneSales = totRev + totOutletRev;
 
       currentSpatialResult = {
@@ -5524,6 +5851,11 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         activeOutletCnt,
         totalZoneSales,
         selOutlets,
+        totGolden: selGolden.length,
+        totGoldenSellout,
+        goldenACnt,
+        goldenBCnt,
+        selGolden,
         bounds,
         polyPoints,
         circleCenter,
@@ -5568,7 +5900,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         rowsNppHtml = '<tr><td colspan="7" style="text-align:center; padding:12px; color:#94a3b8;">Không có trụ sở NPP trong vùng khoanh này (vùng chỉ có Điểm Bán Lẻ).</td></tr>';
       }
 
-      // Tạo bảng Điểm Bán (Hiển thị Top 40 điểm có doanh số cao nhất hoặc có tủ)
+      // Tạo bảng Điểm Bán (Hiển thị Top 50 điểm có doanh số cao nhất)
       let rowsOutletHtml = '';
       const topOutlets = (r.selOutlets || [])
         .slice()
@@ -5598,7 +5930,44 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         rowsOutletHtml = `
           <tr>
             <td colspan="5" style="text-align:center; padding:12px; color:#94a3b8;">
-              ${outletsLoaded ? 'Không có điểm bán nào trong vùng khoanh này.' : '⏳ Đang tải dữ liệu điểm bán... <a href="#" onclick="ensureOutletsLoaded(function(){processSpatialSelection(currentSpatialResult.nppList, currentSpatialResult.zoneTitle, currentSpatialResult.radiusKm, currentSpatialResult.circleCenter, currentSpatialResult.polyPoints, currentSpatialResult.bounds);}); return false;" style="color:#38bdf8; text-decoration:underline;">Bấm để tính lại ngay</a>'}
+              ${outletsLoaded ? 'Không có điểm bán CJ nào trong vùng khoanh này.' : '⏳ Đang tải dữ liệu điểm bán... <a href="#" onclick="ensureOutletsLoaded(function(){processSpatialSelection(currentSpatialResult.nppList, currentSpatialResult.zoneTitle, currentSpatialResult.radiusKm, currentSpatialResult.circleCenter, currentSpatialResult.polyPoints, currentSpatialResult.bounds);}); return false;" style="color:#38bdf8; text-decoration:underline;">Bấm để tính lại ngay</a>'}
+            </td>
+          </tr>
+        `;
+      }
+
+      // Tạo bảng Khách Hàng Golden (Hiển thị Top 50 điểm có Sell-out cao nhất)
+      let rowsGoldenHtml = '';
+      const topGolden = (r.selGolden || [])
+        .slice()
+        .sort((a, b) => (b[10] || 0) - (a[10] || 0))
+        .slice(0, 50);
+
+      topGolden.forEach(g => {
+        const sellout = g[10] || 0;
+        const grade = g[4];
+        rowsGoldenHtml += `
+          <tr>
+            <td style="font-weight:700; color:#38bdf8; font-size:0.72rem;">#${g[3]}</td>
+            <td style="max-width:140px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#ffffff !important; font-weight:700; font-size:0.75rem;" title="${g[2]}">
+              ${g[2]}
+            </td>
+            <td>
+              <span style="background:${grade === 'A' ? '#f59e0b' : '#38bdf8'}; color:#fff; font-size:0.65rem; font-weight:800; padding:1px 6px; border-radius:10px;">
+                Hạng ${grade}
+              </span>
+            </td>
+            <td style="color:#cbd5e1; font-size:0.68rem;">${g[5] || ''}</td>
+            <td style="text-align:right; font-weight:800; color:#fde047;">${formatMoneyVND(sellout)}</td>
+          </tr>
+        `;
+      });
+
+      if (!r.selGolden || r.selGolden.length === 0) {
+        rowsGoldenHtml = `
+          <tr>
+            <td colspan="5" style="text-align:center; padding:12px; color:#94a3b8;">
+              ${goldenLoaded ? 'Không có khách hàng Golden nào trong vùng khoanh này.' : '⏳ Đang tải dữ liệu Golden... <a href="#" onclick="ensureGoldenLoaded(function(){processSpatialSelection(currentSpatialResult.nppList, currentSpatialResult.zoneTitle, currentSpatialResult.radiusKm, currentSpatialResult.circleCenter, currentSpatialResult.polyPoints, currentSpatialResult.bounds);}); return false;" style="color:#fde047; text-decoration:underline;">Bấm để tính lại ngay</a>'}
             </td>
           </tr>
         `;
@@ -5629,8 +5998,8 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
           </div>
         </div>
 
-        <!-- LƯỚI 4 THẺ KPI CHI TIẾT -->
-        <div class="revenue-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));">
+        <!-- LƯỚI 5 THẺ KPI CHI TIẾT (BAO GỒM CẢ GOLDEN STORES) -->
+        <div class="revenue-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));">
           <div class="revenue-kpi-card" style="border-left-color:#38bdf8;">
             <div class="revenue-kpi-lbl">Số NPP Trong Vùng</div>
             <div class="revenue-kpi-val" style="color:#38bdf8;">${r.nppList.length} <span style="font-size:0.7rem; font-weight:400; color:#94a3b8;">(${r.coSmCnt} Có SM)</span></div>
@@ -5640,15 +6009,21 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
             <div class="revenue-kpi-val" style="color:#10b981;">${formatMoneyVND(r.totRev)}</div>
           </div>
           <div class="revenue-kpi-card" style="border-left-color:#06b6d4;">
-            <div class="revenue-kpi-lbl">Số Điểm Bán (Outlets)</div>
+            <div class="revenue-kpi-lbl">Điểm Bán CJ</div>
             <div class="revenue-kpi-val" style="color:#06b6d4;">
               ${r.totOutlets.toLocaleString('vi-VN')} <span style="font-size:0.7rem; color:#94a3b8;">(${r.activeOutletCnt} có DS)</span>
             </div>
           </div>
           <div class="revenue-kpi-card" style="border-left-color:#f59e0b;">
-            <div class="revenue-kpi-lbl">Tủ Đông/Mát Đầu Tư</div>
+            <div class="revenue-kpi-lbl">Tủ Đông/Mát CJ</div>
             <div class="revenue-kpi-val" style="color:#fbbf24;">
-              ${r.equipOutletCnt} <span style="font-size:0.7rem; color:#67e8f9;">Tủ CJ</span>
+              ${r.equipOutletCnt} <span style="font-size:0.7rem; color:#67e8f9;">Tủ</span>
+            </div>
+          </div>
+          <div class="revenue-kpi-card" style="border-left-color:#eab308; background:rgba(234,179,8,0.1);">
+            <div class="revenue-kpi-lbl" style="color:#fde047;">Tiềm Năng Golden</div>
+            <div class="revenue-kpi-val" style="color:#fde047;">
+              ${(r.totGolden || 0).toLocaleString('vi-VN')} <span style="font-size:0.68rem; color:#fef08a;">(${r.goldenACnt || 0} A &bull; ${r.goldenBCnt || 0} B)</span>
             </div>
           </div>
         </div>
@@ -5673,13 +6048,16 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
           </div>
         ` : ''}
 
-        <!-- TABS CHUYỂN ĐỔI BẢNG NPP VÀ BẢNG ĐIỂM BÁN -->
-        <div style="display:flex; gap:6px; margin: 10px 0 6px 0; border-bottom:1px solid #334155; padding-bottom:6px;">
-          <button onclick="switchSpatialTab('npp')" style="background:${activeSpatialTab==='npp'?'#059669':'#1e293b'}; color:#fff; border:1px solid ${activeSpatialTab==='npp'?'#10b981':'#475569'}; border-radius:15px; padding:3px 12px; font-size:0.72rem; font-weight:700; cursor:pointer;">
-            🏢 Nhà Phân Phối (${r.nppList.length})
+        <!-- TABS CHUYỂN ĐỔI BẢNG NPP, BẢNG ĐIỂM BÁN VÀ BẢNG GOLDEN -->
+        <div style="display:flex; gap:6px; margin: 10px 0 6px 0; border-bottom:1px solid #334155; padding-bottom:6px; overflow-x:auto;">
+          <button onclick="switchSpatialTab('npp')" style="background:${activeSpatialTab==='npp'?'#059669':'#1e293b'}; color:#fff; border:1px solid ${activeSpatialTab==='npp'?'#10b981':'#475569'}; border-radius:15px; padding:3px 12px; font-size:0.72rem; font-weight:700; cursor:pointer; white-space:nowrap;">
+            🏢 NPP (${r.nppList.length})
           </button>
-          <button onclick="switchSpatialTab('outlet')" style="background:${activeSpatialTab==='outlet'?'#0284c7':'#1e293b'}; color:#fff; border:1px solid ${activeSpatialTab==='outlet'?'#38bdf8':'#475569'}; border-radius:15px; padding:3px 12px; font-size:0.72rem; font-weight:700; cursor:pointer;">
-            🏪 Điểm Bán Lẻ (${r.totOutlets})
+          <button onclick="switchSpatialTab('outlet')" style="background:${activeSpatialTab==='outlet'?'#0284c7':'#1e293b'}; color:#fff; border:1px solid ${activeSpatialTab==='outlet'?'#38bdf8':'#475569'}; border-radius:15px; padding:3px 12px; font-size:0.72rem; font-weight:700; cursor:pointer; white-space:nowrap;">
+            🏪 Điểm Bán CJ (${r.totOutlets})
+          </button>
+          <button onclick="switchSpatialTab('golden')" style="background:${activeSpatialTab==='golden'?'#d97706':'#1e293b'}; color:#fff; border:1px solid ${activeSpatialTab==='golden'?'#facc15':'#475569'}; border-radius:15px; padding:3px 12px; font-size:0.72rem; font-weight:700; cursor:pointer; white-space:nowrap;">
+            ⭐ Golden Tiềm Năng (${r.totGolden || 0})
           </button>
         </div>
 
@@ -5703,7 +6081,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
               </tbody>
             </table>
           </div>
-        ` : `
+        ` : (activeSpatialTab === 'outlet' ? `
           <div class="revenue-table-wrapper">
             <table class="revenue-table">
               <thead>
@@ -5721,7 +6099,25 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
             </table>
           </div>
           ${r.selOutlets && r.selOutlets.length > 50 ? `<div style="font-size:0.68rem; color:#94a3b8; text-align:center; margin-top:4px;">(Đang hiển thị 50 điểm có doanh số cao nhất. Bấm "Xuất CSV" để tải đủ ${r.selOutlets.length} điểm)</div>` : ''}
-        `}
+        ` : `
+          <div class="revenue-table-wrapper">
+            <table class="revenue-table">
+              <thead>
+                <tr>
+                  <th>Mã Census</th>
+                  <th>Tên Cửa Hàng</th>
+                  <th>Phân Hạng</th>
+                  <th>Tỉnh/Thành</th>
+                  <th style="text-align:right;">Sell-out / Tháng</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsGoldenHtml}
+              </tbody>
+            </table>
+          </div>
+          ${r.selGolden && r.selGolden.length > 50 ? `<div style="font-size:0.68rem; color:#94a3b8; text-align:center; margin-top:4px;">(Đang hiển thị 50 điểm có Sell-out cao nhất. Bấm "Xuất CSV" để tải đủ ${r.selGolden.length} điểm)</div>` : ''}
+        `)}
       `;
 
       panel.style.display = 'flex';
@@ -5737,8 +6133,25 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       const lines = [];
       let filename = 'Bao_Cao_Doanh_So_Vung_Khoanh_T9_2026.csv';
 
-      // Nếu đang ở Tab Điểm Bán hoặc vùng khoanh chỉ có Điểm Bán
-      if (activeSpatialTab === 'outlet' || (r.nppList.length === 0 && r.selOutlets && r.selOutlets.length > 0)) {
+      // Nếu đang ở Tab Golden
+      if (activeSpatialTab === 'golden' && r.selGolden && r.selGolden.length > 0) {
+        filename = 'Danh_Sach_Khach_Hang_Golden_Vung_Khoanh.csv';
+        lines.push('"Mã Census","Tên Cửa Hàng","Hạng","Tỉnh Thành","Quận Huyện","Địa Chỉ","Loại Hình","Doanh Số Sell-out Ước Tính/Tháng (VNĐ)"');
+        r.selGolden.forEach(g => {
+          const row = [
+            g[3] || '',
+            (g[2] || '').replace(/"/g, '""'),
+            g[4] || '',
+            g[5] || '',
+            g[6] || '',
+            (g[8] || '').replace(/"/g, '""'),
+            g[9] || '',
+            Math.round(g[10] || 0)
+          ];
+          lines.push(row.map(v => `"${v}"`).join(','));
+        });
+      } else if (activeSpatialTab === 'outlet' || (r.nppList.length === 0 && r.selOutlets && r.selOutlets.length > 0)) {
+        // Nếu đang ở Tab Điểm Bán hoặc vùng khoanh chỉ có Điểm Bán
         filename = 'Danh_Sach_Diem_Ban_Vung_Khoanh_T9_2026.csv';
         lines.push('"Mã Cửa Hàng","Tên Điểm Bán","Mã NPP","Tỉnh Thành","Địa Chỉ","Cự Ly (km)","Phân Loại","Doanh Số T9 MTD (VNĐ)","Doanh Số T8 M-1 (VNĐ)","Thiết Bị Đầu Tư","Phân Khúc VPO","Hành Động Đề Xuất","NVBH Phụ Trách","Tuyến Bán Hàng"');
         
