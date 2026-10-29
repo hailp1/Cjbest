@@ -124,11 +124,10 @@
       align-items: center;
       justify-content: flex-start;
       gap: 8px;
-      z-index: 999;
+      z-index: 1000;
       flex-shrink: 0;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      scrollbar-width: none;
+      flex-wrap: wrap;
+      overflow: visible !important;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
     }
     .filter-bar::-webkit-scrollbar { display: none; }
@@ -1735,8 +1734,10 @@
 
 
     /* MULTI-SELECT TỈNH/THÀNH STYLING */
+    /* MULTI-SELECT TỈNH/THÀNH STYLING */
     .multi-select-wrapper {
       position: relative;
+      overflow: visible !important;
     }
     .multi-select-trigger {
       display: flex;
@@ -1745,30 +1746,40 @@
       cursor: pointer;
       text-align: left;
       white-space: nowrap;
-      max-width: 190px;
+      max-width: 200px;
       overflow: hidden;
       text-overflow: ellipsis;
       font-size: 0.72rem;
+      border: 1px solid #38bdf8;
+      background: #0f172a;
+    }
+    .multi-select-trigger:hover {
+      border-color: #0284c7;
+      background: #1e293b;
     }
     .multi-select-trigger .dropdown-arrow {
       font-size: 0.58rem;
-      color: #94a3b8;
+      color: #38bdf8;
       margin-left: auto;
     }
     .multi-select-menu {
-      width: 270px;
-      max-height: 400px;
+      position: absolute !important;
+      top: calc(100% + 6px) !important;
+      left: 0 !important;
+      width: 310px;
+      max-height: 440px;
       display: none;
       flex-direction: column;
       padding: 10px;
       background: #0f172a;
-      border: 1px solid #334155;
+      border: 1px solid #38bdf8;
       border-radius: 10px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
-      z-index: 10001;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.95);
+      z-index: 999999 !important;
+      backdrop-filter: blur(12px);
     }
     .multi-select-menu.show {
-      display: flex;
+      display: flex !important;
     }
     .multi-select-head {
       padding-bottom: 8px;
@@ -1788,7 +1799,7 @@
       transition: all 0.2s;
     }
     .btn-quick-multi:hover {
-      background: #2563eb;
+      background: #0284c7;
       color: #ffffff;
       border-color: #38bdf8;
     }
@@ -1813,7 +1824,7 @@
     }
     .multi-select-list {
       overflow-y: auto;
-      max-height: 220px;
+      max-height: 230px;
       display: flex;
       flex-direction: column;
       gap: 3px;
@@ -1829,10 +1840,10 @@
     .multi-select-item {
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
+      gap: 6px;
       padding: 5px 8px;
       border-radius: 5px;
-      cursor: pointer;
       font-size: 0.72rem;
       color: #cbd5e1;
       transition: background 0.15s;
@@ -1845,14 +1856,34 @@
     .multi-select-item input[type="checkbox"] {
       cursor: pointer;
       accent-color: #0284c7;
-      width: 14px;
-      height: 14px;
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
     }
     .multi-select-item .npp-num {
       margin-left: auto;
       font-size: 0.65rem;
       color: #64748b;
       font-weight: 600;
+    }
+    .btn-only-province {
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+      border-radius: 4px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      cursor: pointer;
+      margin-left: 6px;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-only-province:hover {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #38bdf8;
     }
 </style>
 </head>
@@ -1907,10 +1938,10 @@
           <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
         </button>
 
-        <div class="island-dropdown-menu multi-select-menu" id="menuMultiTinh" onclick="event.stopPropagation()">
+        <div class="island-dropdown-menu multi-select-menu" id="menuMultiTinh" onclick="event.stopPropagation()" onmousedown="event.stopPropagation()">
           <div class="multi-select-head">
             <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:6px;">
-              <span style="font-weight:800; font-size:0.72rem; color:#f8fafc;"><i class="fa-solid fa-filter"></i> CHỌN TỈNH/THÀNH</span>
+              <span style="font-weight:800; font-size:0.72rem; color:#f8fafc;"><i class="fa-solid fa-filter" style="color:#38bdf8;"></i> CHỌN TỈNH/THÀNH</span>
               <span id="badgeMultiTinhCount" class="badge-mini" style="background:#0284c7; color:#fff;">Tất cả</span>
             </div>
             <div style="display:flex; gap:6px; width:100%;">
@@ -1924,6 +1955,10 @@
           </div>
           <div class="multi-select-list" id="listMultiTinh">
             <!-- Dynamically populated checkboxes -->
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:6px; border-top:1px solid #334155;">
+            <span style="font-size:0.65rem; color:#94a3b8;">Hỗ trợ chọn 1 hoặc nhiều tỉnh</span>
+            <button type="button" class="btn-quick-multi" style="background:#0284c7; color:#fff; border-color:#38bdf8; padding:3px 12px; font-weight:800; flex:none;" onclick="closeAllDropdowns()">Xong ✓</button>
           </div>
         </div>
       </div>
@@ -2904,13 +2939,16 @@
 
           const isChecked = selectedProvinces.has(p);
 
-          const item = document.createElement('label');
+          const item = document.createElement('div');
           item.className = 'multi-select-item';
           item.setAttribute('data-province', p);
           item.innerHTML = `
-            <input type="checkbox" class="tinh-checkbox" value="${p}" ${isChecked ? 'checked' : ''} onchange="onProvinceCheckboxChange(this)">
-            <span>${p}</span>
-            <span class="npp-num">${count} NPP</span>
+            <label style="display:flex; align-items:center; gap:8px; flex:1; cursor:pointer; margin:0;" onclick="event.stopPropagation()">
+              <input type="checkbox" class="tinh-checkbox" value="${p}" ${isChecked ? 'checked' : ''} onchange="onProvinceCheckboxChange(this)">
+              <span style="font-weight:600; color:#f1f5f9;">${p}</span>
+              <span class="npp-num">${count} NPP</span>
+            </label>
+            <button type="button" class="btn-only-province" onclick="selectOnlyProvince('${p}', event)" title="Chỉ lọc xem riêng ${p}">Chỉ xem</button>
           `;
           listContainer.appendChild(item);
 
@@ -3173,12 +3211,37 @@
     let outletFilterStatus = 'ALL';
 
     function toggleMultiTinhDropdown(e) {
-      if (e) e.stopPropagation();
+      if (e) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
       const menu = document.getElementById('menuMultiTinh');
       if (!menu) return;
       const isShown = menu.classList.contains('show');
       closeAllDropdowns();
-      if (!isShown) menu.classList.add('show');
+      if (!isShown) {
+        menu.classList.add('show');
+        setTimeout(() => {
+          const inp = document.getElementById('inputSearchTinh');
+          if (inp) inp.focus();
+        }, 50);
+      }
+    }
+
+    function selectOnlyProvince(provName, e) {
+      if (e) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+      selectedProvinces.clear();
+      selectedProvinces.add(provName);
+      const checkboxes = document.querySelectorAll('.tinh-checkbox');
+      checkboxes.forEach(chk => {
+        chk.checked = (chk.value === provName);
+      });
+      updateMultiTinhUI();
+      applyFilters();
+      closeAllDropdowns();
     }
 
     function filterProvincesList(query) {
@@ -3365,7 +3428,9 @@ function toggleUnifiedNppLayer() {
       document.querySelectorAll('.island-dropdown-menu').forEach(el => el.classList.remove('show'));
     }
     document.addEventListener('click', (e) => {
-      if (e.target && e.target.closest('#outletDropdownMenu')) return;
+      if (e.target && e.target.closest('.island-dropdown-menu, .multi-select-wrapper, .dropdown-wrapper, #btnMultiTinhTrigger, #menuMultiTinh, #toolsDropdownMenu, #toolsDropdownWrapper, #outletDropdownMenu')) {
+        return;
+      }
       closeAllDropdowns();
     });
 
