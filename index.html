@@ -227,6 +227,12 @@
       color: #fef08a !important;
       box-shadow: 0 0 10px rgba(234, 179, 8, 0.35) !important;
     }
+    .island-btn.active-golden-scope {
+      background: #0284c7 !important;
+      border-color: #38bdf8 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5) !important;
+    }
     .select-golden {
       border-color: #eab308 !important;
       color: #fef08a !important;
@@ -2034,14 +2040,21 @@
 
     <!-- CỤM 3.5: KHÁCH HÀNG GOLDEN (EXTERNAL POTENTIAL SHOPS) -->
     <div class="toolbar-cluster golden-cluster">
-      <button id="btnUnifiedGoldenToggle" class="island-btn" onclick="toggleUnifiedGoldenLayer()" title="Bật/Tắt rải 9.1k Khách Hàng Golden (Hạng A & B)">
+      <button id="btnUnifiedGoldenToggle" class="island-btn" onclick="toggleUnifiedGoldenLayer()" title="Bật/Tắt hiển thị Khách Hàng Golden tiềm năng">
         <i class="fa-solid fa-crown" style="color:#facc15;"></i>
         <span>Golden: <strong id="chkGoldenCount" style="color:#fde047;">9.1k</strong></span>
       </button>
 
-      <div class="toolbar-item" title="Lọc hiển thị khách hàng Golden Hạng A hoặc Hạng B">
+      <button id="btnGoldenScopeAll" class="island-btn" onclick="toggleGoldenScopeAll()" title="Bấm để chuyển đổi giữa xem TẤT CẢ 9,056 Golden Toàn Quốc vs lọc theo Vùng CJ">
+        <i class="fa-solid fa-earth-asia" style="color:#38bdf8;"></i>
+        <span id="btnGoldenScopeText">Tất Cả (9.1k)</span>
+      </button>
+
+      <div class="toolbar-item" title="Lọc phạm vi và phân hạng khách hàng Golden">
         <select id="filterUnifiedGoldenGrade" class="island-select select-golden" onchange="onUnifiedGoldenGradeChange(this.value)">
-          <option value="ALL">⭐ Tất Cả A & B (9.1k)</option>
+          <option value="ALL_NATIONWIDE">🌐 Tất Cả Golden (Toàn Quốc: 9.1k)</option>
+          <option value="BY_REGION">📍 Golden Theo Vùng / Tỉnh CJ</option>
+          <option value="ALL">⭐ Cả Hạng A & B</option>
           <option value="A">🥇 Chỉ Hạng A (4.7k)</option>
           <option value="B">🥈 Chỉ Hạng B (4.4k)</option>
           <option value="OFF">❌ Ẩn Lớp Golden</option>
@@ -2877,7 +2890,8 @@
     const goldenLayer = L.layerGroup().addTo(map);
 
     let showGolden = false;
-    let goldenGradeFilter = 'ALL'; // 'ALL', 'A', 'B', 'OFF'
+    let goldenGradeFilter = 'ALL'; // 'ALL', 'A', 'B', 'OFF', 'ALL_NATIONWIDE', 'BY_REGION'
+    let goldenScope = 'REGION'; // 'REGION' (theo vùng/tỉnh CJ) hoặc 'ALL' (toàn quốc tất cả 9,056 điểm)
     let goldenLoaded = false;
     let goldenLoading = false;
     window.ALL_GOLDEN = [];
@@ -3369,6 +3383,44 @@
       }
     }
 
+    function updateGoldenScopeUI() {
+      const btn = document.getElementById('btnGoldenScopeAll');
+      const text = document.getElementById('btnGoldenScopeText');
+      if (goldenScope === 'ALL') {
+        if (btn) btn.classList.add('active-golden-scope');
+        if (text) text.textContent = '🌐 Toàn Quốc (9.1k)';
+        if (btn) btn.title = 'Đang xem TẤT CẢ 9,056 Golden Toàn Quốc. Bấm để chuyển về lọc theo Vùng CJ';
+      } else {
+        if (btn) btn.classList.remove('active-golden-scope');
+        if (text) text.textContent = '📍 Theo Vùng';
+        if (btn) btn.title = 'Đang lọc Golden theo Vùng CJ. Bấm để xem TẤT CẢ 9,056 Golden Toàn Quốc';
+      }
+    }
+
+    function toggleGoldenScopeAll() {
+      if (goldenScope === 'ALL') {
+        goldenScope = 'REGION';
+        showToastNotification('📍 Đã chuyển sang xem Golden theo Vùng / Bộ lọc CJ');
+      } else {
+        goldenScope = 'ALL';
+        showToastNotification('🌐 Đang hiển thị TẤT CẢ 9,056 Khách Hàng Golden Toàn Quốc!');
+      }
+      updateGoldenScopeUI();
+      if (!showGolden) {
+        showGolden = true;
+        const btn = document.getElementById('btnUnifiedGoldenToggle');
+        if (btn) btn.classList.add('active-golden');
+        const select = document.getElementById('filterUnifiedGoldenGrade');
+        if (select && select.value === 'OFF') select.value = 'ALL';
+        if (goldenGradeFilter === 'OFF') goldenGradeFilter = 'ALL';
+        ensureGoldenLoaded(() => {
+          renderGoldenOutlets();
+        });
+      } else {
+        renderGoldenOutlets();
+      }
+    }
+
     function onUnifiedGoldenGradeChange(val) {
       const btn = document.getElementById('btnUnifiedGoldenToggle');
       if (val === 'OFF') {
@@ -3381,17 +3433,39 @@
       }
       
       showGolden = true;
-      goldenGradeFilter = val;
       if (btn) btn.classList.add('active-golden');
-      
+
+      if (val === 'ALL_NATIONWIDE') {
+        goldenScope = 'ALL';
+        goldenGradeFilter = 'ALL';
+        updateGoldenScopeUI();
+        ensureGoldenLoaded(() => {
+          renderGoldenOutlets();
+          showToastNotification('🌐 Đang hiển thị TẤT CẢ 9,056 Khách Hàng Golden Toàn Quốc!');
+        });
+        return;
+      }
+
+      if (val === 'BY_REGION') {
+        goldenScope = 'REGION';
+        goldenGradeFilter = 'ALL';
+        updateGoldenScopeUI();
+        ensureGoldenLoaded(() => {
+          renderGoldenOutlets();
+          showToastNotification('📍 Đang hiển thị Khách Hàng Golden theo Vùng / Bộ Lọc CJ!');
+        });
+        return;
+      }
+
+      goldenGradeFilter = val;
       ensureGoldenLoaded(() => {
         renderGoldenOutlets();
         if (val === 'ALL') {
-          showToastNotification('⭐ Đang hiển thị 9,056 Khách Hàng Golden (Hạng A & B)!');
+          showToastNotification(`⭐ Đang hiển thị Khách Hàng Golden (${goldenScope === 'ALL' ? 'Toàn Quốc: 9.1k' : 'Theo Vùng CJ'})!`);
         } else if (val === 'A') {
-          showToastNotification('🥇 Đang hiển thị 4,706 Khách Hàng Golden Hạng A (Quy mô lớn nhất)!');
+          showToastNotification(`🥇 Đang lọc Khách Hàng Golden Hạng A (${goldenScope === 'ALL' ? 'Toàn Quốc: 4.7k' : 'Theo Vùng CJ'})!`);
         } else if (val === 'B') {
-          showToastNotification('🥈 Đang hiển thị 4,350 Khách Hàng Golden Hạng B!');
+          showToastNotification(`🥈 Đang lọc Khách Hàng Golden Hạng B (${goldenScope === 'ALL' ? 'Toàn Quốc: 4.4k' : 'Theo Vùng CJ'})!`);
         }
       });
     }
@@ -3627,21 +3701,25 @@
 
         const prov = g[5] || '';
         const provNorm = cleanProvName(prov);
-        const cjInfo = getGoldenCJRegionArea(prov);
 
-        // Lọc theo Miền CJ
-        if (mienVal !== 'ALL' && cjInfo.region !== mienVal) return false;
+        // NẾU KHÔNG BẬT CHẾ ĐỘ 'ALL' TOÀN QUỐC THÌ ÁP DỤNG BỘ LỌC VÙNG / MIỀN / TỈNH CJ
+        if (goldenScope !== 'ALL') {
+          const cjInfo = getGoldenCJRegionArea(prov);
 
-        // Lọc theo Vùng CJ
-        if (vungVal !== 'ALL') {
-          const vungNorm = vungVal.toLowerCase().trim();
-          const areaNorm = (cjInfo.area || '').toLowerCase().trim();
-          if (areaNorm !== vungNorm) return false;
-        }
+          // Lọc theo Miền CJ
+          if (mienVal !== 'ALL' && cjInfo.region !== mienVal) return false;
 
-        // Lọc theo Tỉnh/Thành được chọn
-        if (hasProvinceFilter) {
-          if (!selectedProvNorm.has(provNorm)) return false;
+          // Lọc theo Vùng CJ
+          if (vungVal !== 'ALL') {
+            const vungNorm = vungVal.toLowerCase().trim();
+            const areaNorm = (cjInfo.area || '').toLowerCase().trim();
+            if (areaNorm !== vungNorm) return false;
+          }
+
+          // Lọc theo Tỉnh/Thành được chọn
+          if (hasProvinceFilter) {
+            if (!selectedProvNorm.has(provNorm)) return false;
+          }
         }
 
         // Lọc theo từ khóa tìm kiếm
