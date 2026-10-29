@@ -710,7 +710,7 @@
       position: absolute;
       bottom: 25px;
       left: 20px;
-      width: 480px;
+      width: 520px;
       max-width: calc(100vw - 40px);
       max-height: 80vh;
       background: rgba(15, 23, 42, 0.96);
@@ -5879,6 +5879,10 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       const body = document.getElementById('spatialRevenueBody');
       const panel = document.getElementById('spatialRevenuePanel');
 
+      const goldenPotential10 = (r.totGoldenSellout || 0) * 0.10;
+      const goldenPotential15 = (r.totGoldenSellout || 0) * 0.15;
+      const goldenPotential25 = (r.totGoldenSellout || 0) * 0.25;
+
       // Tạo bảng NPP
       let rowsNppHtml = '';
       r.nppList.forEach(n => {
@@ -5995,8 +5999,13 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
             </div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:0.75rem; color:#cbd5e1;">NPP Sell-in: <b style="color:#10b981;">${formatMoneyVND(r.totRev)}</b></div>
-            <div style="font-size:0.75rem; color:#cbd5e1; margin-top:3px;">Điểm bán Sell-out: <b style="color:#38bdf8;">${formatMoneyVND(r.totOutletRev)}</b></div>
+            <div style="font-size:0.73rem; color:#cbd5e1;">NPP Sell-in: <b style="color:#10b981;">${formatMoneyVND(r.totRev)}</b></div>
+            <div style="font-size:0.73rem; color:#cbd5e1; margin-top:2px;">Điểm bán Sell-out: <b style="color:#38bdf8;">${formatMoneyVND(r.totOutletRev)}</b></div>
+            ${(r.totGolden || 0) > 0 ? `
+              <div style="font-size:0.73rem; color:#fde047; margin-top:3px; font-weight:700;">
+                <i class="fa-solid fa-arrow-trend-up"></i> Cơ Hội Golden (+15%): <b style="color:#34d399;">+${formatMoneyShort(goldenPotential15)}</b>
+              </div>
+            ` : ''}
           </div>
         </div>
 
@@ -6022,13 +6031,61 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
               ${r.equipOutletCnt} <span style="font-size:0.7rem; color:#67e8f9;">Tủ</span>
             </div>
           </div>
-          <div class="revenue-kpi-card" style="border-left-color:#eab308; background:rgba(234,179,8,0.1);">
+          <div class="revenue-kpi-card" style="border-left-color:#eab308; background:rgba(234,179,8,0.12);">
             <div class="revenue-kpi-lbl" style="color:#fde047;">Tiềm Năng Golden</div>
             <div class="revenue-kpi-val" style="color:#fde047;">
               ${(r.totGolden || 0).toLocaleString('vi-VN')} <span style="font-size:0.68rem; color:#fef08a;">(${r.goldenACnt || 0} A &bull; ${r.goldenBCnt || 0} B)</span>
             </div>
           </div>
+          <div class="revenue-kpi-card" style="border-left-color:#10b981; background:rgba(16,185,129,0.12);">
+            <div class="revenue-kpi-lbl" style="color:#34d399;">Doanh Số Tăng Thêm</div>
+            <div class="revenue-kpi-val" style="color:#34d399;">
+              +${formatMoneyShort(goldenPotential15)} <span style="font-size:0.68rem; color:#6ee7b7;">(+15%)</span>
+            </div>
+          </div>
         </div>
+
+        <!-- KHỐI PHÂN TÍCH TIỀM NĂNG TĂNG DOANH THU NHÓM GOLDEN -->
+        ${(r.totGolden || 0) > 0 ? `
+          <div style="background: linear-gradient(135deg, rgba(234,179,8,0.18), rgba(245,158,11,0.08)); border: 1px solid rgba(234,179,8,0.55); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.3);">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(234,179,8,0.25); padding-bottom:6px; margin-bottom:8px;">
+              <div style="font-size:0.78rem; font-weight:800; color:#fde047; display:flex; align-items:center; gap:6px;">
+                <i class="fa-solid fa-crown" style="color:#fde047;"></i> DỰ BÁO TIỀM NĂNG TĂNG DOANH THU TỪ NHÓM GOLDEN
+              </div>
+              <div style="font-size:0.68rem; color:#fef08a; font-weight:700;">
+                ${r.totGolden} Khách Hàng (${r.goldenACnt} Hạng A &bull; ${r.goldenBCnt} Hạng B)
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px;">
+              <!-- Cột 1: Tổng dung lượng thị trường -->
+              <div style="background:rgba(0,0,0,0.35); padding:6px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.07);">
+                <div style="font-size:0.62rem; color:#94a3b8; text-transform:uppercase; font-weight:700;">Dung Lượng Thị Trường</div>
+                <div style="font-size:0.95rem; font-weight:900; color:#fbbf24; margin-top:2px;">${formatMoneyVND(r.totGoldenSellout || 0)}</div>
+                <div style="font-size:0.62rem; color:#cbd5e1; margin-top:2px;">Tổng Sell-out Golden / tháng</div>
+              </div>
+
+              <!-- Cột 2: Mục tiêu chuẩn 15% thị phần -->
+              <div style="background:rgba(16,185,129,0.18); padding:6px 8px; border-radius:6px; border:1px solid rgba(16,185,129,0.5);">
+                <div style="font-size:0.62rem; color:#6ee7b7; text-transform:uppercase; font-weight:800;">🎯 Mục Tiêu (+15% CJ)</div>
+                <div style="font-size:1.02rem; font-weight:900; color:#34d399; margin-top:2px;">+${formatMoneyVND(goldenPotential15)}</div>
+                <div style="font-size:0.62rem; color:#a7f3d0; margin-top:2px;">Doanh thu CJ tăng thêm / tháng</div>
+              </div>
+
+              <!-- Cột 3: Kịch bản tối ưu 25% thâm nhập -->
+              <div style="background:rgba(56,189,248,0.15); padding:6px 8px; border-radius:6px; border:1px solid rgba(56,189,248,0.4);">
+                <div style="font-size:0.62rem; color:#7dd3fc; text-transform:uppercase; font-weight:800;">🚀 Tối Ưu (+25% CJ)</div>
+                <div style="font-size:1.02rem; font-weight:900; color:#38bdf8; margin-top:2px;">+${formatMoneyVND(goldenPotential25)}</div>
+                <div style="font-size:0.62rem; color:#bae6fd; margin-top:2px;">Đạt ~${formatMoneyShort(goldenPotential25 * 12)} đ / năm</div>
+              </div>
+            </div>
+
+            <div style="margin-top:8px; font-size:0.68rem; color:#fef08a; display:flex; align-items:center; gap:6px; background:rgba(0,0,0,0.25); padding:5px 9px; border-radius:5px;">
+              <i class="fa-solid fa-lightbulb" style="color:#fde047; flex-shrink:0;"></i>
+              <span><b>Đề xuất khai thác:</b> Trang bị tủ đông cho <b>${r.goldenACnt} điểm Hạng A</b> và gom tuyến vào NPP gần nhất để mở rộng doanh số thêm <b>+${formatMoneyShort(goldenPotential15)} đ/tháng</b>.</span>
+            </div>
+          </div>
+        ` : ''}
 
         <!-- STACKED PROGRESS BAR THEO NHÓM SP (NẾU CÓ NPP) -->
         ${r.totRev > 0 ? `
@@ -6102,6 +6159,11 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
           </div>
           ${r.selOutlets && r.selOutlets.length > 50 ? `<div style="font-size:0.68rem; color:#94a3b8; text-align:center; margin-top:4px;">(Đang hiển thị 50 điểm có doanh số cao nhất. Bấm "Xuất CSV" để tải đủ ${r.selOutlets.length} điểm)</div>` : ''}
         ` : `
+          <div style="background:rgba(234,179,8,0.1); border:1px solid rgba(234,179,8,0.3); border-radius:6px; padding:6px 10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; flex-wrap:wrap; gap:4px;">
+            <span style="color:#fde047;"><i class="fa-solid fa-crown"></i> <b>${r.totGolden} Khách Hàng Tiềm Năng</b> (${r.goldenACnt} A &bull; ${r.goldenBCnt} B)</span>
+            <span style="color:#fbbf24;">Dung lượng: <b>${formatMoneyShort(r.totGoldenSellout || 0)} đ/tháng</b></span>
+            <span style="color:#34d399; font-weight:800;">Tiềm năng CJ (+15%): +${formatMoneyShort(goldenPotential15)} đ/tháng</span>
+          </div>
           <div class="revenue-table-wrapper">
             <table class="revenue-table">
               <thead>
@@ -6188,8 +6250,17 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
 
       // Nếu đang ở Tab Golden
       if (activeSpatialTab === 'golden' && r.selGolden && r.selGolden.length > 0) {
-        filename = 'Danh_Sach_Khach_Hang_Golden_Vung_Khoanh.csv';
-        lines.push('"Mã Census","Tên Cửa Hàng","Hạng","Tỉnh Thành","Quận Huyện","Địa Chỉ","Loại Hình","Doanh Số Sell-out Ước Tính/Tháng (VNĐ)"');
+        filename = 'Danh_Sach_Khach_Hang_Golden_Va_Ti_Le_Tang_Truong.csv';
+        const pot15 = Math.round((r.totGoldenSellout || 0) * 0.15);
+        const pot25 = Math.round((r.totGoldenSellout || 0) * 0.25);
+        lines.push('"=== BÁO CÁO TIỀM NĂNG TĂNG TRƯỞNG DOANH THU TỪ NHÓM GOLDEN ==="');
+        lines.push(`"Vùng khoanh chọn","${r.zoneTitle}"`);
+        lines.push(`"Tổng số điểm bán Golden","${r.totGolden} (${r.goldenACnt} Hạng A, ${r.goldenBCnt} Hạng B)"`);
+        lines.push(`"Tổng dung lượng thị trường Golden (Sell-out/tháng)","${Math.round(r.totGoldenSellout || 0)}"`);
+        lines.push(`"Mục tiêu doanh số CJ tăng thêm (+15% thị phần/tháng)","${pot15}"`);
+        lines.push(`"Kịch bản tối ưu doanh số CJ (+25% thị phần/tháng)","${pot25}"`);
+        lines.push('');
+        lines.push('"Mã Census","Tên Cửa Hàng","Hạng","Tỉnh Thành","Quận Huyện","Địa Chỉ","Loại Hình","Doanh Số Sell-out Ước Tính/Tháng (VNĐ)","Tiềm Năng CJ Dự Kiến 15% (VNĐ/Tháng)"');
         r.selGolden.forEach(g => {
           const row = [
             g[3] || '',
@@ -6199,7 +6270,8 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
             g[6] || '',
             (g[8] || '').replace(/"/g, '""'),
             g[9] || '',
-            Math.round(g[10] || 0)
+            Math.round(g[10] || 0),
+            Math.round((g[10] || 0) * 0.15)
           ];
           lines.push(row.map(v => `"${v}"`).join(','));
         });
