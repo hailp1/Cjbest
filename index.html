@@ -2964,15 +2964,64 @@
       updateMultiTinhUI();
     }
 
+    function zoomToSelectedArea() {
+      const vungVal = document.getElementById('filterVung') ? document.getElementById('filterVung').value : 'ALL';
+      const mienVal = document.getElementById('filterMien') ? document.getElementById('filterMien').value : 'ALL';
+
+      if (vungVal && vungVal !== 'ALL') {
+        const vungKey = vungVal.normalize('NFC').toLowerCase().trim();
+        const AREA_PRESETS = {
+          'cần thơ': { center: [9.95, 105.65], zoom: 8.5 },
+          'hcm': { center: [10.82, 106.70], zoom: 9 },
+          'hà nội': { center: [21.05, 105.80], zoom: 8.5 },
+          'hải phòng': { center: [20.85, 106.68], zoom: 8.5 },
+          'nha trang': { center: [12.65, 108.80], zoom: 7.5 },
+          'đà nẵng': { center: [15.85, 108.00], zoom: 7.5 }
+        };
+
+        if (AREA_PRESETS[vungKey]) {
+          map.flyTo(AREA_PRESETS[vungKey].center, AREA_PRESETS[vungKey].zoom, {
+            animate: true,
+            duration: 1.2
+          });
+          return;
+        }
+
+        // Tự động tính Bounding Box của các NPP thuộc Vùng
+        const nppsInArea = ALL_NPPS.filter(n => n.area === vungVal && n.lat && n.lng);
+        if (nppsInArea.length > 0) {
+          const bounds = nppsInArea.map(n => [n.lat, n.lng]);
+          map.fitBounds(bounds, {
+            padding: [45, 45],
+            maxZoom: 11,
+            animate: true,
+            duration: 1.2
+          });
+          return;
+        }
+      }
+
+      // Nếu chọn Tất cả Vùng, zoom theo Miền hoặc Toàn Quốc
+      if (mienVal === 'MIỀN BẮC') {
+        map.flyTo([21.0285, 105.8542], 7, { animate: true, duration: 1.2 });
+      } else if (mienVal === 'MIỀN NAM') {
+        map.flyTo([10.8231, 106.6297], 7, { animate: true, duration: 1.2 });
+      } else {
+        map.flyTo([14.0583, 108.2772], window.innerWidth <= 768 ? 5 : 6, { animate: true, duration: 1.2 });
+      }
+    }
+
     function onMienChange() {
       populateVungOptions();
       populateTinhOptions();
       applyFilters();
+      zoomToSelectedArea();
     }
 
     function onVungChange() {
       populateTinhOptions();
       applyFilters();
+      zoomToSelectedArea();
     }
 
     function toggleNPPVisibility() {
@@ -3242,6 +3291,13 @@
       updateMultiTinhUI();
       applyFilters();
       closeAllDropdowns();
+
+      // Tự động zoom bản đồ vào tỉnh vừa chọn
+      const nppsInProv = ALL_NPPS.filter(n => n.province === provName && n.lat && n.lng);
+      if (nppsInProv.length > 0) {
+        const bounds = nppsInProv.map(n => [n.lat, n.lng]);
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12, animate: true, duration: 1.2 });
+      }
     }
 
     function filterProvincesList(query) {
@@ -3263,6 +3319,7 @@
       });
       updateMultiTinhUI();
       applyFilters();
+      zoomToSelectedArea();
     }
 
     function onProvinceCheckboxChange(chk) {
@@ -3273,6 +3330,17 @@
       }
       updateMultiTinhUI();
       applyFilters();
+
+      if (selectedProvinces.size === 1) {
+        const provName = Array.from(selectedProvinces)[0];
+        const nppsInProv = ALL_NPPS.filter(n => n.province === provName && n.lat && n.lng);
+        if (nppsInProv.length > 0) {
+          const bounds = nppsInProv.map(n => [n.lat, n.lng]);
+          map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12, animate: true, duration: 1.2 });
+        }
+      } else if (selectedProvinces.size === 0) {
+        zoomToSelectedArea();
+      }
     }
 
     function updateMultiTinhUI() {
