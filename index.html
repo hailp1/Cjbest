@@ -643,12 +643,14 @@
     .crosshair-cursor .leaflet-interactive {
       cursor: crosshair !important;
     }
-    .spatial-mode-active .leaflet-marker-pane,
-    .spatial-mode-active .leaflet-overlay-pane {
+    /* Chi vo hieu hoa click vao marker KHI DANG GIU CHUOT KEO VE VUNG (spatial-dragging) */
+    .spatial-dragging .leaflet-marker-pane,
+    .spatial-dragging .leaflet-overlay-pane {
       pointer-events: none !important;
     }
-    .spatial-mode-active .leaflet-pane.leaflet-spatial-pane {
-      pointer-events: auto !important;
+    /* Vung khoanh spatial selection khong chan click chuot vao cac marker ben duoi */
+    .leaflet-pane.leaflet-spatial-pane {
+      pointer-events: none !important;
     }
 
     /* Floating Toolbar on Top of Map */
@@ -2196,7 +2198,7 @@
           <button onclick="exportSpatialRevenueCSV()" style="background:#059669; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:700; cursor:pointer;" title="Tải file CSV">
             <i class="fa-solid fa-file-excel"></i> Xuất CSV
           </button>
-          <button onclick="document.getElementById('spatialRevenuePanel').style.display='none'" style="background:transparent; color:#94a3b8; border:none; font-size:1rem; cursor:pointer; padding:2px 6px;">
+          <button onclick="closeSpatialRevenuePanel()" style="background:transparent; color:#94a3b8; border:none; font-size:1.1rem; cursor:pointer; padding:2px 6px;" title="Đóng bảng và thoát khoanh vùng">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
@@ -5420,6 +5422,10 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       return Math.round(num).toLocaleString('vi-VN');
     }
 
+    function closeSpatialRevenuePanel() {
+      toggleSpatialSelectMode(false);
+    }
+
     function toggleSpatialSelectMode(forceState) {
       isSpatialMode = (forceState !== undefined) ? forceState : !isSpatialMode;
       const btn = document.getElementById('btnSpatialSelect');
@@ -5439,7 +5445,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         
         // Mặc định công cụ kéo chuột tạo hộp
         setSpatialTool('box');
-        map.dragging.disable();
+        map.dragging.enable();
         showToastNotification('🖱️ Nhấn giữ chuột và KÉO trên bản đồ để khoanh vùng tính doanh số!');
       } else {
         if (btn) { btn.classList.remove('active-spatial'); const t = document.getElementById('btnSpatialSelectText'); if (t) t.textContent = '📐 Khoanh Vùng Doanh Số'; }
@@ -5447,6 +5453,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         if (mapElem) {
           mapElem.classList.remove('crosshair-cursor');
           mapElem.classList.remove('spatial-mode-active');
+          mapElem.classList.remove('spatial-dragging');
         }
         clearSpatialSelection();
         map.dragging.enable();
@@ -5462,11 +5469,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       if (document.getElementById('btnToolCircle')) document.getElementById('btnToolCircle').classList.toggle('active', toolName === 'circle');
       if (document.getElementById('btnToolPolygon')) document.getElementById('btnToolPolygon').classList.toggle('active', toolName === 'polygon');
 
-      if (toolName === 'box' || toolName === 'freehand') {
-        map.dragging.disable();
-      } else {
-        map.dragging.enable();
-      }
+      map.dragging.enable();
 
       const instr = document.getElementById('spatialToolInstruction');
       if (instr) {
@@ -5476,9 +5479,6 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         else if (toolName === 'polygon') instr.textContent = '📐 Click các đỉnh đa giác (click điểm đầu để chốt)';
       }
       clearSpatialSelection();
-      if (isSpatialMode && (spatialTool === 'box' || spatialTool === 'freehand')) {
-        map.dragging.disable();
-      }
     }
 
     function clearSpatialSelection() {
@@ -5493,11 +5493,9 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       spatialFreehandPoints = [];
       currentSpatialResult = null;
       isSpatialMouseDown = false;
-      if (!isSpatialMode || (spatialTool !== 'box' && spatialTool !== 'freehand')) {
-        map.dragging.enable();
-      } else {
-        map.dragging.disable();
-      }
+      map.dragging.enable();
+      const mapElem = document.getElementById('map');
+      if (mapElem) mapElem.classList.remove('spatial-dragging');
       const p = document.getElementById('spatialRevenuePanel');
       if (p) p.style.display = 'none';
     }
@@ -5541,6 +5539,8 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         isSpatialMouseDown = true;
         spatialDragStartLatLng = e.latlng;
         map.dragging.disable();
+        const mapElem = document.getElementById('map');
+        if (mapElem) mapElem.classList.add('spatial-dragging');
 
         if (e.originalEvent && e.originalEvent.preventDefault) {
           e.originalEvent.preventDefault();
@@ -5600,9 +5600,9 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
     function handleSpatialMouseUp(e) {
       if (!isSpatialMode || !isSpatialMouseDown) return;
       isSpatialMouseDown = false;
-      if (spatialTool !== 'box' && spatialTool !== 'freehand') {
-        map.dragging.enable();
-      }
+      const mapElem = document.getElementById('map');
+      if (mapElem) mapElem.classList.remove('spatial-dragging');
+      map.dragging.enable();
 
       const instr = document.getElementById('spatialToolInstruction');
       if (instr) {
@@ -5635,7 +5635,8 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
           color: '#10b981',
           weight: 3,
           fillColor: '#059669',
-          fillOpacity: 0.25
+          fillOpacity: 0.25,
+          interactive: false
         });
         spatialLayerGroup.addLayer(spatialActivePolygon);
         finishSpatialPolygon();
@@ -5723,7 +5724,8 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
             weight: 2,
             dashArray: '6, 6',
             fillColor: '#0284c7',
-            fillOpacity: 0.2
+            fillOpacity: 0.2,
+            interactive: false
           });
           spatialLayerGroup.addLayer(spatialActiveCircle);
           finishSpatialCircle(center, distKm);
@@ -5882,8 +5884,8 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       r.nppList.forEach(n => {
         const rev = n.sales_total || 0;
         rowsNppHtml += `
-          <tr>
-            <td style="font-weight:700; color:#38bdf8;">${n.code}</td>
+          <tr onclick="selectNPP('${n.code}', true)" style="cursor:pointer;" title="Bấm để zoom và định vị NPP này trên bản đồ">
+            <td style="font-weight:700; color:#38bdf8;"><i class="fa-solid fa-building" style="color:#38bdf8; margin-right:3px;"></i>${n.code}</td>
             <td style="max-width:140px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#ffffff !important; font-weight:700;" title="${n.name}">
               ${n.short_name || n.name}
             </td>
@@ -5912,8 +5914,8 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         const equip = o[13] || '';
         const vpo = o[14] || '';
         rowsOutletHtml += `
-          <tr>
-            <td style="font-weight:700; color:#38bdf8; font-size:0.72rem;">${o[3]}</td>
+          <tr onclick="inspectSpatialOutlet('${o[3]}', ${o[0]}, ${o[1]})" style="cursor:pointer;" title="Bấm để phóng to và xem chi tiết điểm bán này">
+            <td style="font-weight:700; color:#38bdf8; font-size:0.72rem;"><i class="fa-solid fa-location-crosshairs" style="color:#38bdf8; margin-right:3px;"></i>${o[3]}</td>
             <td style="max-width:150px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#ffffff !important; font-weight:700; font-size:0.75rem;" title="${o[2]}">
               ${o[2]}
             </td>
@@ -5947,8 +5949,8 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         const sellout = g[10] || 0;
         const grade = g[4];
         rowsGoldenHtml += `
-          <tr>
-            <td style="font-weight:700; color:#38bdf8; font-size:0.72rem;">#${g[3]}</td>
+          <tr onclick="inspectSpatialGolden('${g[3]}', ${g[0]}, ${g[1]})" style="cursor:pointer;" title="Bấm để phóng to và xem chi tiết khách hàng Golden này">
+            <td style="font-weight:700; color:#fde047; font-size:0.72rem;"><i class="fa-solid fa-crown" style="color:#fde047; margin-right:3px;"></i>#${g[3]}</td>
             <td style="max-width:140px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#ffffff !important; font-weight:700; font-size:0.75rem;" title="${g[2]}">
               ${g[2]}
             </td>
@@ -6121,6 +6123,57 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       `;
 
       panel.style.display = 'flex';
+    }
+
+    
+    function inspectSpatialOutlet(storeCode, lat, lng) {
+      if (!lat || !lng) return;
+      map.setView([lat, lng], 17);
+      
+      let found = false;
+      outletsLayer.eachLayer(layer => {
+        if (layer.getLatLng && Math.abs(layer.getLatLng().lat - lat) < 0.0001 && Math.abs(layer.getLatLng().lng - lng) < 0.0001) {
+          layer.openPopup();
+          found = true;
+        }
+      });
+      if (!found) {
+        const o = (ALL_OUTLETS || []).find(item => item[3] === storeCode);
+        if (o) {
+          const storeName = o[2];
+          const equip = o[13] || '';
+          const salesMtd = o[12] || 0;
+          const content = `
+            <div style="font-size:0.75rem; padding:4px 6px; min-width:240px; color:#0f172a;">
+              <div style="font-weight:800; font-size:0.85rem; border-bottom:1px solid #cbd5e1; padding-bottom:4px; margin-bottom:5px;">
+                ${storeName} <span style="font-size:0.7rem; color:#64748b;">#${storeCode}</span>
+              </div>
+              <div style="font-size:0.72rem; color:#475569; margin-bottom:3px;">📍 ${o[9] || ''}</div>
+              <div style="font-size:0.75rem; color:#0369a1; font-weight:700;">❄️ Thiết bị: ${equip || 'Chưa cấp'}</div>
+              <div style="font-size:0.75rem; color:#047857; font-weight:800;">💰 Doanh số T9: ${formatMoneyVND(salesMtd)}</div>
+            </div>
+          `;
+          L.popup().setLatLng([lat, lng]).setContent(content).openOn(map);
+        }
+      }
+    }
+
+    function inspectSpatialGolden(censusCode, lat, lng) {
+      if (!lat || !lng) return;
+      map.setView([lat, lng], 17);
+      let found = false;
+      goldenLayer.eachLayer(layer => {
+        if (layer.getLatLng && Math.abs(layer.getLatLng().lat - lat) < 0.0001 && Math.abs(layer.getLatLng().lng - lng) < 0.0001) {
+          layer.openPopup();
+          found = true;
+        }
+      });
+      if (!found) {
+        const g = (window.ALL_GOLDEN || window.GOLDEN_OUTLETS || []).find(item => item[3] === censusCode);
+        if (g) {
+          L.popup().setLatLng([lat, lng]).setContent(createGoldenPopup(g)).openOn(map);
+        }
+      }
     }
 
     function exportSpatialRevenueCSV() {
