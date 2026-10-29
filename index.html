@@ -2001,6 +2001,7 @@
           <option value="ALL">🏪 Tất cả Điểm Bán (59.4k)</option>
           <option value="ACTIVE_SALES">💰 Đang Hoạt Động (Có DS T9: 34.2k)</option>
           <option value="EQUIP_CJ">❄️ Có Tủ Đông/Mát CJ (2.6k)</option>
+          <option value="EQUIP_ZERO_SALES">⚠️ Có Tủ nhưng Không Có Doanh Số (391)</option>
           <option value="NO_EQUIP">📦 Chưa Có Tủ CJ (56.8k)</option>
           <option value="REMOTE_45">⚠️ Cự Ly Xa > 45km (2.4k)</option>
           <option value="COLD_ONLY">❄️ Chỉ Hàng Đông (Cold Chain)</option>
@@ -3416,6 +3417,8 @@
         showToastNotification('💰 Đang lọc các điểm bán Đang Hoạt Động (phát sinh Doanh Số T9)!');
       } else if (val === 'EQUIP_CJ') {
         showToastNotification('❄️ Đang lọc 2,598 điểm bán ĐÃ ĐẦU TƯ TỦ đông/mát CJ!');
+      } else if (val === 'EQUIP_ZERO_SALES') {
+        showToastNotification('⚠️ Đang lọc 391 điểm bán CÓ TỦ CJ nhưng ZERO SALES (không phát sinh doanh số T9)!');
       } else if (val === 'NO_EQUIP') {
         showToastNotification('📦 Đang lọc các điểm bán CHƯA ĐẦU TƯ TỦ (tiềm năng đặt tủ mới)!');
       } else if (val === 'REMOTE_45') {
@@ -3660,6 +3663,7 @@ function toggleUnifiedNppLayer() {
         // TIÊU CHÍ LỌC ĐIỂM BÁN (HIỆN RÕ TRÊN THANH CÔNG CỤ)
         if (outletFilterStatus === 'ACTIVE_SALES' && (!o[12] || o[12] <= 0)) return false;
         if (outletFilterStatus === 'EQUIP_CJ' && (!o[13] || o[13].length === 0)) return false;
+        if (outletFilterStatus === 'EQUIP_ZERO_SALES' && ((!o[13] || o[13].length === 0) || (o[12] && o[12] > 0))) return false;
         if (outletFilterStatus === 'NO_EQUIP' && o[13] && o[13].length > 0) return false;
         if (outletFilterStatus === 'REMOTE_45' && (!o[10] || o[10] < 45)) return false;
         if (outletFilterStatus === 'ZERO_SALES' && o[12] && o[12] > 0) return false;
@@ -3948,18 +3952,32 @@ function toggleUnifiedNppLayer() {
         const route = o[18] || '';
 
         const hasEquip = equip && equip.length > 0;
+        const isZeroSales = (!salesMtd || salesMtd <= 0);
+        const isEquipZeroSales = hasEquip && isZeroSales;
 
         let color = '#f59e0b';
         if (ptype === 'DONG') color = '#0284c7';
         else if (ptype === 'BOTH') color = '#8b5cf6';
         if (isRemote) color = '#dc2626';
 
-        // Điểm có tủ: bán kính 5, viền vàng kim (#eab308) nổi bật
+        let markerRadius = hasEquip ? 5 : (isRemote ? 4 : 3);
+        let markerFill = hasEquip ? '#0284c7' : color;
+        let markerBorder = hasEquip ? '#eab308' : '#ffffff';
+        let markerWeight = hasEquip ? 2.2 : 0.8;
+
+        if (isEquipZeroSales) {
+          markerFill = '#ef4444';
+          markerBorder = '#facc15';
+          markerRadius = 6;
+          markerWeight = 2.5;
+        }
+
+        // Điểm có tủ: bán kính 5, viền vàng kim (#eab308) nổi bật; có tủ zero sales: màu đỏ viền vàng neon
         const circleMarker = L.circleMarker([lat, lng], {
-          radius: hasEquip ? 5 : (isRemote ? 4 : 3),
-          fillColor: hasEquip ? '#0284c7' : color,
-          color: hasEquip ? '#eab308' : '#ffffff',
-          weight: hasEquip ? 2.2 : 0.8,
+          radius: markerRadius,
+          fillColor: markerFill,
+          color: markerBorder,
+          weight: markerWeight,
           opacity: 0.95,
           fillOpacity: 0.85
         });
@@ -3971,7 +3989,12 @@ function toggleUnifiedNppLayer() {
               <span style="font-weight:600; color:#64748b; font-size:0.7rem;">#${storeCode}</span>
             </div>
 
-            ${hasEquip ? `
+            ${isEquipZeroSales ? `
+              <div style="margin-bottom:6px; padding:5px 8px; background:#fef2f2; border:1px solid #f87171; border-radius:5px; color:#991b1b; font-size:0.72rem; font-weight:800; display:flex; align-items:center; gap:5px;">
+                <i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;"></i>
+                <span>CÓ TỦ (${equip}) NHƯNG ZERO SALES</span>
+              </div>
+            ` : (hasEquip ? `
               <div style="margin-bottom:6px; padding:4px 7px; background:#eff6ff; border:1px solid #93c5fd; border-radius:5px; color:#1e40af; font-size:0.73rem; font-weight:700; display:flex; align-items:center; gap:5px;">
                 <i class="fa-solid fa-snowflake" style="color:#0284c7;"></i>
                 <span>Thiết bị: <b>${equip}</b></span>
@@ -3980,7 +4003,7 @@ function toggleUnifiedNppLayer() {
               <div style="margin-bottom:4px; font-size:0.7rem; color:#64748b;">
                 <i class="fa-solid fa-box" style="color:#94a3b8;"></i> Thiết bị: <i>Chưa đầu tư tủ</i>
               </div>
-            `}
+            `)}
 
             <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:5px; padding:4px 6px; margin-bottom:5px;">
               <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
