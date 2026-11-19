@@ -3814,6 +3814,12 @@
       }
     }
 
+    // ==========================================
+    // MULTI-SELECT TỈNH/THÀNH & OUTLET FILTER LOGIC
+    // ==========================================
+    let selectedProvinces = new Set();
+    let outletFilterStatus = 'ALL';
+
     function toggleMultiTinhDropdown(e) {
       if (e) {
         e.stopPropagation();
