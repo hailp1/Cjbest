@@ -2069,6 +2069,12 @@
         <span id="btnSpatialSelectText">📐 Khoanh Vùng Doanh Số</span>
       </button>
 
+      <!-- NÚT BẬT TẮT NHANH C1 KHUYẾN NGHỊ -->
+      <button class="island-btn" id="btnQuickC1Recommend" onclick="toggleC1Recommendations()" title="Bật/Tắt hiển thị các trạm C1 khuyến nghị của hệ thống (Cai Lậy, Đức Hòa, Trà Vinh, Ba Tri...)" style="border-color:#f59e0b; color:#fef08a;">
+        <i class="fa-solid fa-flag" style="color:#f59e0b;"></i>
+        <span id="btnQuickC1Text">🚩 C1 Khuyến Nghị</span>
+      </button>
+
       <!-- MENU CÔNG CỤ MỞ RỘNG -->
       <div class="dropdown-wrapper" id="toolsDropdownWrapper">
         <button class="island-btn" onclick="toggleToolsMenu(event)" title="Các công cụ phân tích và quy hoạch khác">
@@ -5521,6 +5527,88 @@ function toggleUnifiedNppLayer() {
       } catch (e) {
         console.warn('Cannot load planned flags from storage:', e);
       }
+    }
+
+    // DANH SÁCH TẤT CẢ CÁC TRẠM C1 KHUYẾN NGHỊ THEO VÙNG (TỪ BÁO CÁO CHIẾN LƯỢC RTM)
+    const ALL_C1_RECOMMENDATIONS = {
+      'Cần Thơ': [
+        { id: 'c1_cailay', name: 'C1 TT. Cai Lậy (Tiền Giang)', type: 'C1 Partner', lat: 10.4087, lng: 106.1158, radiusKm: 25, note: 'Cắt giảm 60km từ TP. Mỹ Tho sang Cái Bè/Cai Lậy. Tiếp quản 50 Golden Outlets + 233 tiệm Nhóm C.' },
+        { id: 'c1_duchoa', name: 'C1 TT. Hậu Nghĩa / Đức Hòa (Long An)', type: 'C1 Partner', lat: 10.8872, lng: 106.4485, radiusKm: 25, note: 'Cắt giảm 40km từ TP. Tân An lên Bắc Long An. Tiếp quản 17 Golden Outlets + 266 tiệm Nhóm C.' },
+        { id: 'c1_travinh', name: 'C1 TP. Trà Vinh (Trà Vinh)', type: 'C1 Partner', lat: 9.9348, lng: 106.3456, radiusKm: 30, note: 'Cắt giảm 42km vượt sông Cổ Chiên từ NPP Vĩnh Long. Tiếp quản 87 Golden Outlets + 400 tiệm Nhóm C.' },
+        { id: 'c1_batri', name: 'C1 TT. Ba Tri (Bến Tre)', type: 'C1 Partner', lat: 10.0381, lng: 106.5986, radiusKm: 25, note: 'Cắt giảm 42km-65km vượt đảo từ TP. Bến Tre. Tiếp quản 80 Golden Outlets Ba Tri & Bình Đại.' }
+      ],
+      'Hải Phòng': [
+        { id: 'c1_lucngan', name: 'C1 TT. Chũ / Lục Ngạn (Bắc Giang)', type: 'C1 Partner', lat: 21.3653, lng: 106.5654, radiusKm: 30, note: 'Tiếp nhận 36 shop A/B, giải tỏa tuyến 56.6km cho NPP Thái Đạt.' },
+        { id: 'c1_nghiahung', name: 'C1 Nghĩa Hưng / Nam Trực (Nam Định)', type: 'C1 Partner', lat: 20.2185, lng: 106.1512, radiusKm: 25, note: 'Tiếp nhận 69 shop A/B, giải tỏa tuyến 60km vượt tỉnh cho NPP Hà Hải.' },
+        { id: 'c1_diemdien', name: 'C1 TT. Diêm Điền / Thái Thụy (Thái Bình)', type: 'C1 Partner', lat: 20.5701, lng: 106.5824, radiusKm: 25, note: 'Tiếp nhận 42 shop A/B dải ven biển Thái Thụy - Tiền Hải.' },
+        { id: 'c1_nghison', name: 'C1 TX. Nghi Sơn / Tĩnh Gia (Thanh Hóa Nam)', type: 'C1 Partner', lat: 19.3321, lng: 105.7892, radiusKm: 30, note: 'Tiếp nhận 48 shop A/B, giảm cự ly từ 48.7km xuống 10km.' }
+      ],
+      'Hà Nội': [
+        { id: 'c1_sontay', name: 'C1 TX. Sơn Tây & Ba Vì (Hà Nội Tây)', type: 'C1 Partner', lat: 21.1384, lng: 105.5061, radiusKm: 25, note: 'Tiếp nhận 62 shop A/B bán sơn địa Ba Vì & Sơn Tây, bảo vệ chuỗi lạnh.' },
+        { id: 'c1_hoabinh', name: 'C1 TP. Hòa Bình & Lương Sơn', type: 'C1 Partner', lat: 20.8172, lng: 105.3384, radiusKm: 25, note: 'Tiếp nhận 28 shop A/B, giải tỏa tuyến đèo dốc Hòa Bình.' },
+        { id: 'c1_phutho', name: 'C1 TX. Phú Thọ & Đoan Hùng', type: 'C1 Partner', lat: 21.4012, lng: 105.2183, radiusKm: 30, note: 'Tiếp nhận 45 shop A/B khu vực trung du Phú Thọ.' }
+      ],
+      'Nha Trang': [
+        { id: 'c1_eahleo', name: 'C1 TT. Ea Drăng / Ea H\'leo (Bắc Đắk Lắk)', type: 'C1 Partner', lat: 13.2005, lng: 108.2052, radiusKm: 35, note: 'Tiếp nhận 42 shop A/B phía Bắc Đắk Lắk, cắt giảm 60km từ TP. Buôn Ma Thuột.' },
+        { id: 'c1_ayunpa', name: 'C1 TX. Ayun Pa & Phú Thiện (Gia Lai Nam)', type: 'C1 Partner', lat: 13.4033, lng: 108.4452, radiusKm: 30, note: 'Tiếp nhận 31 shop A/B tiểu vùng Nam Gia Lai.' }
+      ],
+      'Đà Nẵng': [
+        { id: 'c1_lethuy', name: 'C1 TT. Kiến Giang / Lệ Thủy (Quảng Bình)', type: 'C1 Partner', lat: 17.2182, lng: 106.7824, radiusKm: 30, note: 'Tiếp nhận 13 shop A/B, giải tỏa tuyến vượt đèo cho NPP Duy Thúy.' }
+      ]
+    };
+
+    function toggleC1Recommendations() {
+      const btn = document.getElementById('btnQuickC1Recommend');
+      const text = document.getElementById('btnQuickC1Text');
+
+      // Nếu đang có cờ C1 hiển thị thì ẩn đi (toggle off)
+      if (plannedFlags && plannedFlags.length > 0) {
+        clearAllPlannedFlags();
+        if (btn) btn.classList.remove('active-c1-btn');
+        if (text) text.textContent = '🚩 C1 Khuyến Nghị';
+        showToastNotification('Đã ẩn các trạm C1 đề xuất.');
+        return;
+      }
+
+      // Lấy Vùng đang chọn
+      const vungVal = document.getElementById('filterVung') ? document.getElementById('filterVung').value : 'ALL';
+      let targets = [];
+
+      if (vungVal && vungVal !== 'ALL' && ALL_C1_RECOMMENDATIONS[vungVal]) {
+        targets = ALL_C1_RECOMMENDATIONS[vungVal];
+      } else {
+        // Nạp 4 vùng trọng tâm Mekong + các điểm nóng tiêu biểu
+        targets = [
+          ...ALL_C1_RECOMMENDATIONS['Cần Thơ'],
+          ALL_C1_RECOMMENDATIONS['Hải Phòng'][1], // Nghĩa Hưng
+          ALL_C1_RECOMMENDATIONS['Hà Nội'][0], // Sơn Tây
+          ALL_C1_RECOMMENDATIONS['Nha Trang'][0] // Ea H'leo
+        ];
+      }
+
+      targets.forEach(preset => {
+        if (!plannedFlags.some(f => f.id === preset.id || f.name === preset.name)) {
+          addPlannedFlag(preset, false, false);
+        }
+      });
+
+      savePlannedFlagsToStorage();
+      updatePlannedFlagsUI();
+
+      if (btn) btn.classList.add('active-c1-btn');
+      if (text) text.textContent = `🚩 Đang Hiện C1 (${targets.length})`;
+
+      // Zoom tới tâm điểm các trạm C1 vừa nạp
+      if (targets.length > 0) {
+        const bounds = targets.map(t => [t.lat, t.lng]);
+        if (bounds.length === 1) {
+          map.flyTo(bounds[0], 10, { animate: true, duration: 1.2 });
+        } else {
+          map.fitBounds(bounds, { padding: [50, 50], maxZoom: 10, animate: true, duration: 1.2 });
+        }
+      }
+
+      showToastNotification(`🚩 Đã kích hoạt ${targets.length} trạm C1 khuyến nghị của hệ thống!`);
     }
 
     // Nạp nhanh 4 Vùng Trắng Trọng Điểm Mekong (Cai Lậy, Đức Hòa, Trà Vinh, Ba Tri)
