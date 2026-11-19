@@ -124,11 +124,10 @@
       align-items: center;
       justify-content: flex-start;
       gap: 8px;
-      z-index: 999;
+      z-index: 1000;
       flex-shrink: 0;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      scrollbar-width: none;
+      flex-wrap: wrap;
+      overflow: visible !important;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
     }
     .filter-bar::-webkit-scrollbar { display: none; }
@@ -220,6 +219,22 @@
     .island-btn.active-outlet {
       background: rgba(245, 158, 11, 0.25) !important;
       border-color: #f59e0b !important;
+      color: #fef08a !important;
+    }
+    .island-btn.active-golden {
+      background: rgba(234, 179, 8, 0.28) !important;
+      border-color: #facc15 !important;
+      color: #fef08a !important;
+      box-shadow: 0 0 10px rgba(234, 179, 8, 0.35) !important;
+    }
+    .island-btn.active-golden-scope {
+      background: #0284c7 !important;
+      border-color: #38bdf8 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5) !important;
+    }
+    .select-golden {
+      border-color: #eab308 !important;
       color: #fef08a !important;
     }
     .island-btn-hero {
@@ -629,8 +644,19 @@
     /* ==========================================
        SPATIAL SELECTION & REVENUE ANALYTICS CSS
        ========================================== */
-    .crosshair-cursor {
+    .crosshair-cursor,
+    .crosshair-cursor .leaflet-grab,
+    .crosshair-cursor .leaflet-interactive {
       cursor: crosshair !important;
+    }
+    /* Chi vo hieu hoa click vao marker KHI DANG GIU CHUOT KEO VE VUNG (spatial-dragging) */
+    .spatial-dragging .leaflet-marker-pane,
+    .spatial-dragging .leaflet-overlay-pane {
+      pointer-events: none !important;
+    }
+    /* Vung khoanh spatial selection khong chan click chuot vao cac marker ben duoi */
+    .leaflet-pane.leaflet-spatial-pane {
+      pointer-events: none !important;
     }
 
     /* Floating Toolbar on Top of Map */
@@ -690,7 +716,7 @@
       position: absolute;
       bottom: 25px;
       left: 20px;
-      width: 480px;
+      width: 520px;
       max-width: calc(100vw - 40px);
       max-height: 80vh;
       background: rgba(15, 23, 42, 0.96);
@@ -1735,8 +1761,10 @@
 
 
     /* MULTI-SELECT TỈNH/THÀNH STYLING */
+    /* MULTI-SELECT TỈNH/THÀNH STYLING */
     .multi-select-wrapper {
       position: relative;
+      overflow: visible !important;
     }
     .multi-select-trigger {
       display: flex;
@@ -1745,30 +1773,40 @@
       cursor: pointer;
       text-align: left;
       white-space: nowrap;
-      max-width: 190px;
+      max-width: 200px;
       overflow: hidden;
       text-overflow: ellipsis;
       font-size: 0.72rem;
+      border: 1px solid #38bdf8;
+      background: #0f172a;
+    }
+    .multi-select-trigger:hover {
+      border-color: #0284c7;
+      background: #1e293b;
     }
     .multi-select-trigger .dropdown-arrow {
       font-size: 0.58rem;
-      color: #94a3b8;
+      color: #38bdf8;
       margin-left: auto;
     }
     .multi-select-menu {
-      width: 270px;
-      max-height: 400px;
+      position: absolute !important;
+      top: calc(100% + 6px) !important;
+      left: 0 !important;
+      width: 310px;
+      max-height: 440px;
       display: none;
       flex-direction: column;
       padding: 10px;
       background: #0f172a;
-      border: 1px solid #334155;
+      border: 1px solid #38bdf8;
       border-radius: 10px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
-      z-index: 10001;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.95);
+      z-index: 999999 !important;
+      backdrop-filter: blur(12px);
     }
     .multi-select-menu.show {
-      display: flex;
+      display: flex !important;
     }
     .multi-select-head {
       padding-bottom: 8px;
@@ -1788,7 +1826,7 @@
       transition: all 0.2s;
     }
     .btn-quick-multi:hover {
-      background: #2563eb;
+      background: #0284c7;
       color: #ffffff;
       border-color: #38bdf8;
     }
@@ -1813,7 +1851,7 @@
     }
     .multi-select-list {
       overflow-y: auto;
-      max-height: 220px;
+      max-height: 230px;
       display: flex;
       flex-direction: column;
       gap: 3px;
@@ -1829,10 +1867,10 @@
     .multi-select-item {
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
+      gap: 6px;
       padding: 5px 8px;
       border-radius: 5px;
-      cursor: pointer;
       font-size: 0.72rem;
       color: #cbd5e1;
       transition: background 0.15s;
@@ -1845,14 +1883,34 @@
     .multi-select-item input[type="checkbox"] {
       cursor: pointer;
       accent-color: #0284c7;
-      width: 14px;
-      height: 14px;
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
     }
     .multi-select-item .npp-num {
       margin-left: auto;
       font-size: 0.65rem;
       color: #64748b;
       font-weight: 600;
+    }
+    .btn-only-province {
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+      border-radius: 4px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      cursor: pointer;
+      margin-left: 6px;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-only-province:hover {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #38bdf8;
     }
 </style>
 </head>
@@ -1872,10 +1930,6 @@
       <h1><i class="fa-solid fa-route" style="color:#10b981;"></i> RTM Spatial Model</h1>
     </div>
     <div class="header-right">
-      <!-- NÚT BẬT BÁO CÁO ĐÁNH GIÁ 6 VÙNG & CHI TIẾT CỰ LY HUB -->
-      <button class="btn-nav" style="background:#0284c7; border-color:#38bdf8;" onclick="openStrategicModal()"><i class="fa-solid fa-compass-drafting"></i> Đánh Giá 6 Vùng</button>
-      <a href="rtm_analytics_dashboard.html" class="btn-nav" style="background: linear-gradient(135deg, #f59e0b, #d97706); border-color: #fbbf24; text-decoration: none; color: white;" title="Xem báo cáo biểu đồ trực quan & bản đồ vùng trắng C1"><i class="fa-solid fa-chart-pie"></i> Báo Cáo Biểu Đồ & Vùng Trắng C1</a>
-      <button class="btn-nav" style="background:#7c3aed; border-color:#8b5cf6;" onclick="openAnalyticsModal()"><i class="fa-solid fa-chart-pie"></i> Cự Ly & Hub</button>
       <button class="btn-nav" onclick="exportFilteredCSV()"><i class="fa-solid fa-file-excel"></i> Xuất Excel</button>
       <a href="rtm_dashboard_mien_tay.html" class="btn-nav"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
     </div>
@@ -1907,10 +1961,10 @@
           <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
         </button>
 
-        <div class="island-dropdown-menu multi-select-menu" id="menuMultiTinh" onclick="event.stopPropagation()">
+        <div class="island-dropdown-menu multi-select-menu" id="menuMultiTinh" onclick="event.stopPropagation()" onmousedown="event.stopPropagation()">
           <div class="multi-select-head">
             <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:6px;">
-              <span style="font-weight:800; font-size:0.72rem; color:#f8fafc;"><i class="fa-solid fa-filter"></i> CHỌN TỈNH/THÀNH</span>
+              <span style="font-weight:800; font-size:0.72rem; color:#f8fafc;"><i class="fa-solid fa-filter" style="color:#38bdf8;"></i> CHỌN TỈNH/THÀNH</span>
               <span id="badgeMultiTinhCount" class="badge-mini" style="background:#0284c7; color:#fff;">Tất cả</span>
             </div>
             <div style="display:flex; gap:6px; width:100%;">
@@ -1924,6 +1978,10 @@
           </div>
           <div class="multi-select-list" id="listMultiTinh">
             <!-- Dynamically populated checkboxes -->
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:6px; border-top:1px solid #334155;">
+            <span style="font-size:0.65rem; color:#94a3b8;">Hỗ trợ chọn 1 hoặc nhiều tỉnh</span>
+            <button type="button" class="btn-quick-multi" style="background:#0284c7; color:#fff; border-color:#38bdf8; padding:3px 12px; font-weight:800; flex:none;" onclick="closeAllDropdowns()">Xong ✓</button>
           </div>
         </div>
       </div>
@@ -1944,9 +2002,9 @@
       <div class="toolbar-item">
         <select id="filterUnifiedNppStatus" class="island-select" onchange="onUnifiedNppStatusChange(this.value)" title="Lọc trạng thái hoạt động & nhân sự giám sát SM">
           <option value="ALL">🏢 Tất cả Trạng Thái (391)</option>
-          <option value="ACTIVE_ALL">🟢 Đang Hoạt Động (215)</option>
-          <option value="ACTIVE_SM">👤 Có SM / Giám Sát (119)</option>
-          <option value="ACTIVE_KSM">⚠️ Chưa Có SM / NV (96)</option>
+          <option value="ACTIVE_ALL">🟢 Tất cả Đang Hoạt Động (215)</option>
+          <option value="ACTIVE_SM">👤 Đang Hoạt Động & Có NV / SM (119)</option>
+          <option value="ACTIVE_KSM">⚠️ Đang Hoạt Động & Chưa Có NV / SM (96)</option>
           <option value="INACTIVE">🔴 Ngưng Hoạt Động (176)</option>
         </select>
       </div>
@@ -1966,11 +2024,39 @@
           <option value="ALL">🏪 Tất cả Điểm Bán (59.4k)</option>
           <option value="ACTIVE_SALES">💰 Đang Hoạt Động (Có DS T9: 34.2k)</option>
           <option value="EQUIP_CJ">❄️ Có Tủ Đông/Mát CJ (2.6k)</option>
+          <option value="EQUIP_ZERO_SALES">⚠️ Có Tủ nhưng Không Có Doanh Số (391)</option>
           <option value="NO_EQUIP">📦 Chưa Có Tủ CJ (56.8k)</option>
           <option value="REMOTE_45">⚠️ Cự Ly Xa > 45km (2.4k)</option>
           <option value="COLD_ONLY">❄️ Chỉ Hàng Đông (Cold Chain)</option>
           <option value="DRY_ONLY">📦 Chỉ Hàng Khô (Dry / Ambient)</option>
           <option value="ZERO_SALES">🔴 Điểm Zero Sales (Không DS)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- CỤM 3.5: KHÁCH HÀNG THỊ TRƯỜNG (CENSUS / MARKET OUTLETS 215K) -->
+    <div class="toolbar-cluster golden-cluster">
+      <button id="btnUnifiedGoldenToggle" class="island-btn" onclick="toggleUnifiedGoldenLayer()" title="Bật/Tắt hiển thị Khách Hàng Thị Trường (Census 215k)">
+        <i class="fa-solid fa-shop" style="color:#facc15;"></i>
+        <span>Thị Trường: <strong id="chkGoldenCount" style="color:#fde047;">215k</strong></span>
+      </button>
+
+      <button id="btnGoldenScopeAll" class="island-btn" onclick="toggleGoldenScopeAll()" title="Chuyển đổi giữa xem Toàn Quốc vs Lọc theo Vùng CJ">
+        <i class="fa-solid fa-earth-asia" style="color:#38bdf8;"></i>
+        <span id="btnGoldenScopeText">📍 Theo Vùng</span>
+      </button>
+
+      <div class="toolbar-item" title="Lọc phân hạng khách hàng thị trường (S, A, B, C, D)">
+        <select id="filterUnifiedGoldenGrade" class="island-select select-golden" onchange="onUnifiedGoldenGradeChange(this.value)">
+          <option value="ALL">🌐 Tất Cả Hạng (215k)</option>
+          <option value="AB" selected>⭐ Trọng Tâm (S, A, B: 10.1k)</option>
+          <option value="S">👑 Chỉ Hạng S - Sỉ (1.1k)</option>
+          <option value="A">🥇 Chỉ Hạng A (4.7k)</option>
+          <option value="B">🥈 Chỉ Hạng B (4.4k)</option>
+          <option value="C">🥉 Chỉ Hạng C (49.2k)</option>
+          <option value="D">📦 Chỉ Hạng D (41.8k)</option>
+          <option value="KHAC">⚪ Khác / Chưa Xếp Hạng (114k)</option>
+          <option value="OFF">❌ Ẩn Lớp Thị Trường</option>
         </select>
       </div>
     </div>
@@ -2124,7 +2210,7 @@
           <button onclick="exportSpatialRevenueCSV()" style="background:#059669; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:700; cursor:pointer;" title="Tải file CSV">
             <i class="fa-solid fa-file-excel"></i> Xuất CSV
           </button>
-          <button onclick="document.getElementById('spatialRevenuePanel').style.display='none'" style="background:transparent; color:#94a3b8; border:none; font-size:1rem; cursor:pointer; padding:2px 6px;">
+          <button onclick="closeSpatialRevenuePanel()" style="background:transparent; color:#94a3b8; border:none; font-size:1.1rem; cursor:pointer; padding:2px 6px;" title="Đóng bảng và thoát khoanh vùng">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
@@ -2143,12 +2229,7 @@
       </button>
     </div>
 
-    <!-- Mini Map Presets (Góc trái trên) -->
-    <div class="map-preset-pills">
-      <button class="preset-pill" onclick="zoomToPreset('ALL')"><i class="fa-solid fa-arrows-to-eye"></i> Toàn Quốc</button>
-      <button class="preset-pill" onclick="zoomToPreset('MB')">Bắc</button>
-      <button class="preset-pill" onclick="zoomToPreset('MN')">Nam</button>
-    </div>
+
 
     <!-- BANNER CHẾ ĐỘ CẮM CỜ -->
     <div id="pinModeBanner" class="pin-mode-banner" style="display:none;">
@@ -2260,9 +2341,10 @@
       <div class="legend-item"><span class="legend-dot" style="background: #059669; border:1.5px solid #34d399;"></span> <i class="fa-solid fa-user-tie" style="color:#34d399; font-size:0.65rem;"></i> NPP Có SM Giám Sát</div>
       <div class="legend-item"><span class="legend-dot" style="background: #dc2626; border:1.5px solid #f87171;"></span> <i class="fa-solid fa-user-slash" style="color:#f87171; font-size:0.65rem;"></i> ⚠️ NPP Không Có SM</div>
       <div class="legend-item"><span class="legend-dot" style="background: #475569;"></span> <i class="fa-solid fa-lock" style="color:#94a3b8; font-size:0.65rem;"></i> NPP Ngưng Hoạt Động</div>
-      <div class="legend-item"><span class="legend-dot" style="background: #dc2626;"></span> NPP Ngưng Hoạt Động</div>
-      <div class="legend-item"><span class="legend-dot" style="background: #0284c7; width:7px; height:7px;"></span> Điểm Hàng Đông (Cold Chain)</div>
-      <div class="legend-item"><span class="legend-dot" style="background: #f59e0b; width:7px; height:7px;"></span> Điểm Hàng Khô (Dry Chain)</div>
+      <div class="legend-item"><span class="legend-dot" style="background: #0284c7; width:7px; height:7px;"></span> Điểm Bán Đông (Cold Chain)</div>
+      <div class="legend-item"><span class="legend-dot" style="background: #f59e0b; width:7px; height:7px;"></span> Điểm Bán Khô (Dry Chain)</div>
+      <div class="legend-item"><span class="legend-dot" style="background: #facc15; border:1.5px solid #b45309; width:8px; height:8px;"></span> <i class="fa-solid fa-crown" style="color:#fde047; font-size:0.65rem;"></i> Golden Hạng A (Quy mô lớn)</div>
+      <div class="legend-item"><span class="legend-dot" style="background: #fb923c; border:1px solid #9a3412; width:7px; height:7px;"></span> <i class="fa-solid fa-star" style="color:#fb923c; font-size:0.65rem;"></i> Golden Hạng B (Tiềm năng)</div>
       <div class="legend-item"><span class="legend-dot" style="background: #dc2626; width:7px; height:7px;"></span> Cự ly > 45km (Cần mở Hub)</div>
     </div>
 
@@ -2799,6 +2881,18 @@
     const radiusLayer = L.layerGroup();
     const outletsLayer = L.layerGroup().addTo(map);
     const spiderLayer = L.layerGroup().addTo(map);
+    const goldenLayer = L.layerGroup().addTo(map);
+
+    let showGolden = false;
+    let goldenGradeFilter = 'AB'; // 'ALL', 'A', 'B', 'OFF', 'ALL_NATIONWIDE', 'BY_REGION'
+    let goldenScope = 'REGION'; // 'REGION' (theo vùng/tỉnh CJ) hoặc 'ALL' (toàn quốc tất cả 9,056 điểm)
+    let goldenLoaded = false;
+    let goldenLoading = false;
+    window.ALL_GOLDEN = [];
+
+    // Dedicated pane for spatial selections so it renders above all standard layers
+    map.createPane('spatialPane');
+    map.getPane('spatialPane').style.zIndex = '650';
 
     // Poll data loaded from deferred script
     let checkTimer = setInterval(() => {
@@ -2904,13 +2998,16 @@
 
           const isChecked = selectedProvinces.has(p);
 
-          const item = document.createElement('label');
+          const item = document.createElement('div');
           item.className = 'multi-select-item';
           item.setAttribute('data-province', p);
           item.innerHTML = `
-            <input type="checkbox" class="tinh-checkbox" value="${p}" ${isChecked ? 'checked' : ''} onchange="onProvinceCheckboxChange(this)">
-            <span>${p}</span>
-            <span class="npp-num">${count} NPP</span>
+            <label style="display:flex; align-items:center; gap:8px; flex:1; cursor:pointer; margin:0;" onclick="event.stopPropagation()">
+              <input type="checkbox" class="tinh-checkbox" value="${p}" ${isChecked ? 'checked' : ''} onchange="onProvinceCheckboxChange(this)">
+              <span style="font-weight:600; color:#f1f5f9;">${p}</span>
+              <span class="npp-num">${count} NPP</span>
+            </label>
+            <button type="button" class="btn-only-province" onclick="selectOnlyProvince('${p}', event)" title="Chỉ lọc xem riêng ${p}">Chỉ xem</button>
           `;
           listContainer.appendChild(item);
 
@@ -2926,15 +3023,64 @@
       updateMultiTinhUI();
     }
 
+    function zoomToSelectedArea() {
+      const vungVal = document.getElementById('filterVung') ? document.getElementById('filterVung').value : 'ALL';
+      const mienVal = document.getElementById('filterMien') ? document.getElementById('filterMien').value : 'ALL';
+
+      if (vungVal && vungVal !== 'ALL') {
+        const vungKey = vungVal.normalize('NFC').toLowerCase().trim();
+        const AREA_PRESETS = {
+          'cần thơ': { center: [9.95, 105.65], zoom: 8.5 },
+          'hcm': { center: [10.82, 106.70], zoom: 9 },
+          'hà nội': { center: [21.05, 105.80], zoom: 8.5 },
+          'hải phòng': { center: [20.85, 106.68], zoom: 8.5 },
+          'nha trang': { center: [12.65, 108.80], zoom: 7.5 },
+          'đà nẵng': { center: [15.85, 108.00], zoom: 7.5 }
+        };
+
+        if (AREA_PRESETS[vungKey]) {
+          map.flyTo(AREA_PRESETS[vungKey].center, AREA_PRESETS[vungKey].zoom, {
+            animate: true,
+            duration: 1.2
+          });
+          return;
+        }
+
+        // Tự động tính Bounding Box của các NPP thuộc Vùng
+        const nppsInArea = ALL_NPPS.filter(n => n.area === vungVal && n.lat && n.lng);
+        if (nppsInArea.length > 0) {
+          const bounds = nppsInArea.map(n => [n.lat, n.lng]);
+          map.fitBounds(bounds, {
+            padding: [45, 45],
+            maxZoom: 11,
+            animate: true,
+            duration: 1.2
+          });
+          return;
+        }
+      }
+
+      // Nếu chọn Tất cả Vùng, zoom theo Miền hoặc Toàn Quốc
+      if (mienVal === 'MIỀN BẮC') {
+        map.flyTo([21.0285, 105.8542], 7, { animate: true, duration: 1.2 });
+      } else if (mienVal === 'MIỀN NAM') {
+        map.flyTo([10.8231, 106.6297], 7, { animate: true, duration: 1.2 });
+      } else {
+        map.flyTo([14.0583, 108.2772], window.innerWidth <= 768 ? 5 : 6, { animate: true, duration: 1.2 });
+      }
+    }
+
     function onMienChange() {
       populateVungOptions();
       populateTinhOptions();
       applyFilters();
+      zoomToSelectedArea();
     }
 
     function onVungChange() {
       populateTinhOptions();
       applyFilters();
+      zoomToSelectedArea();
     }
 
     function toggleNPPVisibility() {
@@ -3165,20 +3311,541 @@
       }
     }
 
-
     // ==========================================
-    // MULTI-SELECT TỈNH/THÀNH & OUTLET FILTER LOGIC
+    // GOLDEN OUTLETS LAYER (KHÁCH HÀNG TIỀM NĂNG HẠNG A & B)
     // ==========================================
-    let selectedProvinces = new Set();
-    let outletFilterStatus = 'ALL';
+    function ensureGoldenLoaded(callback) {
+      if (window.ALL_GOLDEN && window.ALL_GOLDEN.length > 0) {
+        goldenLoaded = true;
+        goldenLoading = false;
+        if (callback) callback();
+        return;
+      }
+      if (window.GOLDEN_OUTLETS && window.GOLDEN_OUTLETS.length > 0) {
+        window.ALL_GOLDEN = window.GOLDEN_OUTLETS;
+        goldenLoaded = true;
+        goldenLoading = false;
+        if (callback) callback();
+        return;
+      }
+      if (goldenLoading) {
+        const timer = setInterval(() => {
+          if (window.GOLDEN_OUTLETS && window.GOLDEN_OUTLETS.length > 0) {
+            clearInterval(timer);
+            window.ALL_GOLDEN = window.GOLDEN_OUTLETS;
+            goldenLoaded = true;
+            goldenLoading = false;
+            if (callback) callback();
+          }
+        }, 100);
+        return;
+      }
+      goldenLoading = true;
+      showToastNotification('⏳ Đang nạp 9,056 Khách Hàng Golden (Hạng A & B)...');
+      
+      const s = document.createElement('script');
+      s.id = 'rtmGoldenScript';
+      s.src = 'golden_outlets_data.js?v=' + Date.now();
+      s.onload = () => {
+        window.ALL_GOLDEN = window.GOLDEN_OUTLETS || [];
+        goldenLoaded = true;
+        goldenLoading = false;
+        if (callback) callback();
+      };
+      document.body.appendChild(s);
+    }
 
-    function toggleMultiTinhDropdown(e) {
-      if (e) e.stopPropagation();
+    function toggleUnifiedGoldenLayer() {
+      showGolden = !showGolden;
+      const btn = document.getElementById('btnUnifiedGoldenToggle');
+      const select = document.getElementById('filterUnifiedGoldenGrade');
+      
+      if (showGolden) {
+        if (btn) btn.classList.add('active-golden');
+        if (select && select.value === 'OFF') select.value = 'AB';
+        goldenGradeFilter = select ? select.value : 'AB';
+        ensureGoldenLoaded(() => {
+          renderGoldenOutlets();
+          showToastNotification(`⭐ Đang hiển thị Khách Hàng Thị Trường (${goldenGradeFilter === 'AB' ? 'Trọng tâm S, A, B' : (goldenGradeFilter === 'ALL' ? 'Tất cả các hạng' : 'Hạng ' + goldenGradeFilter)})!`);
+        });
+      } else {
+        if (btn) btn.classList.remove('active-golden');
+        if (select) select.value = 'OFF';
+        goldenGradeFilter = 'OFF';
+        goldenLayer.clearLayers();
+        showToastNotification('Đã ẩn lớp Khách Hàng Thị Trường.');
+      }
+    }
+
+    function updateGoldenScopeUI() {
+      const btn = document.getElementById('btnGoldenScopeAll');
+      const text = document.getElementById('btnGoldenScopeText');
+      if (goldenScope === 'ALL') {
+        if (btn) btn.classList.add('active-golden-scope');
+        if (text) text.textContent = '🌐 Toàn Quốc (215k)';
+        if (btn) btn.title = 'Đang xem TẤT CẢ 215,353 Thị Trường Toàn Quốc. Bấm để chuyển về lọc theo Vùng CJ';
+      } else {
+        if (btn) btn.classList.remove('active-golden-scope');
+        if (text) text.textContent = '📍 Theo Vùng';
+        if (btn) btn.title = 'Đang lọc Thị Trường theo Vùng CJ. Bấm để xem TẤT CẢ 215k Toàn Quốc';
+      }
+    }
+
+    function toggleGoldenScopeAll() {
+      if (goldenScope === 'ALL') {
+        goldenScope = 'REGION';
+        showToastNotification('📍 Đã chuyển sang xem Thị Trường theo Vùng / Bộ lọc CJ');
+      } else {
+        goldenScope = 'ALL';
+        showToastNotification('🌐 Đang hiển thị TẤT CẢ Khách Hàng Thị Trường Toàn Quốc!');
+      }
+      updateGoldenScopeUI();
+      if (!showGolden) {
+        showGolden = true;
+        const btn = document.getElementById('btnUnifiedGoldenToggle');
+        if (btn) btn.classList.add('active-golden');
+        const select = document.getElementById('filterUnifiedGoldenGrade');
+        if (select && select.value === 'OFF') select.value = 'AB';
+        if (goldenGradeFilter === 'OFF') goldenGradeFilter = 'AB';
+        ensureGoldenLoaded(() => {
+          renderGoldenOutlets();
+        });
+      } else {
+        renderGoldenOutlets();
+      }
+    }
+
+    function onUnifiedGoldenGradeChange(val) {
+      const btn = document.getElementById('btnUnifiedGoldenToggle');
+      if (val === 'OFF') {
+        showGolden = false;
+        goldenGradeFilter = 'OFF';
+        if (btn) btn.classList.remove('active-golden');
+        goldenLayer.clearLayers();
+        showToastNotification('Đã ẩn lớp Khách Hàng Thị Trường.');
+        return;
+      }
+      
+      showGolden = true;
+      if (btn) btn.classList.add('active-golden');
+
+      goldenGradeFilter = val;
+      ensureGoldenLoaded(() => {
+        renderGoldenOutlets();
+        const scopeLabel = goldenScope === 'ALL' ? 'Toàn Quốc' : 'Theo Vùng CJ';
+        if (val === 'ALL') {
+          showToastNotification(`🌐 Hiển thị Tất Cả Hạng Thị Trường (${scopeLabel})!`);
+        } else if (val === 'AB') {
+          showToastNotification(`⭐ Lọc Khách Hàng Trọng Tâm S, A, B (${scopeLabel})!`);
+        } else if (val === 'S') {
+          showToastNotification(`👑 Lọc Khách Hàng Hạng S - Sỉ Lớn (${scopeLabel})!`);
+        } else if (val === 'A') {
+          showToastNotification(`🥇 Lọc Khách Hàng Hạng A (${scopeLabel})!`);
+        } else if (val === 'B') {
+          showToastNotification(`🥈 Lọc Khách Hàng Hạng B (${scopeLabel})!`);
+        } else if (val === 'C') {
+          showToastNotification(`🥉 Lọc Khách Hàng Hạng C (${scopeLabel})!`);
+        } else if (val === 'D') {
+          showToastNotification(`📦 Lọc Khách Hàng Hạng D (${scopeLabel})!`);
+        } else if (val === 'KHAC') {
+          showToastNotification(`⚪ Lọc Điểm Chưa Xếp Hạng (${scopeLabel})!`);
+        }
+      });
+    }
+
+    function cleanProvName    function cleanProvName(p) {
+      if (!p) return '';
+      return p.toLowerCase()
+        .replace(/^tp\.?\s*/i, '')
+        .replace(/^tỉnh\s*/i, '')
+        .replace(/^thành phố\s*/i, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .normalize('NFC');
+    }
+
+    function findNearestNpp(lat, lon) {
+      let nearest = null;
+      let minDist = Infinity;
+      if (typeof ALL_NPPS !== 'undefined' && ALL_NPPS) {
+        for (let i = 0; i < ALL_NPPS.length; i++) {
+          const n = ALL_NPPS[i];
+          if (!n.lat || !n.lng) continue;
+          const d = getDistanceKm(lat, lon, n.lat, n.lng);
+          if (d < minDist) {
+            minDist = d;
+            nearest = { npp: n, distKm: d };
+          }
+        }
+      }
+      return nearest;
+    }
+
+    function createGoldenPopup(g) {
+      const lat = g[0];
+      const lon = g[1];
+      const name = g[2];
+      const code = g[3];
+      const grade = g[4];
+      const prov = g[5];
+      const dist = g[6];
+      const ward = g[7];
+      const addr = g[8];
+      const shopType = g[9] || 'Điểm bán lẻ';
+      const sellout = g[10] || 0;
+      const gradeSnack = g[11];
+      const sm = g[12];
+      const route = g[13];
+
+      const nearest = findNearestNpp(lat, lon);
+      const nppName = nearest && nearest.npp ? (nearest.npp.short_name || nearest.npp.name) : 'N/A';
+      const nppDist = nearest ? nearest.distKm.toFixed(1) : '-';
+      const isFar = nearest && nearest.distKm > 45;
+
+      let gradColor1 = '#d97706', gradColor2 = '#b45309', badgeIcon = 'fa-crown', badgeTitle = `HẠNG ${grade}`;
+      if (grade === 'S') { gradColor1 = '#7e22ce'; gradColor2 = '#581c87'; badgeIcon = 'fa-gem'; badgeTitle = 'HẠNG S (SỈ LỚN)'; }
+      else if (grade === 'A') { gradColor1 = '#d97706'; gradColor2 = '#b45309'; badgeIcon = 'fa-crown'; badgeTitle = 'HẠNG A (LỚN)'; }
+      else if (grade === 'B') { gradColor1 = '#ea580c'; gradColor2 = '#c2410c'; badgeIcon = 'fa-medal'; badgeTitle = 'HẠNG B (TRUNG BÌNH)'; }
+      else if (grade === 'C') { gradColor1 = '#0284c7'; gradColor2 = '#0369a1'; badgeIcon = 'fa-store'; badgeTitle = 'HẠNG C'; }
+      else if (grade === 'D') { gradColor1 = '#475569'; gradColor2 = '#334155'; badgeIcon = 'fa-box'; badgeTitle = 'HẠNG D'; }
+      else { gradColor1 = '#64748b'; gradColor2 = '#475569'; badgeIcon = 'fa-circle-dot'; badgeTitle = 'CHƯA XẾP HẠNG'; }
+
+      return `
+        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; min-width:260px; max-width:320px; padding:2px;">
+          <div style="background:linear-gradient(135deg, ${gradColor1}, ${gradColor2}); padding:7px 10px; border-radius:6px 6px 0 0; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:900; font-size:0.75rem; letter-spacing:0.3px;">
+              <i class="fa-solid ${badgeIcon}" style="color:#fde047;"></i> ${badgeTitle}
+            </span>
+            <span style="font-size:0.68rem; background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:10px;">${code}</span>
+          </div>
+
+          <div style="padding:10px 12px; font-size:0.75rem; color:#f1f5f9; line-height:1.45; background:#0f172a; border-radius:0 0 6px 6px; border:1px solid #334155; border-top:none;">
+            <div style="font-weight:800; font-size:0.88rem; color:#f8fafc; margin-bottom:4px;">${name}</div>
+            <div style="color:#94a3b8; font-size:0.7rem; margin-bottom:6px;">
+              <i class="fa-solid fa-location-dot" style="color:#ef4444; width:14px;"></i> ${addr ? addr : (ward + ', ' + dist + ', ' + prov)}
+            </div>
+
+            <div style="background:#1e293b; padding:6px 8px; border-radius:5px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="font-size:0.65rem; color:#94a3b8; display:block;">Doanh số thị trường:</span>
+                <span style="font-weight:800; color:#4ade80; font-size:0.85rem;">${formatMoney(sellout)} đ/tháng</span>
+              </div>
+              <div style="text-align:right;">
+                <span style="font-size:0.65rem; color:#94a3b8; display:block;">Loại hình:</span>
+                <span style="font-weight:700; color:#cbd5e1; font-size:0.72rem;">${shopType}</span>
+              </div>
+            </div>
+
+            <div style="background:#1e293b; padding:6px 8px; border-radius:5px; border-left:3px solid ${isFar ? '#ef4444' : '#3b82f6'};">
+              <div style="font-size:0.65rem; color:#94a3b8;">NPP CJ Gần Nhất:</div>
+              <div style="font-weight:700; color:#f8fafc; font-size:0.73rem;">${nppName}</div>
+              <div style="font-size:0.68rem; color:${isFar ? '#f87171' : '#60a5fa'}; font-weight:700; margin-top:2px;">
+                Khoảng cách: <b>${nppDist} km</b> ${isFar ? '<span style="background:#dc2626; color:#fff; font-size:0.6rem; padding:1px 4px; border-radius:3px; margin-left:4px;">⚠️ Giao Xa (>45km)</span>' : ''}
+              </div>
+            </div>
+
+            ${sm ? `
+              <div style="font-size:0.68rem; color:#94a3b8; margin-top:6px; display:flex; justify-content:space-between;">
+                <span>SM: <b style="color:#cbd5e1;">${sm}</b></span>
+                <span>Tuyến: <b style="color:#cbd5e1;">${route || '-'}</b></span>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // BẢNG TRA CỨU ĐỒNG BỘ 63 TỈNH THÀNH GOLDEN THEO VÙNG & MIỀN CỦA CJ
+    const GOLDEN_PROV_CJ_MAP = {
+      // Area: Hà Nội (Hà Nội) - Miền Bắc
+      'hà nội': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'cao bằng': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'bắc kạn': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'bắc giang': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'lào cai': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'lai châu': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'điện biên': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'sơn la': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'hoà bình': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'hòa bình': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'phú thọ': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'thái nguyên': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'tuyên quang': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'hà giang': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'yên bái': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+      'vĩnh phúc': { area: 'Hà Nội', region: 'MIỀN BẮC' },
+
+      // Area: Hải Phòng (Hải Phòng) - Miền Bắc
+      'hải phòng': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'hải dương': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'hưng yên': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'bắc ninh': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'quảng ninh': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'lạng sơn': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'hà nam': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'nam định': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'ninh bình': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'thái bình': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'thanh hoá': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'thanh hóa': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'nghệ an': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+      'hà tĩnh': { area: 'Hải Phòng', region: 'MIỀN BẮC' },
+
+      // Area: Đà Nẵng - Miền Bắc / Miền Trung
+      'đà nẵng': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'thừa thiên huế': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'huế': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'quảng bình': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'quảng trị': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'quảng nam': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'quảng ngãi': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'bình định': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'phú yên': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'gia lai': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+      'kon tum': { area: 'Đà Nẵng', region: 'MIỀN BẮC' },
+
+      // Area: Nha Trang - Miền Nam
+      'khánh hoà': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'khánh hòa': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'ninh thuận': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'bình thuận': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'đăk lăk': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'đắk lắk': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'đăk nông': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'đắk nông': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'lâm đồng': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'bình phước': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'tây ninh': { area: 'Nha Trang', region: 'MIỀN NAM' },
+      'đồng nai': { area: 'Nha Trang', region: 'MIỀN NAM' },
+
+      // Area: HCM - Miền Nam
+      'hồ chí minh': { area: 'HCM', region: 'MIỀN NAM' },
+      'bình dương': { area: 'HCM', region: 'MIỀN NAM' },
+      'bà rịa': { area: 'HCM', region: 'MIỀN NAM' },
+      'bà rịa - vũng tàu': { area: 'HCM', region: 'MIỀN NAM' },
+      'vũng tàu': { area: 'HCM', region: 'MIỀN NAM' },
+
+      // Area: Cần Thơ (Cần Thơ) - Miền Nam
+      'cần thơ': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'long an': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'tiền giang': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'bến tre': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'trà vinh': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'vĩnh long': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'đồng tháp': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'an giang': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'kiên giang': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'hậu giang': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'sóc trăng': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'bạc liêu': { area: 'Cần Thơ', region: 'MIỀN NAM' },
+      'cà mau': { area: 'Cần Thơ', region: 'MIỀN NAM' }
+    };
+
+    function getGoldenCJRegionArea(provName) {
+      if (!provName) return { area: '', region: '' };
+      const clean = cleanProvName(provName);
+      const match = GOLDEN_PROV_CJ_MAP[clean];
+      if (match) {
+        return {
+          area: match.area.normalize('NFC'),
+          region: match.region.normalize('NFC')
+        };
+      }
+      return { area: '', region: '' };
+    }
+
+    function getFilteredGoldenOutlets() {
+      const goldenData = window.ALL_GOLDEN || window.GOLDEN_OUTLETS || [];
+      if (!goldenData || goldenData.length === 0) return [];
+
+      // 1. Lấy giá trị bộ lọc Miền & Vùng hiện tại của CJ
+      const mienVal = document.getElementById('filterMien') ? document.getElementById('filterMien').value : 'ALL';
+      const vungVal = document.getElementById('filterVung') ? (document.getElementById('filterVung').value || 'ALL').normalize('NFC') : 'ALL';
+
+      // 2. Lấy bộ lọc Tỉnh/Thành multi-select
+      const allTinhCount = document.querySelectorAll('.tinh-checkbox').length;
+      const hasProvinceFilter = (selectedProvinces && selectedProvinces.size > 0 && selectedProvinces.size < allTinhCount);
+
+      const selectedProvNorm = new Set();
+      if (hasProvinceFilter) {
+        selectedProvinces.forEach(p => selectedProvNorm.add(cleanProvName(p)));
+      }
+
+      // 3. Lấy ô tìm kiếm từ khóa
+      const searchVal = document.getElementById('filterSearch') ? document.getElementById('filterSearch').value.toLowerCase().trim() : '';
+
+      return goldenData.filter(g => {
+        const grade = g[4];
+        if (goldenGradeFilter === 'S' && grade !== 'S') return false;
+        if (goldenGradeFilter === 'A' && grade !== 'A') return false;
+        if (goldenGradeFilter === 'B' && grade !== 'B') return false;
+        if (goldenGradeFilter === 'C' && grade !== 'C') return false;
+        if (goldenGradeFilter === 'D' && grade !== 'D') return false;
+        if (goldenGradeFilter === 'AB' && (grade !== 'S' && grade !== 'A' && grade !== 'B')) return false;
+        if (goldenGradeFilter === 'CD' && (grade !== 'C' && grade !== 'D')) return false;
+        if (goldenGradeFilter === 'KHAC' && (grade === 'S' || grade === 'A' || grade === 'B' || grade === 'C' || grade === 'D')) return false;
+
+        const prov = g[5] || '';
+        const provNorm = cleanProvName(prov);
+
+        // NẾU KHÔNG BẬT CHẾ ĐỘ 'ALL' TOÀN QUỐC THÌ ÁP DỤNG BỘ LỌC VÙNG / MIỀN / TỈNH CJ
+        if (goldenScope !== 'ALL') {
+          const cjInfo = getGoldenCJRegionArea(prov);
+
+          // Lọc theo Miền CJ
+          if (mienVal !== 'ALL' && cjInfo.region !== mienVal) return false;
+
+          // Lọc theo Vùng CJ
+          if (vungVal !== 'ALL') {
+            const vungNorm = vungVal.toLowerCase().trim();
+            const areaNorm = (cjInfo.area || '').toLowerCase().trim();
+            if (areaNorm !== vungNorm) return false;
+          }
+
+          // Lọc theo Tỉnh/Thành được chọn
+          if (hasProvinceFilter) {
+            if (!selectedProvNorm.has(provNorm)) return false;
+          }
+        }
+
+        // Lọc theo từ khóa tìm kiếm
+        if (searchVal) {
+          const matchSearch = (g[2] || '').toLowerCase().includes(searchVal) ||
+                              (g[3] || '').toLowerCase().includes(searchVal) ||
+                              prov.toLowerCase().includes(searchVal) ||
+                              (g[6] || '').toLowerCase().includes(searchVal) ||
+                              (g[8] || '').toLowerCase().includes(searchVal);
+          if (!matchSearch) return false;
+        }
+
+        return true;
+      });
+    }
+
+    function updateGoldenCounter() {
+      const countEl = document.getElementById('chkGoldenCount');
+      if (!countEl) return;
+      const count = getFilteredGoldenOutlets().length;
+      countEl.textContent = count >= 1000 ? (count / 1000).toFixed(1) + 'k' : count;
+    }
+
+    function renderGoldenOutlets() {
+      goldenLayer.clearLayers();
+      updateGoldenCounter();
+      if (!showGolden || goldenGradeFilter === 'OFF') return;
+
+      const toRender = getFilteredGoldenOutlets();
+      const maxRender = 15000;
+      const displayRender = toRender.slice(0, maxRender);
+
+      displayRender.forEach(g => {
+        const lat = g[0];
+        const lon = g[1];
+        if (!lat || !lon) return;
+
+        const name = g[2];
+        const grade = g[4];
+        const sellout = g[10] || 0;
+
+        let markerColor = '#94a3b8';
+        let borderColor = '#475569';
+        let radius = 3;
+        let weight = 1;
+
+        if (grade === 'S') {
+          markerColor = '#a855f7';
+          borderColor = '#6b21a8';
+          radius = 6;
+          weight = 2;
+        } else if (grade === 'A') {
+          markerColor = '#eab308';
+          borderColor = '#854d0e';
+          radius = 5.5;
+          weight = 2;
+        } else if (grade === 'B') {
+          markerColor = '#f97316';
+          borderColor = '#9a3412';
+          radius = 4.5;
+          weight = 1.5;
+        } else if (grade === 'C') {
+          markerColor = '#06b6d4';
+          borderColor = '#0e7490';
+          radius = 3.5;
+          weight = 1;
+        } else if (grade === 'D') {
+          markerColor = '#64748b';
+          borderColor = '#334155';
+          radius = 3;
+          weight = 1;
+        }
+
+        const marker = L.circleMarker([lat, lon], {
+          radius: radius,
+          fillColor: markerColor,
+          color: borderColor,
+          weight: weight,
+          opacity: 0.95,
+          fillOpacity: 0.88
+        });
+
+        marker.bindTooltip(`
+          <div style="font-size:0.75rem; font-weight:700;">
+            <span style="color:${markerColor};">⭐ [Hạng ${grade}]</span> ${name}
+            <div style="font-size:0.68rem; color:#cbd5e1; font-weight:400;">Sell-out: <b>${formatMoneyShort(sellout)} đ/tháng</b></div>
+          </div>
+        `, { direction: 'top', offset: [0, -4] });
+
+        marker.on('click', () => {
+          marker.bindPopup(createGoldenPopup(g)).openPopup();
+        });
+
+        goldenLayer.addLayer(marker);
+      });
+
+      if (toRender.length > maxRender) {
+        showToastNotification(`Đang hiển thị 15,000 / ${toRender.length.toLocaleString()} điểm thị trường tiêu biểu (Ưu tiên Hạng S, A, B). Chọn Vùng/Tỉnh để xem chi tiết.`);
+      }
+    }
+
+    function toggleMultiTinhDropdown    function toggleMultiTinhDropdown(e) {
+      if (e) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
       const menu = document.getElementById('menuMultiTinh');
       if (!menu) return;
       const isShown = menu.classList.contains('show');
       closeAllDropdowns();
-      if (!isShown) menu.classList.add('show');
+      if (!isShown) {
+        menu.classList.add('show');
+        setTimeout(() => {
+          const inp = document.getElementById('inputSearchTinh');
+          if (inp) inp.focus();
+        }, 50);
+      }
+    }
+
+    function selectOnlyProvince(provName, e) {
+      if (e) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+      selectedProvinces.clear();
+      selectedProvinces.add(provName);
+      const checkboxes = document.querySelectorAll('.tinh-checkbox');
+      checkboxes.forEach(chk => {
+        chk.checked = (chk.value === provName);
+      });
+      updateMultiTinhUI();
+      applyFilters();
+      closeAllDropdowns();
+
+      // Tự động zoom bản đồ vào tỉnh vừa chọn
+      const nppsInProv = ALL_NPPS.filter(n => n.province === provName && n.lat && n.lng);
+      if (nppsInProv.length > 0) {
+        const bounds = nppsInProv.map(n => [n.lat, n.lng]);
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12, animate: true, duration: 1.2 });
+      }
     }
 
     function filterProvincesList(query) {
@@ -3200,6 +3867,7 @@
       });
       updateMultiTinhUI();
       applyFilters();
+      zoomToSelectedArea();
     }
 
     function onProvinceCheckboxChange(chk) {
@@ -3210,6 +3878,17 @@
       }
       updateMultiTinhUI();
       applyFilters();
+
+      if (selectedProvinces.size === 1) {
+        const provName = Array.from(selectedProvinces)[0];
+        const nppsInProv = ALL_NPPS.filter(n => n.province === provName && n.lat && n.lng);
+        if (nppsInProv.length > 0) {
+          const bounds = nppsInProv.map(n => [n.lat, n.lng]);
+          map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12, animate: true, duration: 1.2 });
+        }
+      } else if (selectedProvinces.size === 0) {
+        zoomToSelectedArea();
+      }
     }
 
     function updateMultiTinhUI() {
@@ -3285,6 +3964,8 @@
         showToastNotification('💰 Đang lọc các điểm bán Đang Hoạt Động (phát sinh Doanh Số T9)!');
       } else if (val === 'EQUIP_CJ') {
         showToastNotification('❄️ Đang lọc 2,598 điểm bán ĐÃ ĐẦU TƯ TỦ đông/mát CJ!');
+      } else if (val === 'EQUIP_ZERO_SALES') {
+        showToastNotification('⚠️ Đang lọc 391 điểm bán CÓ TỦ CJ nhưng ZERO SALES (không phát sinh doanh số T9)!');
       } else if (val === 'NO_EQUIP') {
         showToastNotification('📦 Đang lọc các điểm bán CHƯA ĐẦU TƯ TỦ (tiềm năng đặt tủ mới)!');
       } else if (val === 'REMOTE_45') {
@@ -3365,7 +4046,9 @@ function toggleUnifiedNppLayer() {
       document.querySelectorAll('.island-dropdown-menu').forEach(el => el.classList.remove('show'));
     }
     document.addEventListener('click', (e) => {
-      if (e.target && e.target.closest('#outletDropdownMenu')) return;
+      if (e.target && e.target.closest('.island-dropdown-menu, .multi-select-wrapper, .dropdown-wrapper, #btnMultiTinhTrigger, #menuMultiTinh, #toolsDropdownMenu, #toolsDropdownWrapper, #outletDropdownMenu')) {
+        return;
+      }
       closeAllDropdowns();
     });
 
@@ -3441,14 +4124,15 @@ function toggleUnifiedNppLayer() {
     }
 
     function applyFilters() {
-      const mienVal = document.getElementById('filterMien').value;
-      const vungVal = document.getElementById('filterVung').value;
-      const tinhVal = document.getElementById('filterTinh').value;
+      const mienVal = document.getElementById('filterMien') ? document.getElementById('filterMien').value : 'ALL';
+      const vungVal = document.getElementById('filterVung') ? document.getElementById('filterVung').value : 'ALL';
+      const filterTinhEl = document.getElementById('filterTinh');
+      const tinhVal = filterTinhEl ? filterTinhEl.value : 'ALL';
       const statusVal = document.getElementById('filterStatus') ? document.getElementById('filterStatus').value : 'ALL';
       const hideInactive = document.getElementById('chkHideInactive') ? document.getElementById('chkHideInactive').checked : false;
       const hideKhongSM = document.getElementById('chkHideKhongSM') ? document.getElementById('chkHideKhongSM').checked : false;
       const smVal = document.getElementById('filterSM') ? document.getElementById('filterSM').value : 'ALL';
-      const searchVal = document.getElementById('filterSearch').value.toLowerCase().trim();
+      const searchVal = document.getElementById('filterSearch') ? document.getElementById('filterSearch').value.toLowerCase().trim() : '';
 
       // Đồng bộ trạng thái visual nút Bỏ NPP Không SM trên bản đồ
       const btnQuickKSM = document.getElementById('btnQuickHideKhongSM');
@@ -3460,14 +4144,20 @@ function toggleUnifiedNppLayer() {
         }
       }
 
-      const allowCold = document.getElementById('chkToggleCold').checked;
-      const allowDry = document.getElementById('chkToggleDry').checked;
-      const remoteOnly = document.getElementById('chkToggleRemoteOnly').checked;
+      const chkColdEl = document.getElementById('chkToggleCold');
+      const allowCold = chkColdEl ? chkColdEl.checked : (outletFilterStatus !== 'DRY_ONLY');
+      const chkDryEl = document.getElementById('chkToggleDry');
+      const allowDry = chkDryEl ? chkDryEl.checked : (outletFilterStatus !== 'COLD_ONLY');
+      const chkRemoteEl = document.getElementById('chkToggleRemoteOnly');
+      const remoteOnly = chkRemoteEl ? chkRemoteEl.checked : (outletFilterStatus === 'REMOTE_45');
 
       // Update toggle visual active states
-      document.getElementById('lblChkCold').classList.toggle('active-cold', allowCold);
-      document.getElementById('lblChkDry').classList.toggle('active-dry', allowDry);
-      document.getElementById('lblChkRemoteOnly').classList.toggle('active-remote', remoteOnly);
+      const lblCold = document.getElementById('lblChkCold');
+      if (lblCold) lblCold.classList.toggle('active-cold', allowCold);
+      const lblDry = document.getElementById('lblChkDry');
+      if (lblDry) lblDry.classList.toggle('active-dry', allowDry);
+      const lblRemote = document.getElementById('lblChkRemoteOnly');
+      if (lblRemote) lblRemote.classList.toggle('active-remote', remoteOnly);
 
       const lblInactive = document.getElementById('lblChkHideInactive');
       if (lblInactive) lblInactive.classList.toggle('active-hide-inactive', hideInactive);
@@ -3477,12 +4167,14 @@ function toggleUnifiedNppLayer() {
         btnQuickInactive.classList.toggle('active-inactive-btn', hideInactive);
       }
 
+      // Xác định trạng thái Multi-Select Tỉnh/Thành
+      const allTinhCount = document.querySelectorAll('.tinh-checkbox').length;
+      const hasProvinceFilter = (selectedProvinces.size > 0 && selectedProvinces.size < allTinhCount);
+
       // 1. Filter NPPs
       filteredNPPs = ALL_NPPS.filter(n => {
         const matchMien = (mienVal === 'ALL' || n.region === mienVal);
         const matchVung = (vungVal === 'ALL' || n.area === vungVal);
-        const allTinhCount = document.querySelectorAll('.tinh-checkbox').length;
-        const hasProvinceFilter = (selectedProvinces.size > 0 && selectedProvinces.size < allTinhCount);
         const matchTinh = !hasProvinceFilter || selectedProvinces.has(n.province);
 
         // Bỏ NPP ngưng hoạt động khi nút tích Bỏ NPP Ngưng được chọn
@@ -3518,6 +4210,7 @@ function toggleUnifiedNppLayer() {
         // TIÊU CHÍ LỌC ĐIỂM BÁN (HIỆN RÕ TRÊN THANH CÔNG CỤ)
         if (outletFilterStatus === 'ACTIVE_SALES' && (!o[12] || o[12] <= 0)) return false;
         if (outletFilterStatus === 'EQUIP_CJ' && (!o[13] || o[13].length === 0)) return false;
+        if (outletFilterStatus === 'EQUIP_ZERO_SALES' && ((!o[13] || o[13].length === 0) || (o[12] && o[12] > 0))) return false;
         if (outletFilterStatus === 'NO_EQUIP' && o[13] && o[13].length > 0) return false;
         if (outletFilterStatus === 'REMOTE_45' && (!o[10] || o[10] < 45)) return false;
         if (outletFilterStatus === 'ZERO_SALES' && o[12] && o[12] > 0) return false;
@@ -3551,6 +4244,11 @@ function toggleUnifiedNppLayer() {
       renderMapMarkers();
       renderOutlets();
       if (showSpiderLines) renderSpiderLines();
+      if (showGolden) {
+        renderGoldenOutlets();
+      } else {
+        updateGoldenCounter();
+      }
       renderSidebarList();
       updateKPIs();
     }
@@ -3562,18 +4260,29 @@ function toggleUnifiedNppLayer() {
       const totalOutlets = filteredOutlets.length;
       const remoteCount = filteredOutlets.filter(o => o[10] >= 45).length;
 
-      document.getElementById('kpiCount').textContent = totalNpp;
-      if (document.getElementById('kpiActive')) document.getElementById('kpiActive').textContent = `${activeNpp} Chạy`;
-      if (document.getElementById('kpiInactive')) document.getElementById('kpiInactive').textContent = `${inactiveNpp} Ngưng`;
-      document.getElementById('kpiOutlets').textContent = totalOutlets.toLocaleString('vi-VN');
-      document.getElementById('kpiRemote').textContent = remoteCount.toLocaleString('vi-VN');
-      document.getElementById('sidebarCount').textContent = totalNpp;
-      if (document.getElementById('mobileCount')) document.getElementById('mobileCount').textContent = totalNpp;
+      const kpiCountEl = document.getElementById('kpiCount');
+      if (kpiCountEl) kpiCountEl.textContent = totalNpp;
+      const kpiActiveEl = document.getElementById('kpiActive');
+      if (kpiActiveEl) kpiActiveEl.textContent = `${activeNpp} Chạy`;
+      const kpiInactiveEl = document.getElementById('kpiInactive');
+      if (kpiInactiveEl) kpiInactiveEl.textContent = `${inactiveNpp} Ngưng`;
+      const kpiOutletsEl = document.getElementById('kpiOutlets');
+      if (kpiOutletsEl) kpiOutletsEl.textContent = totalOutlets.toLocaleString('vi-VN');
+      const kpiRemoteEl = document.getElementById('kpiRemote');
+      if (kpiRemoteEl) kpiRemoteEl.textContent = remoteCount.toLocaleString('vi-VN');
+      const sidebarCountEl = document.getElementById('sidebarCount');
+      if (sidebarCountEl) sidebarCountEl.textContent = totalNpp;
+      const mobileCountEl = document.getElementById('mobileCount');
+      if (mobileCountEl) mobileCountEl.textContent = totalNpp;
 
       const totalFilteredSales = filteredNPPs.reduce((acc, n) => acc + (n.sales_total || 0), 0);
+      const totalAmb = filteredNPPs.reduce((acc, n) => acc + (n.sales_ambient || 0), 0);
+      const totalChi = filteredNPPs.reduce((acc, n) => acc + (n.sales_chilled || 0), 0);
+      const totalFro = filteredNPPs.reduce((acc, n) => acc + (n.sales_frozen || 0), 0);
       const salesElem = document.getElementById('sidebarTotalSales');
       if (salesElem) {
         salesElem.textContent = formatMoneyVND(totalFilteredSales);
+        salesElem.title = `Khô (Ambient): ${formatMoneyVND(totalAmb)} | Mát (Chilled): ${formatMoneyVND(totalChi)} | Đông (Frozen): ${formatMoneyVND(totalFro)}`;
       }
 
       const outletSalesElem = document.getElementById('sidebarOutletSales');
@@ -3581,13 +4290,16 @@ function toggleUnifiedNppLayer() {
         if (typeof ALL_OUTLETS !== 'undefined' && ALL_OUTLETS && ALL_OUTLETS.length > 0 && filteredOutlets && filteredOutlets.length > 0) {
           const totalOutletMtd = filteredOutlets.reduce((acc, o) => acc + (o[12] || 0), 0);
           outletSalesElem.textContent = formatMoneyVND(totalOutletMtd);
+          outletSalesElem.title = `Tổng Sell-out thực tế của ${filteredOutlets.length.toLocaleString()} điểm bán GT đang hiển thị`;
         } else {
           outletSalesElem.textContent = (typeof ALL_OUTLETS !== 'undefined' && ALL_OUTLETS && ALL_OUTLETS.length > 0) ? '0 đ' : 'Bật Điểm Bán';
         }
       }
 
-      document.getElementById('chkNppCount').textContent = totalNpp;
-      document.getElementById('chkOutletCount').textContent = totalOutlets >= 1000 ? (totalOutlets/1000).toFixed(1) + 'k' : totalOutlets;
+      const chkNppCountEl = document.getElementById('chkNppCount');
+      if (chkNppCountEl) chkNppCountEl.textContent = totalNpp;
+      const chkOutletCountEl = document.getElementById('chkOutletCount');
+      if (chkOutletCountEl) chkOutletCountEl.textContent = totalOutlets >= 1000 ? (totalOutlets/1000).toFixed(1) + 'k' : totalOutlets;
       updateOutletTriggerLabel();
     }
 
@@ -3792,18 +4504,32 @@ function toggleUnifiedNppLayer() {
         const route = o[18] || '';
 
         const hasEquip = equip && equip.length > 0;
+        const isZeroSales = (!salesMtd || salesMtd <= 0);
+        const isEquipZeroSales = hasEquip && isZeroSales;
 
         let color = '#f59e0b';
         if (ptype === 'DONG') color = '#0284c7';
         else if (ptype === 'BOTH') color = '#8b5cf6';
         if (isRemote) color = '#dc2626';
 
-        // Điểm có tủ: bán kính 5, viền vàng kim (#eab308) nổi bật
+        let markerRadius = hasEquip ? 5 : (isRemote ? 4 : 3);
+        let markerFill = hasEquip ? '#0284c7' : color;
+        let markerBorder = hasEquip ? '#eab308' : '#ffffff';
+        let markerWeight = hasEquip ? 2.2 : 0.8;
+
+        if (isEquipZeroSales) {
+          markerFill = '#ef4444';
+          markerBorder = '#facc15';
+          markerRadius = 6;
+          markerWeight = 2.5;
+        }
+
+        // Điểm có tủ: bán kính 5, viền vàng kim (#eab308) nổi bật; có tủ zero sales: màu đỏ viền vàng neon
         const circleMarker = L.circleMarker([lat, lng], {
-          radius: hasEquip ? 5 : (isRemote ? 4 : 3),
-          fillColor: hasEquip ? '#0284c7' : color,
-          color: hasEquip ? '#eab308' : '#ffffff',
-          weight: hasEquip ? 2.2 : 0.8,
+          radius: markerRadius,
+          fillColor: markerFill,
+          color: markerBorder,
+          weight: markerWeight,
           opacity: 0.95,
           fillOpacity: 0.85
         });
@@ -3815,7 +4541,12 @@ function toggleUnifiedNppLayer() {
               <span style="font-weight:600; color:#64748b; font-size:0.7rem;">#${storeCode}</span>
             </div>
 
-            ${hasEquip ? `
+            ${isEquipZeroSales ? `
+              <div style="margin-bottom:6px; padding:5px 8px; background:#fef2f2; border:1px solid #f87171; border-radius:5px; color:#991b1b; font-size:0.72rem; font-weight:800; display:flex; align-items:center; gap:5px;">
+                <i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;"></i>
+                <span>CÓ TỦ (${equip}) NHƯNG ZERO SALES</span>
+              </div>
+            ` : (hasEquip ? `
               <div style="margin-bottom:6px; padding:4px 7px; background:#eff6ff; border:1px solid #93c5fd; border-radius:5px; color:#1e40af; font-size:0.73rem; font-weight:700; display:flex; align-items:center; gap:5px;">
                 <i class="fa-solid fa-snowflake" style="color:#0284c7;"></i>
                 <span>Thiết bị: <b>${equip}</b></span>
@@ -3824,7 +4555,7 @@ function toggleUnifiedNppLayer() {
               <div style="margin-bottom:4px; font-size:0.7rem; color:#64748b;">
                 <i class="fa-solid fa-box" style="color:#94a3b8;"></i> Thiết bị: <i>Chưa đầu tư tủ</i>
               </div>
-            `}
+            `)}
 
             <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:5px; padding:4px 6px; margin-bottom:5px;">
               <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
@@ -4886,7 +5617,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
     let spatialActiveCircle = null;
     let spatialActiveRect = null;
     let spatialTempMarkers = [];
-    let spatialLayerGroup = L.layerGroup();
+    let spatialLayerGroup = L.layerGroup([], { pane: 'spatialPane' }).addTo(map);
     let currentSpatialResult = null;
     let activeSpatialTab = 'npp'; // 'npp' or 'outlet'
 
@@ -4922,6 +5653,10 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       return Math.round(num).toLocaleString('vi-VN');
     }
 
+    function closeSpatialRevenuePanel() {
+      toggleSpatialSelectMode(false);
+    }
+
     function toggleSpatialSelectMode(forceState) {
       isSpatialMode = (forceState !== undefined) ? forceState : !isSpatialMode;
       const btn = document.getElementById('btnSpatialSelect');
@@ -4931,21 +5666,30 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       if (isSpatialMode) {
         if (btn) { btn.classList.add('active-spatial'); const t = document.getElementById('btnSpatialSelectText'); if (t) t.textContent = '❌ Đóng Khoanh Vùng'; }
         if (toolbar) toolbar.style.display = 'flex';
-        if (mapElem) mapElem.classList.add('crosshair-cursor');
+        if (mapElem) {
+          mapElem.classList.add('crosshair-cursor');
+          mapElem.classList.add('spatial-mode-active');
+        }
         
         // Tự động nạp sẵn dữ liệu điểm bán trong nền
         ensureOutletsLoaded();
         
         // Mặc định công cụ kéo chuột tạo hộp
         setSpatialTool('box');
+        map.dragging.enable();
         showToastNotification('🖱️ Nhấn giữ chuột và KÉO trên bản đồ để khoanh vùng tính doanh số!');
       } else {
         if (btn) { btn.classList.remove('active-spatial'); const t = document.getElementById('btnSpatialSelectText'); if (t) t.textContent = '📐 Khoanh Vùng Doanh Số'; }
         if (toolbar) toolbar.style.display = 'none';
-        if (mapElem) mapElem.classList.remove('crosshair-cursor');
+        if (mapElem) {
+          mapElem.classList.remove('crosshair-cursor');
+          mapElem.classList.remove('spatial-mode-active');
+          mapElem.classList.remove('spatial-dragging');
+        }
         clearSpatialSelection();
         map.dragging.enable();
-        document.getElementById('spatialRevenuePanel').style.display = 'none';
+        const p = document.getElementById('spatialRevenuePanel');
+        if (p) p.style.display = 'none';
       }
     }
 
@@ -4955,6 +5699,8 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       if (document.getElementById('btnToolFreehand')) document.getElementById('btnToolFreehand').classList.toggle('active', toolName === 'freehand');
       if (document.getElementById('btnToolCircle')) document.getElementById('btnToolCircle').classList.toggle('active', toolName === 'circle');
       if (document.getElementById('btnToolPolygon')) document.getElementById('btnToolPolygon').classList.toggle('active', toolName === 'polygon');
+
+      map.dragging.enable();
 
       const instr = document.getElementById('spatialToolInstruction');
       if (instr) {
@@ -4979,7 +5725,10 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       currentSpatialResult = null;
       isSpatialMouseDown = false;
       map.dragging.enable();
-      document.getElementById('spatialRevenuePanel').style.display = 'none';
+      const mapElem = document.getElementById('map');
+      if (mapElem) mapElem.classList.remove('spatial-dragging');
+      const p = document.getElementById('spatialRevenuePanel');
+      if (p) p.style.display = 'none';
     }
 
     // Point in polygon math (Ray-casting)
@@ -5017,35 +5766,45 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         setSpatialTool('box');
       }
 
-      if (spatialTool === 'box') {
+      if (spatialTool === 'box' || spatialTool === 'freehand') {
         isSpatialMouseDown = true;
         spatialDragStartLatLng = e.latlng;
         map.dragging.disable();
+        const mapElem = document.getElementById('map');
+        if (mapElem) mapElem.classList.add('spatial-dragging');
 
-        if (spatialActiveRect) spatialLayerGroup.removeLayer(spatialActiveRect);
-        if (spatialDragRectPreview) spatialLayerGroup.removeLayer(spatialDragRectPreview);
+        if (e.originalEvent && e.originalEvent.preventDefault) {
+          e.originalEvent.preventDefault();
+        }
 
-        spatialDragRectPreview = L.rectangle([spatialDragStartLatLng, spatialDragStartLatLng], {
-          color: '#10b981',
-          weight: 2,
-          fillColor: '#059669',
-          fillOpacity: 0.25,
-          dashArray: '5, 5'
-        });
-        spatialLayerGroup.addLayer(spatialDragRectPreview);
-      } else if (spatialTool === 'freehand') {
-        isSpatialMouseDown = true;
-        map.dragging.disable();
-        spatialFreehandPoints = [[e.latlng.lat, e.latlng.lng]];
+        if (spatialTool === 'box') {
+          if (spatialActiveRect) spatialLayerGroup.removeLayer(spatialActiveRect);
+          if (spatialDragRectPreview) spatialLayerGroup.removeLayer(spatialDragRectPreview);
 
-        if (spatialActivePolygon) spatialLayerGroup.removeLayer(spatialActivePolygon);
-        if (spatialFreehandPolyline) spatialLayerGroup.removeLayer(spatialFreehandPolyline);
+          spatialDragRectPreview = L.rectangle([spatialDragStartLatLng, spatialDragStartLatLng], {
+            pane: 'spatialPane',
+            color: '#10b981',
+            weight: 2.5,
+            fillColor: '#059669',
+            fillOpacity: 0.28,
+            dashArray: '6, 6',
+            interactive: false
+          });
+          spatialLayerGroup.addLayer(spatialDragRectPreview);
+        } else if (spatialTool === 'freehand') {
+          spatialFreehandPoints = [[e.latlng.lat, e.latlng.lng]];
 
-        spatialFreehandPolyline = L.polyline(spatialFreehandPoints, {
-          color: '#10b981',
-          weight: 3
-        });
-        spatialLayerGroup.addLayer(spatialFreehandPolyline);
+          if (spatialActivePolygon) spatialLayerGroup.removeLayer(spatialActivePolygon);
+          if (spatialFreehandPolyline) spatialLayerGroup.removeLayer(spatialFreehandPolyline);
+
+          spatialFreehandPolyline = L.polyline(spatialFreehandPoints, {
+            pane: 'spatialPane',
+            color: '#10b981',
+            weight: 3.5,
+            interactive: false
+          });
+          spatialLayerGroup.addLayer(spatialFreehandPolyline);
+        }
       }
     });
 
@@ -5054,22 +5813,45 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
 
       if (spatialTool === 'box' && spatialDragStartLatLng && spatialDragRectPreview) {
         spatialDragRectPreview.setBounds(L.latLngBounds(spatialDragStartLatLng, e.latlng));
+        const instr = document.getElementById('spatialToolInstruction');
+        if (instr) {
+          const dKm = getDistanceKm(spatialDragStartLatLng.lat, spatialDragStartLatLng.lng, e.latlng.lat, e.latlng.lng);
+          instr.innerHTML = `📐 Đang khoanh vùng: <b>~${dKm.toFixed(1)} km</b> (Thả chuột để chốt tính toán)`;
+        }
       } else if (spatialTool === 'freehand' && spatialFreehandPolyline) {
         spatialFreehandPoints.push([e.latlng.lat, e.latlng.lng]);
         spatialFreehandPolyline.setLatLngs(spatialFreehandPoints);
+        const instr = document.getElementById('spatialToolInstruction');
+        if (instr) {
+          instr.innerHTML = `✏️ Đang vẽ tự do: <b>${spatialFreehandPoints.length} điểm</b> (Thả chuột để chốt vùng)`;
+        }
       }
     });
 
-    map.on('mouseup', function(e) {
+    function handleSpatialMouseUp(e) {
       if (!isSpatialMode || !isSpatialMouseDown) return;
       isSpatialMouseDown = false;
+      const mapElem = document.getElementById('map');
+      if (mapElem) mapElem.classList.remove('spatial-dragging');
       map.dragging.enable();
 
-      if (spatialTool === 'box' && spatialDragStartLatLng && spatialDragRectPreview) {
-        const bounds = L.latLngBounds(spatialDragStartLatLng, e.latlng);
-        const d = getDistanceKm(spatialDragStartLatLng.lat, spatialDragStartLatLng.lng, e.latlng.lat, e.latlng.lng);
-        if (d >= 0.15) {
-          spatialDragRectPreview.setStyle({ dashArray: null, weight: 3, fillOpacity: 0.2 });
+      const instr = document.getElementById('spatialToolInstruction');
+      if (instr) {
+        if (spatialTool === 'box') instr.textContent = '🖱️ Nhấn giữ & KÉO chuột trên bản đồ để tạo hộp khoanh vùng';
+        else if (spatialTool === 'freehand') instr.textContent = '✏️ Nhấn giữ & KÉO vẽ tự do bao quanh khu vực';
+      }
+
+      const endLatLng = e.latlng || (e.clientX ? map.mouseEventToLatLng(e) : spatialDragStartLatLng);
+      if (!endLatLng || !spatialDragStartLatLng) return;
+
+      if (spatialTool === 'box' && spatialDragRectPreview) {
+        const bounds = L.latLngBounds(spatialDragStartLatLng, endLatLng);
+        const p1 = map.latLngToContainerPoint(spatialDragStartLatLng);
+        const p2 = map.latLngToContainerPoint(endLatLng);
+        const pixelDist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+
+        if (pixelDist >= 15) {
+          spatialDragRectPreview.setStyle({ dashArray: null, weight: 3, fillOpacity: 0.22 });
           spatialActiveRect = spatialDragRectPreview;
           finishSpatialBox(bounds);
         } else {
@@ -5077,16 +5859,25 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
           spatialDragRectPreview = null;
         }
       } else if (spatialTool === 'freehand' && spatialFreehandPoints.length >= 4) {
-        spatialLayerGroup.removeLayer(spatialFreehandPolyline);
+        if (spatialFreehandPolyline) spatialLayerGroup.removeLayer(spatialFreehandPolyline);
         spatialPoints = spatialFreehandPoints;
         spatialActivePolygon = L.polygon(spatialPoints, {
+          pane: 'spatialPane',
           color: '#10b981',
           weight: 3,
           fillColor: '#059669',
-          fillOpacity: 0.25
+          fillOpacity: 0.25,
+          interactive: false
         });
         spatialLayerGroup.addLayer(spatialActivePolygon);
         finishSpatialPolygon();
+      }
+    }
+
+    map.on('mouseup', handleSpatialMouseUp);
+    window.addEventListener('mouseup', function(e) {
+      if (isSpatialMode && isSpatialMouseDown) {
+        handleSpatialMouseUp(e);
       }
     });
 
@@ -5102,10 +5893,11 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         spatialPoints.push([lat, lng]);
 
         const ptMarker = L.circleMarker([lat, lng], {
-          radius: 5,
+          pane: 'spatialPane',
+          radius: 6,
           color: '#10b981',
           fillColor: '#34d399',
-          fillOpacity: 0.9,
+          fillOpacity: 0.95,
           weight: 2
         });
         ptMarker.on('click', () => {
@@ -5119,6 +5911,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         }
         if (spatialPoints.length >= 2) {
           spatialActivePolygon = L.polygon(spatialPoints, {
+            pane: 'spatialPane',
             color: '#10b981',
             weight: 2,
             dashArray: '5, 5',
@@ -5138,7 +5931,8 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         if (spatialPoints.length === 0) {
           spatialPoints.push([lat, lng]);
           const centerMarker = L.circleMarker([lat, lng], {
-            radius: 6,
+            pane: 'spatialPane',
+            radius: 7,
             color: '#38bdf8',
             fillColor: '#60a5fa',
             fillOpacity: 1,
@@ -5155,18 +5949,22 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
             spatialLayerGroup.removeLayer(spatialActiveCircle);
           }
           spatialActiveCircle = L.circle(center, {
+            pane: 'spatialPane',
             radius: radiusMeters,
             color: '#38bdf8',
             weight: 2,
             dashArray: '6, 6',
             fillColor: '#0284c7',
-            fillOpacity: 0.2
+            fillOpacity: 0.2,
+            interactive: false
           });
           spatialLayerGroup.addLayer(spatialActiveCircle);
           finishSpatialCircle(center, distKm);
         }
       }
     }
+
+    map.on('click', onMapClickSpatial);
 
     function finishSpatialBox(bounds) {
       // Lọc NPP trong bounds
@@ -5252,6 +6050,31 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         });
       }
 
+      // Thống kê Khách Hàng Golden (External Census) trong vùng khoanh
+      let selGolden = [];
+      let totGoldenSellout = 0;
+      let goldenSCnt = 0, goldenACnt = 0, goldenBCnt = 0, goldenCCnt = 0, goldenDCnt = 0, goldenKhacCnt = 0;
+      const goldenData = window.ALL_GOLDEN || window.GOLDEN_OUTLETS || [];
+      if (goldenData && goldenData.length > 0) {
+        if (bounds) {
+          selGolden = goldenData.filter(g => g[0] && g[1] && bounds.contains([g[0], g[1]]));
+        } else if (circleCenter && radiusKm) {
+          selGolden = goldenData.filter(g => g[0] && g[1] && getDistanceKm(circleCenter[0], circleCenter[1], g[0], g[1]) <= radiusKm);
+        } else if (polyPoints && polyPoints.length >= 3) {
+          selGolden = goldenData.filter(g => g[0] && g[1] && isPointInsidePolygon(g[0], g[1], polyPoints));
+        }
+        selGolden.forEach(g => {
+          const gr = g[4];
+          if (gr === 'S') goldenSCnt++;
+          else if (gr === 'A') goldenACnt++;
+          else if (gr === 'B') goldenBCnt++;
+          else if (gr === 'C') goldenCCnt++;
+          else if (gr === 'D') goldenDCnt++;
+          else goldenKhacCnt++;
+          totGoldenSellout += (g[10] || 0);
+        });
+      }
+
       const totalZoneSales = totRev + totOutletRev;
 
       currentSpatialResult = {
@@ -5265,6 +6088,15 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         activeOutletCnt,
         totalZoneSales,
         selOutlets,
+        totGolden: selGolden.length,
+        totGoldenSellout,
+        goldenSCnt,
+        goldenACnt,
+        goldenBCnt,
+        goldenCCnt,
+        goldenDCnt,
+        goldenKhacCnt,
+        selGolden,
         bounds,
         polyPoints,
         circleCenter,
@@ -5286,13 +6118,17 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       const body = document.getElementById('spatialRevenueBody');
       const panel = document.getElementById('spatialRevenuePanel');
 
+      const goldenPotential10 = (r.totGoldenSellout || 0) * 0.10;
+      const goldenPotential15 = (r.totGoldenSellout || 0) * 0.15;
+      const goldenPotential25 = (r.totGoldenSellout || 0) * 0.25;
+
       // Tạo bảng NPP
       let rowsNppHtml = '';
       r.nppList.forEach(n => {
         const rev = n.sales_total || 0;
         rowsNppHtml += `
-          <tr>
-            <td style="font-weight:700; color:#38bdf8;">${n.code}</td>
+          <tr onclick="selectNPP('${n.code}', true)" style="cursor:pointer;" title="Bấm để zoom và định vị NPP này trên bản đồ">
+            <td style="font-weight:700; color:#38bdf8;"><i class="fa-solid fa-building" style="color:#38bdf8; margin-right:3px;"></i>${n.code}</td>
             <td style="max-width:140px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#ffffff !important; font-weight:700;" title="${n.name}">
               ${n.short_name || n.name}
             </td>
@@ -5309,7 +6145,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         rowsNppHtml = '<tr><td colspan="7" style="text-align:center; padding:12px; color:#94a3b8;">Không có trụ sở NPP trong vùng khoanh này (vùng chỉ có Điểm Bán Lẻ).</td></tr>';
       }
 
-      // Tạo bảng Điểm Bán (Hiển thị Top 40 điểm có doanh số cao nhất hoặc có tủ)
+      // Tạo bảng Điểm Bán (Hiển thị Top 50 điểm có doanh số cao nhất)
       let rowsOutletHtml = '';
       const topOutlets = (r.selOutlets || [])
         .slice()
@@ -5321,8 +6157,8 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         const equip = o[13] || '';
         const vpo = o[14] || '';
         rowsOutletHtml += `
-          <tr>
-            <td style="font-weight:700; color:#38bdf8; font-size:0.72rem;">${o[3]}</td>
+          <tr onclick="inspectSpatialOutlet('${o[3]}', ${o[0]}, ${o[1]})" style="cursor:pointer;" title="Bấm để phóng to và xem chi tiết điểm bán này">
+            <td style="font-weight:700; color:#38bdf8; font-size:0.72rem;"><i class="fa-solid fa-location-crosshairs" style="color:#38bdf8; margin-right:3px;"></i>${o[3]}</td>
             <td style="max-width:150px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#ffffff !important; font-weight:700; font-size:0.75rem;" title="${o[2]}">
               ${o[2]}
             </td>
@@ -5339,7 +6175,44 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         rowsOutletHtml = `
           <tr>
             <td colspan="5" style="text-align:center; padding:12px; color:#94a3b8;">
-              ${outletsLoaded ? 'Không có điểm bán nào trong vùng khoanh này.' : '⏳ Đang tải dữ liệu điểm bán... <a href="#" onclick="ensureOutletsLoaded(function(){processSpatialSelection(currentSpatialResult.nppList, currentSpatialResult.zoneTitle, currentSpatialResult.radiusKm, currentSpatialResult.circleCenter, currentSpatialResult.polyPoints, currentSpatialResult.bounds);}); return false;" style="color:#38bdf8; text-decoration:underline;">Bấm để tính lại ngay</a>'}
+              ${outletsLoaded ? 'Không có điểm bán CJ nào trong vùng khoanh này.' : '⏳ Đang tải dữ liệu điểm bán... <a href="#" onclick="ensureOutletsLoaded(function(){processSpatialSelection(currentSpatialResult.nppList, currentSpatialResult.zoneTitle, currentSpatialResult.radiusKm, currentSpatialResult.circleCenter, currentSpatialResult.polyPoints, currentSpatialResult.bounds);}); return false;" style="color:#38bdf8; text-decoration:underline;">Bấm để tính lại ngay</a>'}
+            </td>
+          </tr>
+        `;
+      }
+
+      // Tạo bảng Khách Hàng Golden (Hiển thị Top 50 điểm có Sell-out cao nhất)
+      let rowsGoldenHtml = '';
+      const topGolden = (r.selGolden || [])
+        .slice()
+        .sort((a, b) => (b[10] || 0) - (a[10] || 0))
+        .slice(0, 50);
+
+      topGolden.forEach(g => {
+        const sellout = g[10] || 0;
+        const grade = g[4];
+        rowsGoldenHtml += `
+          <tr onclick="inspectSpatialGolden('${g[3]}', ${g[0]}, ${g[1]})" style="cursor:pointer;" title="Bấm để phóng to và xem chi tiết khách hàng Golden này">
+            <td style="font-weight:700; color:#fde047; font-size:0.72rem;"><i class="fa-solid fa-crown" style="color:#fde047; margin-right:3px;"></i>#${g[3]}</td>
+            <td style="max-width:140px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#ffffff !important; font-weight:700; font-size:0.75rem;" title="${g[2]}">
+              ${g[2]}
+            </td>
+            <td>
+              <span style="background:${grade === 'S' ? '#9333ea' : (grade === 'A' ? '#f59e0b' : (grade === 'B' ? '#ea580c' : (grade === 'C' ? '#0284c7' : '#64748b')))}; color:#fff; font-size:0.65rem; font-weight:800; padding:1px 6px; border-radius:10px;">
+                Hạng ${grade}
+              </span>
+            </td>
+            <td style="color:#cbd5e1; font-size:0.68rem;">${g[5] || ''}</td>
+            <td style="text-align:right; font-weight:800; color:#fde047;">${formatMoneyVND(sellout)}</td>
+          </tr>
+        `;
+      });
+
+      if (!r.selGolden || r.selGolden.length === 0) {
+        rowsGoldenHtml = `
+          <tr>
+            <td colspan="5" style="text-align:center; padding:12px; color:#94a3b8;">
+              ${goldenLoaded ? 'Không có khách hàng Golden nào trong vùng khoanh này.' : '⏳ Đang tải dữ liệu Golden... <a href="#" onclick="ensureGoldenLoaded(function(){processSpatialSelection(currentSpatialResult.nppList, currentSpatialResult.zoneTitle, currentSpatialResult.radiusKm, currentSpatialResult.circleCenter, currentSpatialResult.polyPoints, currentSpatialResult.bounds);}); return false;" style="color:#fde047; text-decoration:underline;">Bấm để tính lại ngay</a>'}
             </td>
           </tr>
         `;
@@ -5365,13 +6238,18 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
             </div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:0.75rem; color:#cbd5e1;">NPP Sell-in: <b style="color:#10b981;">${formatMoneyVND(r.totRev)}</b></div>
-            <div style="font-size:0.75rem; color:#cbd5e1; margin-top:3px;">Điểm bán Sell-out: <b style="color:#38bdf8;">${formatMoneyVND(r.totOutletRev)}</b></div>
+            <div style="font-size:0.73rem; color:#cbd5e1;">NPP Sell-in: <b style="color:#10b981;">${formatMoneyVND(r.totRev)}</b></div>
+            <div style="font-size:0.73rem; color:#cbd5e1; margin-top:2px;">Điểm bán Sell-out: <b style="color:#38bdf8;">${formatMoneyVND(r.totOutletRev)}</b></div>
+            ${(r.totGolden || 0) > 0 ? `
+              <div style="font-size:0.73rem; color:#fde047; margin-top:3px; font-weight:700;">
+                <i class="fa-solid fa-arrow-trend-up"></i> Cơ Hội Golden (+15%): <b style="color:#34d399;">+${formatMoneyShort(goldenPotential15)}</b>
+              </div>
+            ` : ''}
           </div>
         </div>
 
-        <!-- LƯỚI 4 THẺ KPI CHI TIẾT -->
-        <div class="revenue-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));">
+        <!-- LƯỚI 5 THẺ KPI CHI TIẾT (BAO GỒM CẢ GOLDEN STORES) -->
+        <div class="revenue-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));">
           <div class="revenue-kpi-card" style="border-left-color:#38bdf8;">
             <div class="revenue-kpi-lbl">Số NPP Trong Vùng</div>
             <div class="revenue-kpi-val" style="color:#38bdf8;">${r.nppList.length} <span style="font-size:0.7rem; font-weight:400; color:#94a3b8;">(${r.coSmCnt} Có SM)</span></div>
@@ -5381,18 +6259,72 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
             <div class="revenue-kpi-val" style="color:#10b981;">${formatMoneyVND(r.totRev)}</div>
           </div>
           <div class="revenue-kpi-card" style="border-left-color:#06b6d4;">
-            <div class="revenue-kpi-lbl">Số Điểm Bán (Outlets)</div>
+            <div class="revenue-kpi-lbl">Điểm Bán CJ</div>
             <div class="revenue-kpi-val" style="color:#06b6d4;">
               ${r.totOutlets.toLocaleString('vi-VN')} <span style="font-size:0.7rem; color:#94a3b8;">(${r.activeOutletCnt} có DS)</span>
             </div>
           </div>
           <div class="revenue-kpi-card" style="border-left-color:#f59e0b;">
-            <div class="revenue-kpi-lbl">Tủ Đông/Mát Đầu Tư</div>
+            <div class="revenue-kpi-lbl">Tủ Đông/Mát CJ</div>
             <div class="revenue-kpi-val" style="color:#fbbf24;">
-              ${r.equipOutletCnt} <span style="font-size:0.7rem; color:#67e8f9;">Tủ CJ</span>
+              ${r.equipOutletCnt} <span style="font-size:0.7rem; color:#67e8f9;">Tủ</span>
+            </div>
+          </div>
+          <div class="revenue-kpi-card" style="border-left-color:#eab308; background:rgba(234,179,8,0.12);">
+            <div class="revenue-kpi-lbl" style="color:#fde047;">Tiềm Năng Golden</div>
+            <div class="revenue-kpi-val" style="color:#fde047;">
+              ${(r.totGolden || 0).toLocaleString('vi-VN')} <span style="font-size:0.68rem; color:#fef08a;">(${r.goldenACnt || 0} A &bull; ${r.goldenBCnt || 0} B &bull; ${r.goldenCCnt || 0} C &bull; ${r.goldenDCnt || 0} D)</span>
+            </div>
+          </div>
+          <div class="revenue-kpi-card" style="border-left-color:#10b981; background:rgba(16,185,129,0.12);">
+            <div class="revenue-kpi-lbl" style="color:#34d399;">Doanh Số Tăng Thêm</div>
+            <div class="revenue-kpi-val" style="color:#34d399;">
+              +${formatMoneyShort(goldenPotential15)} <span style="font-size:0.68rem; color:#6ee7b7;">(+15%)</span>
             </div>
           </div>
         </div>
+
+        <!-- KHỐI PHÂN TÍCH TIỀM NĂNG TĂNG DOANH THU NHÓM GOLDEN -->
+        ${(r.totGolden || 0) > 0 ? `
+          <div style="background: linear-gradient(135deg, rgba(234,179,8,0.18), rgba(245,158,11,0.08)); border: 1px solid rgba(234,179,8,0.55); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.3);">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(234,179,8,0.25); padding-bottom:6px; margin-bottom:8px;">
+              <div style="font-size:0.78rem; font-weight:800; color:#fde047; display:flex; align-items:center; gap:6px;">
+                <i class="fa-solid fa-crown" style="color:#fde047;"></i> DỰ BÁO TIỀM NĂNG TĂNG DOANH THU TỪ NHÓM GOLDEN
+              </div>
+              <div style="font-size:0.68rem; color:#fef08a; font-weight:700;">
+                ${r.totGolden} Khách Hàng (${r.goldenACnt} Hạng A &bull; ${r.goldenBCnt} Hạng B)
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px;">
+              <!-- Cột 1: Tổng dung lượng thị trường -->
+              <div style="background:rgba(0,0,0,0.35); padding:6px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.07);">
+                <div style="font-size:0.62rem; color:#94a3b8; text-transform:uppercase; font-weight:700;">Dung Lượng Thị Trường</div>
+                <div style="font-size:0.95rem; font-weight:900; color:#fbbf24; margin-top:2px;">${formatMoneyVND(r.totGoldenSellout || 0)}</div>
+                <div style="font-size:0.62rem; color:#cbd5e1; margin-top:2px;">Tổng Sell-out Golden / tháng</div>
+              </div>
+
+              <!-- Cột 2: Mục tiêu chuẩn 15% thị phần -->
+              <div style="background:rgba(16,185,129,0.18); padding:6px 8px; border-radius:6px; border:1px solid rgba(16,185,129,0.5);">
+                <div style="font-size:0.62rem; color:#6ee7b7; text-transform:uppercase; font-weight:800;">🎯 Mục Tiêu (+15% CJ)</div>
+                <div style="font-size:1.02rem; font-weight:900; color:#34d399; margin-top:2px;">+${formatMoneyVND(goldenPotential15)}</div>
+                <div style="font-size:0.62rem; color:#a7f3d0; margin-top:2px;">Doanh thu CJ tăng thêm / tháng</div>
+              </div>
+
+              <!-- Cột 3: Kịch bản tối ưu 25% thâm nhập -->
+              <div style="background:rgba(56,189,248,0.15); padding:6px 8px; border-radius:6px; border:1px solid rgba(56,189,248,0.4);">
+                <div style="font-size:0.62rem; color:#7dd3fc; text-transform:uppercase; font-weight:800;">🚀 Tối Ưu (+25% CJ)</div>
+                <div style="font-size:1.02rem; font-weight:900; color:#38bdf8; margin-top:2px;">+${formatMoneyVND(goldenPotential25)}</div>
+                <div style="font-size:0.62rem; color:#bae6fd; margin-top:2px;">Đạt ~${formatMoneyShort(goldenPotential25 * 12)} đ / năm</div>
+              </div>
+            </div>
+
+            <div style="margin-top:8px; font-size:0.68rem; color:#fef08a; display:flex; align-items:center; gap:6px; background:rgba(0,0,0,0.25); padding:5px 9px; border-radius:5px;">
+              <i class="fa-solid fa-lightbulb" style="color:#fde047; flex-shrink:0;"></i>
+              <span><b>Đề xuất khai thác:</b> Trang bị tủ đông cho <b>${r.goldenACnt} điểm Hạng A</b> và gom tuyến vào NPP gần nhất để mở rộng doanh số thêm <b>+${formatMoneyShort(goldenPotential15)} đ/tháng</b>.</span>
+            </div>
+          </div>
+        ` : ''}
 
         <!-- STACKED PROGRESS BAR THEO NHÓM SP (NẾU CÓ NPP) -->
         ${r.totRev > 0 ? `
@@ -5414,13 +6346,16 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
           </div>
         ` : ''}
 
-        <!-- TABS CHUYỂN ĐỔI BẢNG NPP VÀ BẢNG ĐIỂM BÁN -->
-        <div style="display:flex; gap:6px; margin: 10px 0 6px 0; border-bottom:1px solid #334155; padding-bottom:6px;">
-          <button onclick="switchSpatialTab('npp')" style="background:${activeSpatialTab==='npp'?'#059669':'#1e293b'}; color:#fff; border:1px solid ${activeSpatialTab==='npp'?'#10b981':'#475569'}; border-radius:15px; padding:3px 12px; font-size:0.72rem; font-weight:700; cursor:pointer;">
-            🏢 Nhà Phân Phối (${r.nppList.length})
+        <!-- TABS CHUYỂN ĐỔI BẢNG NPP, BẢNG ĐIỂM BÁN VÀ BẢNG GOLDEN -->
+        <div style="display:flex; gap:6px; margin: 10px 0 6px 0; border-bottom:1px solid #334155; padding-bottom:6px; overflow-x:auto;">
+          <button onclick="switchSpatialTab('npp')" style="background:${activeSpatialTab==='npp'?'#059669':'#1e293b'}; color:#fff; border:1px solid ${activeSpatialTab==='npp'?'#10b981':'#475569'}; border-radius:15px; padding:3px 12px; font-size:0.72rem; font-weight:700; cursor:pointer; white-space:nowrap;">
+            🏢 NPP (${r.nppList.length})
           </button>
-          <button onclick="switchSpatialTab('outlet')" style="background:${activeSpatialTab==='outlet'?'#0284c7':'#1e293b'}; color:#fff; border:1px solid ${activeSpatialTab==='outlet'?'#38bdf8':'#475569'}; border-radius:15px; padding:3px 12px; font-size:0.72rem; font-weight:700; cursor:pointer;">
-            🏪 Điểm Bán Lẻ (${r.totOutlets})
+          <button onclick="switchSpatialTab('outlet')" style="background:${activeSpatialTab==='outlet'?'#0284c7':'#1e293b'}; color:#fff; border:1px solid ${activeSpatialTab==='outlet'?'#38bdf8':'#475569'}; border-radius:15px; padding:3px 12px; font-size:0.72rem; font-weight:700; cursor:pointer; white-space:nowrap;">
+            🏪 Điểm Bán CJ (${r.totOutlets})
+          </button>
+          <button onclick="switchSpatialTab('golden')" style="background:${activeSpatialTab==='golden'?'#d97706':'#1e293b'}; color:#fff; border:1px solid ${activeSpatialTab==='golden'?'#facc15':'#475569'}; border-radius:15px; padding:3px 12px; font-size:0.72rem; font-weight:700; cursor:pointer; white-space:nowrap;">
+            ⭐ Golden Tiềm Năng (${r.totGolden || 0})
           </button>
         </div>
 
@@ -5444,7 +6379,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
               </tbody>
             </table>
           </div>
-        ` : `
+        ` : (activeSpatialTab === 'outlet' ? `
           <div class="revenue-table-wrapper">
             <table class="revenue-table">
               <thead>
@@ -5462,10 +6397,84 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
             </table>
           </div>
           ${r.selOutlets && r.selOutlets.length > 50 ? `<div style="font-size:0.68rem; color:#94a3b8; text-align:center; margin-top:4px;">(Đang hiển thị 50 điểm có doanh số cao nhất. Bấm "Xuất CSV" để tải đủ ${r.selOutlets.length} điểm)</div>` : ''}
-        `}
+        ` : `
+          <div style="background:rgba(234,179,8,0.1); border:1px solid rgba(234,179,8,0.3); border-radius:6px; padding:6px 10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; flex-wrap:wrap; gap:4px;">
+            <span style="color:#fde047;"><i class="fa-solid fa-crown"></i> <b>${r.totGolden} Khách Hàng Tiềm Năng</b> (${r.goldenACnt} A &bull; ${r.goldenBCnt} B)</span>
+            <span style="color:#fbbf24;">Dung lượng: <b>${formatMoneyShort(r.totGoldenSellout || 0)} đ/tháng</b></span>
+            <span style="color:#34d399; font-weight:800;">Tiềm năng CJ (+15%): +${formatMoneyShort(goldenPotential15)} đ/tháng</span>
+          </div>
+          <div class="revenue-table-wrapper">
+            <table class="revenue-table">
+              <thead>
+                <tr>
+                  <th>Mã Census</th>
+                  <th>Tên Cửa Hàng</th>
+                  <th>Phân Hạng</th>
+                  <th>Tỉnh/Thành</th>
+                  <th style="text-align:right;">Sell-out / Tháng</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsGoldenHtml}
+              </tbody>
+            </table>
+          </div>
+          ${r.selGolden && r.selGolden.length > 50 ? `<div style="font-size:0.68rem; color:#94a3b8; text-align:center; margin-top:4px;">(Đang hiển thị 50 điểm có Sell-out cao nhất. Bấm "Xuất CSV" để tải đủ ${r.selGolden.length} điểm)</div>` : ''}
+        `)}
       `;
 
       panel.style.display = 'flex';
+    }
+
+    
+    function inspectSpatialOutlet(storeCode, lat, lng) {
+      if (!lat || !lng) return;
+      map.setView([lat, lng], 17);
+      
+      let found = false;
+      outletsLayer.eachLayer(layer => {
+        if (layer.getLatLng && Math.abs(layer.getLatLng().lat - lat) < 0.0001 && Math.abs(layer.getLatLng().lng - lng) < 0.0001) {
+          layer.openPopup();
+          found = true;
+        }
+      });
+      if (!found) {
+        const o = (ALL_OUTLETS || []).find(item => item[3] === storeCode);
+        if (o) {
+          const storeName = o[2];
+          const equip = o[13] || '';
+          const salesMtd = o[12] || 0;
+          const content = `
+            <div style="font-size:0.75rem; padding:4px 6px; min-width:240px; color:#0f172a;">
+              <div style="font-weight:800; font-size:0.85rem; border-bottom:1px solid #cbd5e1; padding-bottom:4px; margin-bottom:5px;">
+                ${storeName} <span style="font-size:0.7rem; color:#64748b;">#${storeCode}</span>
+              </div>
+              <div style="font-size:0.72rem; color:#475569; margin-bottom:3px;">📍 ${o[9] || ''}</div>
+              <div style="font-size:0.75rem; color:#0369a1; font-weight:700;">❄️ Thiết bị: ${equip || 'Chưa cấp'}</div>
+              <div style="font-size:0.75rem; color:#047857; font-weight:800;">💰 Doanh số T9: ${formatMoneyVND(salesMtd)}</div>
+            </div>
+          `;
+          L.popup().setLatLng([lat, lng]).setContent(content).openOn(map);
+        }
+      }
+    }
+
+    function inspectSpatialGolden(censusCode, lat, lng) {
+      if (!lat || !lng) return;
+      map.setView([lat, lng], 17);
+      let found = false;
+      goldenLayer.eachLayer(layer => {
+        if (layer.getLatLng && Math.abs(layer.getLatLng().lat - lat) < 0.0001 && Math.abs(layer.getLatLng().lng - lng) < 0.0001) {
+          layer.openPopup();
+          found = true;
+        }
+      });
+      if (!found) {
+        const g = (window.ALL_GOLDEN || window.GOLDEN_OUTLETS || []).find(item => item[3] === censusCode);
+        if (g) {
+          L.popup().setLatLng([lat, lng]).setContent(createGoldenPopup(g)).openOn(map);
+        }
+      }
     }
 
     function exportSpatialRevenueCSV() {
@@ -5478,8 +6487,35 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       const lines = [];
       let filename = 'Bao_Cao_Doanh_So_Vung_Khoanh_T9_2026.csv';
 
-      // Nếu đang ở Tab Điểm Bán hoặc vùng khoanh chỉ có Điểm Bán
-      if (activeSpatialTab === 'outlet' || (r.nppList.length === 0 && r.selOutlets && r.selOutlets.length > 0)) {
+      // Nếu đang ở Tab Golden
+      if (activeSpatialTab === 'golden' && r.selGolden && r.selGolden.length > 0) {
+        filename = 'Danh_Sach_Khach_Hang_Golden_Va_Ti_Le_Tang_Truong.csv';
+        const pot15 = Math.round((r.totGoldenSellout || 0) * 0.15);
+        const pot25 = Math.round((r.totGoldenSellout || 0) * 0.25);
+        lines.push('"=== BÁO CÁO TIỀM NĂNG TĂNG TRƯỞNG DOANH THU TỪ NHÓM GOLDEN ==="');
+        lines.push(`"Vùng khoanh chọn","${r.zoneTitle}"`);
+        lines.push(`"Tổng số điểm bán Golden","${r.totGolden} (${r.goldenACnt} Hạng A, ${r.goldenBCnt} Hạng B)"`);
+        lines.push(`"Tổng dung lượng thị trường Golden (Sell-out/tháng)","${Math.round(r.totGoldenSellout || 0)}"`);
+        lines.push(`"Mục tiêu doanh số CJ tăng thêm (+15% thị phần/tháng)","${pot15}"`);
+        lines.push(`"Kịch bản tối ưu doanh số CJ (+25% thị phần/tháng)","${pot25}"`);
+        lines.push('');
+        lines.push('"Mã Census","Tên Cửa Hàng","Hạng","Tỉnh Thành","Quận Huyện","Địa Chỉ","Loại Hình","Doanh Số Sell-out Ước Tính/Tháng (VNĐ)","Tiềm Năng CJ Dự Kiến 15% (VNĐ/Tháng)"');
+        r.selGolden.forEach(g => {
+          const row = [
+            g[3] || '',
+            (g[2] || '').replace(/"/g, '""'),
+            g[4] || '',
+            g[5] || '',
+            g[6] || '',
+            (g[8] || '').replace(/"/g, '""'),
+            g[9] || '',
+            Math.round(g[10] || 0),
+            Math.round((g[10] || 0) * 0.15)
+          ];
+          lines.push(row.map(v => `"${v}"`).join(','));
+        });
+      } else if (activeSpatialTab === 'outlet' || (r.nppList.length === 0 && r.selOutlets && r.selOutlets.length > 0)) {
+        // Nếu đang ở Tab Điểm Bán hoặc vùng khoanh chỉ có Điểm Bán
         filename = 'Danh_Sach_Diem_Ban_Vung_Khoanh_T9_2026.csv';
         lines.push('"Mã Cửa Hàng","Tên Điểm Bán","Mã NPP","Tỉnh Thành","Địa Chỉ","Cự Ly (km)","Phân Loại","Doanh Số T9 MTD (VNĐ)","Doanh Số T8 M-1 (VNĐ)","Thiết Bị Đầu Tư","Phân Khúc VPO","Hành Động Đề Xuất","NVBH Phụ Trách","Tuyến Bán Hàng"');
         

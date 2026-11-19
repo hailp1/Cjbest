@@ -2034,26 +2034,29 @@
       </div>
     </div>
 
-    <!-- CỤM 3.5: KHÁCH HÀNG GOLDEN (EXTERNAL POTENTIAL SHOPS) -->
+    <!-- CỤM 3.5: KHÁCH HÀNG THỊ TRƯỜNG (CENSUS / MARKET OUTLETS 215K) -->
     <div class="toolbar-cluster golden-cluster">
-      <button id="btnUnifiedGoldenToggle" class="island-btn" onclick="toggleUnifiedGoldenLayer()" title="Bật/Tắt hiển thị Khách Hàng Golden tiềm năng">
-        <i class="fa-solid fa-crown" style="color:#facc15;"></i>
-        <span>Golden: <strong id="chkGoldenCount" style="color:#fde047;">9.1k</strong></span>
+      <button id="btnUnifiedGoldenToggle" class="island-btn" onclick="toggleUnifiedGoldenLayer()" title="Bật/Tắt hiển thị Khách Hàng Thị Trường (Census 215k)">
+        <i class="fa-solid fa-shop" style="color:#facc15;"></i>
+        <span>Thị Trường: <strong id="chkGoldenCount" style="color:#fde047;">215k</strong></span>
       </button>
 
-      <button id="btnGoldenScopeAll" class="island-btn" onclick="toggleGoldenScopeAll()" title="Bấm để chuyển đổi giữa xem TẤT CẢ 9,056 Golden Toàn Quốc vs lọc theo Vùng CJ">
+      <button id="btnGoldenScopeAll" class="island-btn" onclick="toggleGoldenScopeAll()" title="Chuyển đổi giữa xem Toàn Quốc vs Lọc theo Vùng CJ">
         <i class="fa-solid fa-earth-asia" style="color:#38bdf8;"></i>
-        <span id="btnGoldenScopeText">Tất Cả (9.1k)</span>
+        <span id="btnGoldenScopeText">📍 Theo Vùng</span>
       </button>
 
-      <div class="toolbar-item" title="Lọc phạm vi và phân hạng khách hàng Golden">
+      <div class="toolbar-item" title="Lọc phân hạng khách hàng thị trường (S, A, B, C, D)">
         <select id="filterUnifiedGoldenGrade" class="island-select select-golden" onchange="onUnifiedGoldenGradeChange(this.value)">
-          <option value="ALL_NATIONWIDE">🌐 Tất Cả Golden (Toàn Quốc: 9.1k)</option>
-          <option value="BY_REGION">📍 Golden Theo Vùng / Tỉnh CJ</option>
-          <option value="ALL">⭐ Cả Hạng A & B</option>
+          <option value="ALL">🌐 Tất Cả Hạng (215k)</option>
+          <option value="AB" selected>⭐ Trọng Tâm (S, A, B: 10.1k)</option>
+          <option value="S">👑 Chỉ Hạng S - Sỉ (1.1k)</option>
           <option value="A">🥇 Chỉ Hạng A (4.7k)</option>
           <option value="B">🥈 Chỉ Hạng B (4.4k)</option>
-          <option value="OFF">❌ Ẩn Lớp Golden</option>
+          <option value="C">🥉 Chỉ Hạng C (49.2k)</option>
+          <option value="D">📦 Chỉ Hạng D (41.8k)</option>
+          <option value="KHAC">⚪ Khác / Chưa Xếp Hạng (114k)</option>
+          <option value="OFF">❌ Ẩn Lớp Thị Trường</option>
         </select>
       </div>
     </div>
@@ -2881,7 +2884,7 @@
     const goldenLayer = L.layerGroup().addTo(map);
 
     let showGolden = false;
-    let goldenGradeFilter = 'ALL'; // 'ALL', 'A', 'B', 'OFF', 'ALL_NATIONWIDE', 'BY_REGION'
+    let goldenGradeFilter = 'AB'; // 'ALL', 'A', 'B', 'OFF', 'ALL_NATIONWIDE', 'BY_REGION'
     let goldenScope = 'REGION'; // 'REGION' (theo vùng/tỉnh CJ) hoặc 'ALL' (toàn quốc tất cả 9,056 điểm)
     let goldenLoaded = false;
     let goldenLoading = false;
@@ -3359,18 +3362,18 @@
       
       if (showGolden) {
         if (btn) btn.classList.add('active-golden');
-        if (select && select.value === 'OFF') select.value = 'ALL';
-        goldenGradeFilter = select ? select.value : 'ALL';
+        if (select && select.value === 'OFF') select.value = 'AB';
+        goldenGradeFilter = select ? select.value : 'AB';
         ensureGoldenLoaded(() => {
           renderGoldenOutlets();
-          showToastNotification(`⭐ Đang hiển thị Khách Hàng Golden (${goldenGradeFilter === 'ALL' ? 'Tất cả A & B' : 'Hạng ' + goldenGradeFilter})!`);
+          showToastNotification(`⭐ Đang hiển thị Khách Hàng Thị Trường (${goldenGradeFilter === 'AB' ? 'Trọng tâm S, A, B' : (goldenGradeFilter === 'ALL' ? 'Tất cả các hạng' : 'Hạng ' + goldenGradeFilter)})!`);
         });
       } else {
         if (btn) btn.classList.remove('active-golden');
         if (select) select.value = 'OFF';
         goldenGradeFilter = 'OFF';
         goldenLayer.clearLayers();
-        showToastNotification('Đã ẩn lớp Khách Hàng Golden.');
+        showToastNotification('Đã ẩn lớp Khách Hàng Thị Trường.');
       }
     }
 
@@ -3379,22 +3382,22 @@
       const text = document.getElementById('btnGoldenScopeText');
       if (goldenScope === 'ALL') {
         if (btn) btn.classList.add('active-golden-scope');
-        if (text) text.textContent = '🌐 Toàn Quốc (9.1k)';
-        if (btn) btn.title = 'Đang xem TẤT CẢ 9,056 Golden Toàn Quốc. Bấm để chuyển về lọc theo Vùng CJ';
+        if (text) text.textContent = '🌐 Toàn Quốc (215k)';
+        if (btn) btn.title = 'Đang xem TẤT CẢ 215,353 Thị Trường Toàn Quốc. Bấm để chuyển về lọc theo Vùng CJ';
       } else {
         if (btn) btn.classList.remove('active-golden-scope');
         if (text) text.textContent = '📍 Theo Vùng';
-        if (btn) btn.title = 'Đang lọc Golden theo Vùng CJ. Bấm để xem TẤT CẢ 9,056 Golden Toàn Quốc';
+        if (btn) btn.title = 'Đang lọc Thị Trường theo Vùng CJ. Bấm để xem TẤT CẢ 215k Toàn Quốc';
       }
     }
 
     function toggleGoldenScopeAll() {
       if (goldenScope === 'ALL') {
         goldenScope = 'REGION';
-        showToastNotification('📍 Đã chuyển sang xem Golden theo Vùng / Bộ lọc CJ');
+        showToastNotification('📍 Đã chuyển sang xem Thị Trường theo Vùng / Bộ lọc CJ');
       } else {
         goldenScope = 'ALL';
-        showToastNotification('🌐 Đang hiển thị TẤT CẢ 9,056 Khách Hàng Golden Toàn Quốc!');
+        showToastNotification('🌐 Đang hiển thị TẤT CẢ Khách Hàng Thị Trường Toàn Quốc!');
       }
       updateGoldenScopeUI();
       if (!showGolden) {
@@ -3402,8 +3405,8 @@
         const btn = document.getElementById('btnUnifiedGoldenToggle');
         if (btn) btn.classList.add('active-golden');
         const select = document.getElementById('filterUnifiedGoldenGrade');
-        if (select && select.value === 'OFF') select.value = 'ALL';
-        if (goldenGradeFilter === 'OFF') goldenGradeFilter = 'ALL';
+        if (select && select.value === 'OFF') select.value = 'AB';
+        if (goldenGradeFilter === 'OFF') goldenGradeFilter = 'AB';
         ensureGoldenLoaded(() => {
           renderGoldenOutlets();
         });
@@ -3419,49 +3422,38 @@
         goldenGradeFilter = 'OFF';
         if (btn) btn.classList.remove('active-golden');
         goldenLayer.clearLayers();
-        showToastNotification('Đã ẩn lớp Khách Hàng Golden.');
+        showToastNotification('Đã ẩn lớp Khách Hàng Thị Trường.');
         return;
       }
       
       showGolden = true;
       if (btn) btn.classList.add('active-golden');
 
-      if (val === 'ALL_NATIONWIDE') {
-        goldenScope = 'ALL';
-        goldenGradeFilter = 'ALL';
-        updateGoldenScopeUI();
-        ensureGoldenLoaded(() => {
-          renderGoldenOutlets();
-          showToastNotification('🌐 Đang hiển thị TẤT CẢ 9,056 Khách Hàng Golden Toàn Quốc!');
-        });
-        return;
-      }
-
-      if (val === 'BY_REGION') {
-        goldenScope = 'REGION';
-        goldenGradeFilter = 'ALL';
-        updateGoldenScopeUI();
-        ensureGoldenLoaded(() => {
-          renderGoldenOutlets();
-          showToastNotification('📍 Đang hiển thị Khách Hàng Golden theo Vùng / Bộ Lọc CJ!');
-        });
-        return;
-      }
-
       goldenGradeFilter = val;
       ensureGoldenLoaded(() => {
         renderGoldenOutlets();
+        const scopeLabel = goldenScope === 'ALL' ? 'Toàn Quốc' : 'Theo Vùng CJ';
         if (val === 'ALL') {
-          showToastNotification(`⭐ Đang hiển thị Khách Hàng Golden (${goldenScope === 'ALL' ? 'Toàn Quốc: 9.1k' : 'Theo Vùng CJ'})!`);
+          showToastNotification(`🌐 Hiển thị Tất Cả Hạng Thị Trường (${scopeLabel})!`);
+        } else if (val === 'AB') {
+          showToastNotification(`⭐ Lọc Khách Hàng Trọng Tâm S, A, B (${scopeLabel})!`);
+        } else if (val === 'S') {
+          showToastNotification(`👑 Lọc Khách Hàng Hạng S - Sỉ Lớn (${scopeLabel})!`);
         } else if (val === 'A') {
-          showToastNotification(`🥇 Đang lọc Khách Hàng Golden Hạng A (${goldenScope === 'ALL' ? 'Toàn Quốc: 4.7k' : 'Theo Vùng CJ'})!`);
+          showToastNotification(`🥇 Lọc Khách Hàng Hạng A (${scopeLabel})!`);
         } else if (val === 'B') {
-          showToastNotification(`🥈 Đang lọc Khách Hàng Golden Hạng B (${goldenScope === 'ALL' ? 'Toàn Quốc: 4.4k' : 'Theo Vùng CJ'})!`);
+          showToastNotification(`🥈 Lọc Khách Hàng Hạng B (${scopeLabel})!`);
+        } else if (val === 'C') {
+          showToastNotification(`🥉 Lọc Khách Hàng Hạng C (${scopeLabel})!`);
+        } else if (val === 'D') {
+          showToastNotification(`📦 Lọc Khách Hàng Hạng D (${scopeLabel})!`);
+        } else if (val === 'KHAC') {
+          showToastNotification(`⚪ Lọc Điểm Chưa Xếp Hạng (${scopeLabel})!`);
         }
       });
     }
 
-    function cleanProvName(p) {
+    function cleanProvName    function cleanProvName(p) {
       if (!p) return '';
       return p.toLowerCase()
         .replace(/^tp\.?\s*/i, '')
@@ -3510,55 +3502,52 @@
       const nppDist = nearest ? nearest.distKm.toFixed(1) : '-';
       const isFar = nearest && nearest.distKm > 45;
 
+      let gradColor1 = '#d97706', gradColor2 = '#b45309', badgeIcon = 'fa-crown', badgeTitle = `HẠNG ${grade}`;
+      if (grade === 'S') { gradColor1 = '#7e22ce'; gradColor2 = '#581c87'; badgeIcon = 'fa-gem'; badgeTitle = 'HẠNG S (SỈ LỚN)'; }
+      else if (grade === 'A') { gradColor1 = '#d97706'; gradColor2 = '#b45309'; badgeIcon = 'fa-crown'; badgeTitle = 'HẠNG A (LỚN)'; }
+      else if (grade === 'B') { gradColor1 = '#ea580c'; gradColor2 = '#c2410c'; badgeIcon = 'fa-medal'; badgeTitle = 'HẠNG B (TRUNG BÌNH)'; }
+      else if (grade === 'C') { gradColor1 = '#0284c7'; gradColor2 = '#0369a1'; badgeIcon = 'fa-store'; badgeTitle = 'HẠNG C'; }
+      else if (grade === 'D') { gradColor1 = '#475569'; gradColor2 = '#334155'; badgeIcon = 'fa-box'; badgeTitle = 'HẠNG D'; }
+      else { gradColor1 = '#64748b'; gradColor2 = '#475569'; badgeIcon = 'fa-circle-dot'; badgeTitle = 'CHƯA XẾP HẠNG'; }
+
       return `
-        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; min-width:250px; max-width:300px; padding:2px;">
-          <div style="background:linear-gradient(135deg, #d97706, #b45309); padding:7px 10px; border-radius:6px 6px 0 0; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; min-width:260px; max-width:320px; padding:2px;">
+          <div style="background:linear-gradient(135deg, ${gradColor1}, ${gradColor2}); padding:7px 10px; border-radius:6px 6px 0 0; color:#fff; display:flex; justify-content:space-between; align-items:center;">
             <span style="font-weight:900; font-size:0.75rem; letter-spacing:0.3px;">
-              <i class="fa-solid fa-crown" style="color:#fde047;"></i> KHÁCH HÀNG GOLDEN
+              <i class="fa-solid ${badgeIcon}" style="color:#fde047;"></i> ${badgeTitle}
             </span>
-            <span style="background:${grade === 'A' ? '#f59e0b' : '#38bdf8'}; color:#fff; font-size:0.65rem; font-weight:800; padding:1px 6px; border-radius:10px; border:1px solid rgba(255,255,255,0.4);">
-              HẠNG ${grade}
-            </span>
+            <span style="font-size:0.68rem; background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:10px;">${code}</span>
           </div>
-          
-          <div style="padding:10px 10px 6px 10px; background:#0f172a; border:1px solid #334155; border-top:none; border-radius:0 0 6px 6px; color:#e2e8f0;">
-            <div style="font-weight:800; font-size:0.9rem; color:#fef08a; margin-bottom:3px;">
-              ${name}
-            </div>
-            <div style="font-size:0.7rem; color:#94a3b8; margin-bottom:8px;">
-              Mã Census: <strong style="color:#38bdf8;">#${code}</strong> &bull; Loại: <strong style="color:#e2e8f0;">${shopType}</strong>
+
+          <div style="padding:10px 12px; font-size:0.75rem; color:#f1f5f9; line-height:1.45; background:#0f172a; border-radius:0 0 6px 6px; border:1px solid #334155; border-top:none;">
+            <div style="font-weight:800; font-size:0.88rem; color:#f8fafc; margin-bottom:4px;">${name}</div>
+            <div style="color:#94a3b8; font-size:0.7rem; margin-bottom:6px;">
+              <i class="fa-solid fa-location-dot" style="color:#ef4444; width:14px;"></i> ${addr ? addr : (ward + ', ' + dist + ', ' + prov)}
             </div>
 
-            <div style="background:#1e293b; border:1px solid #334155; border-radius:6px; padding:7px 9px; margin-bottom:8px;">
-              <div style="font-size:0.68rem; color:#94a3b8; text-transform:uppercase;">Doanh Số Sell-out Ước Tính (Census)</div>
-              <div style="font-size:1.15rem; font-weight:900; color:#34d399; margin-top:2px;">
-                ${formatMoneyVND(sellout)} <span style="font-size:0.7rem; font-weight:500; color:#94a3b8;">/ tháng</span>
+            <div style="background:#1e293b; padding:6px 8px; border-radius:5px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="font-size:0.65rem; color:#94a3b8; display:block;">Doanh số thị trường:</span>
+                <span style="font-weight:800; color:#4ade80; font-size:0.85rem;">${formatMoney(sellout)} đ/tháng</span>
               </div>
-              ${gradeSnack ? `<div style="font-size:0.68rem; color:#cbd5e1; margin-top:3px;">Phân hạng Snack: <b>${gradeSnack}</b></div>` : ''}
+              <div style="text-align:right;">
+                <span style="font-size:0.65rem; color:#94a3b8; display:block;">Loại hình:</span>
+                <span style="font-weight:700; color:#cbd5e1; font-size:0.72rem;">${shopType}</span>
+              </div>
             </div>
 
-            <div style="font-size:0.72rem; color:#cbd5e1; margin-bottom:6px; line-height:1.35;">
-              <i class="fa-solid fa-location-dot" style="color:#f59e0b; margin-right:4px;"></i>
-              ${addr ? addr + ', ' : ''}${ward ? ward + ', ' : ''}${dist ? dist + ', ' : ''}<b>${prov}</b>
-            </div>
-
-            <div style="background:${isFar ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)'}; border:1px solid ${isFar ? '#ef4444' : '#10b981'}; border-radius:5px; padding:6px 8px; font-size:0.7rem;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="color:#94a3b8;">NPP CJ gần nhất:</span>
-                <b style="color:#ffffff;">${nppName}</b>
-              </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
-                <span style="color:#94a3b8;">Cự ly đến tiệm:</span>
-                <b style="color:${isFar ? '#f87171' : '#34d399'}; font-size:0.78rem;">${nppDist} km</b>
-              </div>
-              <div style="margin-top:4px; font-size:0.67rem; font-weight:700; color:${isFar ? '#fca5a5' : '#86efac'};">
-                ${isFar ? '⚠️ Ngoài bán kính (>45km - Vùng trắng cần mở C1)' : '🟢 Trong bán kính phục vụ chuẩn (≤45km)'}
+            <div style="background:#1e293b; padding:6px 8px; border-radius:5px; border-left:3px solid ${isFar ? '#ef4444' : '#3b82f6'};">
+              <div style="font-size:0.65rem; color:#94a3b8;">NPP CJ Gần Nhất:</div>
+              <div style="font-weight:700; color:#f8fafc; font-size:0.73rem;">${nppName}</div>
+              <div style="font-size:0.68rem; color:${isFar ? '#f87171' : '#60a5fa'}; font-weight:700; margin-top:2px;">
+                Khoảng cách: <b>${nppDist} km</b> ${isFar ? '<span style="background:#dc2626; color:#fff; font-size:0.6rem; padding:1px 4px; border-radius:3px; margin-left:4px;">⚠️ Giao Xa (>45km)</span>' : ''}
               </div>
             </div>
 
             ${sm ? `
-              <div style="font-size:0.68rem; color:#94a3b8; margin-top:6px; text-align:right;">
-                Tuyến: <b style="color:#cbd5e1;">${route || '-'}</b> &bull; SM: <b style="color:#cbd5e1;">${sm}</b>
+              <div style="font-size:0.68rem; color:#94a3b8; margin-top:6px; display:flex; justify-content:space-between;">
+                <span>SM: <b style="color:#cbd5e1;">${sm}</b></span>
+                <span>Tuyến: <b style="color:#cbd5e1;">${route || '-'}</b></span>
               </div>
             ` : ''}
           </div>
@@ -3687,8 +3676,14 @@
 
       return goldenData.filter(g => {
         const grade = g[4];
+        if (goldenGradeFilter === 'S' && grade !== 'S') return false;
         if (goldenGradeFilter === 'A' && grade !== 'A') return false;
         if (goldenGradeFilter === 'B' && grade !== 'B') return false;
+        if (goldenGradeFilter === 'C' && grade !== 'C') return false;
+        if (goldenGradeFilter === 'D' && grade !== 'D') return false;
+        if (goldenGradeFilter === 'AB' && (grade !== 'S' && grade !== 'A' && grade !== 'B')) return false;
+        if (goldenGradeFilter === 'CD' && (grade !== 'C' && grade !== 'D')) return false;
+        if (goldenGradeFilter === 'KHAC' && (grade === 'S' || grade === 'A' || grade === 'B' || grade === 'C' || grade === 'D')) return false;
 
         const prov = g[5] || '';
         const provNorm = cleanProvName(prov);
@@ -3740,8 +3735,10 @@
       if (!showGolden || goldenGradeFilter === 'OFF') return;
 
       const toRender = getFilteredGoldenOutlets();
+      const maxRender = 15000;
+      const displayRender = toRender.slice(0, maxRender);
 
-      toRender.forEach(g => {
+      displayRender.forEach(g => {
         const lat = g[0];
         const lon = g[1];
         if (!lat || !lon) return;
@@ -3750,11 +3747,37 @@
         const grade = g[4];
         const sellout = g[10] || 0;
 
-        const isGradeA = (grade === 'A');
-        const markerColor = isGradeA ? '#facc15' : '#fb923c';
-        const borderColor = isGradeA ? '#b45309' : '#9a3412';
-        const radius = isGradeA ? 5.5 : 4.5;
-        const weight = isGradeA ? 2 : 1.5;
+        let markerColor = '#94a3b8';
+        let borderColor = '#475569';
+        let radius = 3;
+        let weight = 1;
+
+        if (grade === 'S') {
+          markerColor = '#a855f7';
+          borderColor = '#6b21a8';
+          radius = 6;
+          weight = 2;
+        } else if (grade === 'A') {
+          markerColor = '#eab308';
+          borderColor = '#854d0e';
+          radius = 5.5;
+          weight = 2;
+        } else if (grade === 'B') {
+          markerColor = '#f97316';
+          borderColor = '#9a3412';
+          radius = 4.5;
+          weight = 1.5;
+        } else if (grade === 'C') {
+          markerColor = '#06b6d4';
+          borderColor = '#0e7490';
+          radius = 3.5;
+          weight = 1;
+        } else if (grade === 'D') {
+          markerColor = '#64748b';
+          borderColor = '#334155';
+          radius = 3;
+          weight = 1;
+        }
 
         const marker = L.circleMarker([lat, lon], {
           radius: radius,
@@ -3778,16 +3801,13 @@
 
         goldenLayer.addLayer(marker);
       });
+
+      if (toRender.length > maxRender) {
+        showToastNotification(`Đang hiển thị 15,000 / ${toRender.length.toLocaleString()} điểm thị trường tiêu biểu (Ưu tiên Hạng S, A, B). Chọn Vùng/Tỉnh để xem chi tiết.`);
+      }
     }
 
-
-    // ==========================================
-    // MULTI-SELECT TỈNH/THÀNH & OUTLET FILTER LOGIC
-    // ==========================================
-    let selectedProvinces = new Set();
-    let outletFilterStatus = 'ALL';
-
-    function toggleMultiTinhDropdown(e) {
+    function toggleMultiTinhDropdown    function toggleMultiTinhDropdown(e) {
       if (e) {
         e.stopPropagation();
         e.preventDefault();
@@ -6033,8 +6053,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
       // Thống kê Khách Hàng Golden (External Census) trong vùng khoanh
       let selGolden = [];
       let totGoldenSellout = 0;
-      let goldenACnt = 0;
-      let goldenBCnt = 0;
+      let goldenSCnt = 0, goldenACnt = 0, goldenBCnt = 0, goldenCCnt = 0, goldenDCnt = 0, goldenKhacCnt = 0;
       const goldenData = window.ALL_GOLDEN || window.GOLDEN_OUTLETS || [];
       if (goldenData && goldenData.length > 0) {
         if (bounds) {
@@ -6045,8 +6064,13 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
           selGolden = goldenData.filter(g => g[0] && g[1] && isPointInsidePolygon(g[0], g[1], polyPoints));
         }
         selGolden.forEach(g => {
-          if (g[4] === 'A') goldenACnt++;
-          else if (g[4] === 'B') goldenBCnt++;
+          const gr = g[4];
+          if (gr === 'S') goldenSCnt++;
+          else if (gr === 'A') goldenACnt++;
+          else if (gr === 'B') goldenBCnt++;
+          else if (gr === 'C') goldenCCnt++;
+          else if (gr === 'D') goldenDCnt++;
+          else goldenKhacCnt++;
           totGoldenSellout += (g[10] || 0);
         });
       }
@@ -6066,8 +6090,12 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
         selOutlets,
         totGolden: selGolden.length,
         totGoldenSellout,
+        goldenSCnt,
         goldenACnt,
         goldenBCnt,
+        goldenCCnt,
+        goldenDCnt,
+        goldenKhacCnt,
         selGolden,
         bounds,
         polyPoints,
@@ -6170,7 +6198,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
               ${g[2]}
             </td>
             <td>
-              <span style="background:${grade === 'A' ? '#f59e0b' : '#38bdf8'}; color:#fff; font-size:0.65rem; font-weight:800; padding:1px 6px; border-radius:10px;">
+              <span style="background:${grade === 'S' ? '#9333ea' : (grade === 'A' ? '#f59e0b' : (grade === 'B' ? '#ea580c' : (grade === 'C' ? '#0284c7' : '#64748b')))}; color:#fff; font-size:0.65rem; font-weight:800; padding:1px 6px; border-radius:10px;">
                 Hạng ${grade}
               </span>
             </td>
@@ -6245,7 +6273,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
           <div class="revenue-kpi-card" style="border-left-color:#eab308; background:rgba(234,179,8,0.12);">
             <div class="revenue-kpi-lbl" style="color:#fde047;">Tiềm Năng Golden</div>
             <div class="revenue-kpi-val" style="color:#fde047;">
-              ${(r.totGolden || 0).toLocaleString('vi-VN')} <span style="font-size:0.68rem; color:#fef08a;">(${r.goldenACnt || 0} A &bull; ${r.goldenBCnt || 0} B)</span>
+              ${(r.totGolden || 0).toLocaleString('vi-VN')} <span style="font-size:0.68rem; color:#fef08a;">(${r.goldenACnt || 0} A &bull; ${r.goldenBCnt || 0} B &bull; ${r.goldenCCnt || 0} C &bull; ${r.goldenDCnt || 0} D)</span>
             </div>
           </div>
           <div class="revenue-kpi-card" style="border-left-color:#10b981; background:rgba(16,185,129,0.12);">

@@ -1,6 +1,13 @@
-# Temporary office files
-~$*
-*.tmp
+# Raw data and exports
+*.xlsx
+*.xlsb
+*.csv
+!aso.csv
+!doanhso.csv
+!doanh_so_t92026_clean.csv
+!loai_npp.csv
+!outlet_sales_clean.csv
+!potential_shops_ab.csv
 
 # Python artifacts
 __pycache__/
