@@ -471,21 +471,70 @@
       gap: 6px;
     }
 
-    /* NPP Card in Sidebar */
+    /* GPU Hardware Acceleration & Silky 60fps rendering */
+    #map, .leaflet-pane, .leaflet-zoom-animated, .filter-bar, .sidebar, .island-btn, .npp-card {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+
+    /* Custom Sleek Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.7);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(71, 85, 105, 0.6);
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #38bdf8;
+    }
+
+    /* MARKER HOVER NEON PULSE EFFECT (Tương tác 2 chiều mượt mà giữa Thẻ NPP & Marker) */
+    @keyframes markerNeonAura {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.9); }
+      70% { transform: scale(1.4); box-shadow: 0 0 0 16px rgba(56, 189, 248, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+    }
+
+    .custom-npp-icon.marker-hover-pulse {
+      animation: markerNeonAura 1.4s infinite cubic-bezier(0.25, 1, 0.5, 1) !important;
+      z-index: 9999 !important;
+      border-color: #38bdf8 !important;
+      filter: drop-shadow(0 0 10px #38bdf8) !important;
+    }
+
+    /* Card in Sidebar với hiệu ứng 3D Lift & Glassmorphism */
     .npp-card {
-      background: #0f172a;
+      background: linear-gradient(180deg, #0f172a 0%, #131d31 100%);
       border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 8px 10px;
+      border-radius: 9px;
+      padding: 9px 11px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
+                  border-color 0.22s ease, 
+                  box-shadow 0.22s ease, 
+                  background 0.22s ease;
+      will-change: transform, box-shadow;
+      position: relative;
     }
-    .npp-card:hover, .npp-card.selected {
-      border-color: #2563eb;
-      background: #1e293b;
+    .npp-card:hover {
+      border-color: #38bdf8;
+      background: linear-gradient(180deg, #1e293b 0%, #1e2e48 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 12px rgba(56, 189, 248, 0.25);
     }
-    .npp-card.selected {
-      box-shadow: 0 0 0 1px #2563eb;
+    .npp-card.selected, .npp-card.highlight-active {
+      border-color: #0284c7;
+      background: linear-gradient(180deg, #172554 0%, #0f172a 100%);
+      box-shadow: 0 0 0 1.5px #38bdf8, 0 6px 20px rgba(2, 132, 199, 0.4);
+      transform: translateY(-1px);
     }
     .npp-header-row {
       display: flex;
@@ -5021,6 +5070,38 @@ function toggleUnifiedNppLayer() {
       updateKPIs();
     }
 
+    // Lưu trữ giá trị KPI cũ để tạo hiệu ứng số nhảy cuộn mượt (Count-up animation)
+    let prevKpis = {
+      totalNpp: 391,
+      salesTotal: 0,
+      outletSales: 0
+    };
+
+    function animateCountNumber(elementId, startVal, endVal, duration = 380, formatFn = null) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      startVal = Number(startVal) || 0;
+      endVal = Number(endVal) || 0;
+      if (startVal === endVal) {
+        el.textContent = formatFn ? formatFn(endVal) : endVal.toLocaleString('vi-VN');
+        return;
+      }
+      const startTime = performance.now();
+      function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        const currentVal = Math.round(startVal + (endVal - startVal) * easeProgress);
+        el.textContent = formatFn ? formatFn(currentVal) : currentVal.toLocaleString('vi-VN');
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        } else {
+          el.textContent = formatFn ? formatFn(endVal) : endVal.toLocaleString('vi-VN');
+        }
+      }
+      requestAnimationFrame(update);
+    }
+
     function updateKPIs() {
       const totalNpp = filteredNPPs.length;
       const activeNpp = filteredNPPs.filter(n => n.status.includes('Đang')).length;
@@ -5028,8 +5109,7 @@ function toggleUnifiedNppLayer() {
       const totalOutlets = filteredOutlets.length;
       const remoteCount = filteredOutlets.filter(o => o[10] >= 45).length;
 
-      const kpiCountEl = document.getElementById('kpiCount');
-      if (kpiCountEl) kpiCountEl.textContent = totalNpp;
+      animateCountNumber('kpiCount', prevKpis.totalNpp, totalNpp);
       const kpiActiveEl = document.getElementById('kpiActive');
       if (kpiActiveEl) kpiActiveEl.textContent = `${activeNpp} Chạy`;
       const kpiInactiveEl = document.getElementById('kpiInactive');
@@ -5038,10 +5118,11 @@ function toggleUnifiedNppLayer() {
       if (kpiOutletsEl) kpiOutletsEl.textContent = totalOutlets.toLocaleString('vi-VN');
       const kpiRemoteEl = document.getElementById('kpiRemote');
       if (kpiRemoteEl) kpiRemoteEl.textContent = remoteCount.toLocaleString('vi-VN');
-      const sidebarCountEl = document.getElementById('sidebarCount');
-      if (sidebarCountEl) sidebarCountEl.textContent = totalNpp;
-      const mobileCountEl = document.getElementById('mobileCount');
-      if (mobileCountEl) mobileCountEl.textContent = totalNpp;
+
+      animateCountNumber('sidebarCount', prevKpis.totalNpp, totalNpp);
+      animateCountNumber('mobileCount', prevKpis.totalNpp, totalNpp);
+      const chkNppCountEl = document.getElementById('chkNppCount');
+      if (chkNppCountEl) animateCountNumber('chkNppCount', prevKpis.totalNpp, totalNpp);
 
       const totalFilteredSales = filteredNPPs.reduce((acc, n) => acc + (n.sales_total || 0), 0);
       const totalAmb = filteredNPPs.reduce((acc, n) => acc + (n.sales_ambient || 0), 0);
@@ -5049,32 +5130,57 @@ function toggleUnifiedNppLayer() {
       const totalFro = filteredNPPs.reduce((acc, n) => acc + (n.sales_frozen || 0), 0);
       const salesElem = document.getElementById('sidebarTotalSales');
       if (salesElem) {
-        salesElem.textContent = formatMoneyVND(totalFilteredSales);
+        animateCountNumber('sidebarTotalSales', prevKpis.salesTotal, totalFilteredSales, 450, formatMoneyVND);
         salesElem.title = `Khô (Ambient): ${formatMoneyVND(totalAmb)} | Mát (Chilled): ${formatMoneyVND(totalChi)} | Đông (Frozen): ${formatMoneyVND(totalFro)}`;
       }
 
+      let totalOutletMtd = 0;
       const outletSalesElem = document.getElementById('sidebarOutletSales');
       if (outletSalesElem) {
         if (typeof ALL_OUTLETS !== 'undefined' && ALL_OUTLETS && ALL_OUTLETS.length > 0 && filteredOutlets && filteredOutlets.length > 0) {
-          const totalOutletMtd = filteredOutlets.reduce((acc, o) => acc + (o[12] || 0), 0);
-          outletSalesElem.textContent = formatMoneyVND(totalOutletMtd);
+          totalOutletMtd = filteredOutlets.reduce((acc, o) => acc + (o[12] || 0), 0);
+          animateCountNumber('sidebarOutletSales', prevKpis.outletSales, totalOutletMtd, 450, formatMoneyVND);
           outletSalesElem.title = `Tổng Sell-out thực tế của ${filteredOutlets.length.toLocaleString()} điểm bán GT đang hiển thị`;
         } else {
           outletSalesElem.textContent = (typeof ALL_OUTLETS !== 'undefined' && ALL_OUTLETS && ALL_OUTLETS.length > 0) ? '0 đ' : 'Bật Điểm Bán';
         }
       }
 
-      const chkNppCountEl = document.getElementById('chkNppCount');
-      if (chkNppCountEl) chkNppCountEl.textContent = totalNpp;
       const chkOutletCountEl = document.getElementById('chkOutletCount');
       if (chkOutletCountEl) chkOutletCountEl.textContent = totalOutlets >= 1000 ? (totalOutlets/1000).toFixed(1) + 'k' : totalOutlets;
       updateOutletTriggerLabel();
+
+      prevKpis.totalNpp = totalNpp;
+      prevKpis.salesTotal = totalFilteredSales;
+      prevKpis.outletSales = totalOutletMtd;
+    }
+
+    // Lưu trữ tham chiếu marker theo mã NPP để tương tác 2 chiều siêu mượt
+    window.nppMarkerMap = {};
+
+    function highlightMarkerOnMap(code, active) {
+      if (!window.nppMarkerMap) return;
+      const marker = window.nppMarkerMap[code];
+      if (!marker) return;
+      const iconEl = marker.getElement() ? marker.getElement().querySelector('.custom-npp-icon') : null;
+      if (active) {
+        if (iconEl) iconEl.classList.add('marker-hover-pulse');
+        marker.setZIndexOffset(2500);
+        if (!marker.isPopupOpen()) {
+          marker.openTooltip();
+        }
+      } else {
+        if (iconEl) iconEl.classList.remove('marker-hover-pulse');
+        marker.setZIndexOffset(0);
+        marker.closeTooltip();
+      }
     }
 
     // Render Markers on Map
     function renderMapMarkers() {
       markersLayer.clearLayers();
       radiusLayer.clearLayers();
+      window.nppMarkerMap = {};
 
       const bounds = [];
 
@@ -5207,6 +5313,7 @@ function toggleUnifiedNppLayer() {
         marker.bindPopup(popupContent);
         marker.on('click', () => selectNPP(n.code, false));
         markersLayer.addLayer(marker);
+        window.nppMarkerMap[n.code] = marker;
         bounds.push([n.lat, n.lng]);
 
         // Radius 45km
@@ -5222,7 +5329,7 @@ function toggleUnifiedNppLayer() {
       });
 
       if (bounds.length > 0 && bounds.length <= 15) {
-        map.fitBounds(bounds, { padding: [30, 30], maxZoom: 12 });
+        map.flyToBounds(bounds, { padding: [40, 40], maxZoom: 12, duration: 1.2, easeLinearity: 0.25 });
       }
     }
 
@@ -5407,8 +5514,12 @@ function toggleUnifiedNppLayer() {
       toShow.forEach(n => {
         const isActive = n.status.includes('Đang');
         const card = document.createElement('div');
-        card.className = `npp-card ${selectedNPP === n.code ? 'selected' : ''}`;
+        card.className = `npp-card ${selectedNPP === n.code ? 'selected highlight-active' : ''}`;
+        card.id = `npp-card-${n.code}`;
+        card.dataset.nppCode = String(n.code);
         card.onclick = () => selectNPP(n.code, true);
+        card.onmouseenter = () => highlightMarkerOnMap(n.code, true);
+        card.onmouseleave = () => highlightMarkerOnMap(n.code, false);
 
         card.innerHTML = `
           <div class="npp-header-row">
@@ -5485,10 +5596,16 @@ function toggleUnifiedNppLayer() {
       selectedNPP = code;
       const npp = ALL_NPPS.find(n => n.code === code);
       if (npp && zoom && npp.lat && npp.lng) {
-        map.setView([npp.lat, npp.lng], 11);
+        map.flyTo([npp.lat, npp.lng], 13, { duration: 1.2, easeLinearity: 0.25 });
       }
       document.querySelectorAll('.npp-card').forEach(el => {
-        el.classList.toggle('selected', el.querySelector('.npp-code').textContent === code);
+        const isMatch = (el.dataset.nppCode === String(code) || (el.querySelector('.npp-code') && el.querySelector('.npp-code').textContent === code));
+        el.classList.toggle('selected', isMatch);
+        el.classList.toggle('highlight-active', isMatch);
+        if (isMatch && !zoom) {
+          // Khi bấm từ bản đồ, tự động cuộn danh sách đưa thẻ NPP vào giữa khung nhìn
+          el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
       });
       if (window.innerWidth <= 768 && zoom) {
         toggleMobileSidebar(false);
@@ -5498,7 +5615,7 @@ function toggleUnifiedNppLayer() {
     function zoomToNPP(code) {
       const npp = ALL_NPPS.find(n => n.code === code);
       if (npp && npp.lat && npp.lng) {
-        map.setView([npp.lat, npp.lng], 12);
+        map.flyTo([npp.lat, npp.lng], 13, { duration: 1.2, easeLinearity: 0.25 });
       }
       if (window.innerWidth <= 768) {
         toggleMobileSidebar(false);
@@ -5509,7 +5626,7 @@ function toggleUnifiedNppLayer() {
       const npp = ALL_NPPS.find(n => n.code === code);
       if (!npp || !npp.lat || !npp.lng) return;
 
-      map.setView([npp.lat, npp.lng], 11);
+      map.flyTo([npp.lat, npp.lng], 12, { duration: 1.0, easeLinearity: 0.25 });
       spiderLayer.clearLayers();
 
       const nppPos = [npp.lat, npp.lng];
@@ -5603,11 +5720,11 @@ function toggleUnifiedNppLayer() {
 
     function zoomToPreset(preset) {
       if (preset === 'ALL') {
-        map.setView([14.0583, 108.2772], window.innerWidth <= 768 ? 5 : 6);
+        map.flyTo([14.0583, 108.2772], window.innerWidth <= 768 ? 5 : 6, { duration: 1.4, easeLinearity: 0.25 });
       } else if (preset === 'MB') {
-        map.setView([21.0285, 105.8542], 7);
+        map.flyTo([21.0285, 105.8542], 7, { duration: 1.2, easeLinearity: 0.25 });
       } else if (preset === 'MN') {
-        map.setView([10.8231, 106.6297], 7);
+        map.flyTo([10.8231, 106.6297], 7, { duration: 1.2, easeLinearity: 0.25 });
       }
     }
 
