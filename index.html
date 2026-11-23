@@ -1928,6 +1928,48 @@
 </style>
 </head>
 <body>
+  <!-- MODAL ĐĂNG NHẬP PHÂN QUYỀN RTM -->
+  <div id="rtmLoginOverlay" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.88); backdrop-filter:blur(10px); z-index:999999; display:none; align-items:center; justify-content:center;">
+    <div style="background:#1e293b; border:1px solid #334155; border-radius:16px; padding:28px 32px; width:380px; max-width:90vw; box-shadow:0 25px 50px -12px rgba(0,0,0,0.7); color:#f8fafc; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+      <div style="text-align:center; margin-bottom:20px;">
+        <div style="width:54px; height:54px; background:linear-gradient(135deg, #10b981, #0284c7); border-radius:14px; margin:0 auto 12px; display:flex; align-items:center; justify-content:center; font-size:24px; color:#fff; box-shadow:0 10px 15px -3px rgba(16,185,129,0.3);">
+          <i class="fa-solid fa-route"></i>
+        </div>
+        <h2 style="font-size:1.25rem; font-weight:800; margin:0 0 4px; color:#fff;">CJ Foods RTM Model</h2>
+        <div style="font-size:0.75rem; color:#94a3b8;">Hệ Thống Phân Tích Địa Bàn & Không Gian RTM</div>
+      </div>
+
+      <form id="rtmAuthForm" onsubmit="handleRTMAuth(event)">
+        <div style="margin-bottom:14px;">
+          <label style="display:block; font-size:0.72rem; font-weight:700; color:#cbd5e1; margin-bottom:6px;">TÀI KHOẢN (USERNAME)</label>
+          <div style="position:relative;">
+            <i class="fa-solid fa-user" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#64748b; font-size:0.85rem;"></i>
+            <input type="text" id="rtmAuthUser" required placeholder="Nhập tài khoản (vd: RSMMK hoặc admin)" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; border-radius:8px; padding:10px 12px 10px 34px; color:#fff; font-size:0.85rem; outline:none; transition:border 0.2s;">
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.72rem; font-weight:700; color:#cbd5e1; margin-bottom:6px;">MẬT KHẨU (PASSWORD)</label>
+          <div style="position:relative;">
+            <i class="fa-solid fa-lock" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#64748b; font-size:0.85rem;"></i>
+            <input type="password" id="rtmAuthPass" required placeholder="Nhập mật khẩu" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; border-radius:8px; padding:10px 12px 10px 34px; color:#fff; font-size:0.85rem; outline:none; transition:border 0.2s;">
+          </div>
+        </div>
+
+        <div id="rtmAuthError" style="display:none; color:#f87171; font-size:0.72rem; margin-bottom:12px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:6px; padding:6px 10px;"></div>
+
+        <button type="submit" style="width:100%; background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; border-radius:8px; padding:11px; font-weight:800; font-size:0.85rem; cursor:pointer; transition:opacity 0.2s; box-shadow:0 4px 6px -1px rgba(16,185,129,0.3);">
+          ĐĂNG NHẬP VÀO HỆ THỐNG
+        </button>
+      </form>
+
+      <div style="margin-top:18px; padding-top:14px; border-top:1px solid #334155; font-size:0.7rem; color:#94a3b8; line-height:1.5;">
+        <div style="font-weight:700; color:#cbd5e1; margin-bottom:4px;">🔑 Tài khoản truy cập:</div>
+        <div>• <b>RSMMK</b> (Pass: <b>123</b>): Phân quyền riêng <b>Vùng Cần Thơ (ĐBSCL)</b></div>
+        <div>• <b>admin</b> (Pass: <b>admin</b>): Toàn quyền xem <b>Toàn Quốc</b></div>
+      </div>
+    </div>
+  </div>
 
   <!-- Loading indicator -->
   <div id="loadingIndicator">
@@ -1943,6 +1985,14 @@
       <h1><i class="fa-solid fa-route" style="color:#10b981;"></i> RTM Spatial Model</h1>
     </div>
     <div class="header-right">
+      <!-- USER BADGE & LOGOUT -->
+      <div id="userHeaderBadge" style="display:inline-flex; align-items:center; gap:8px; background:rgba(30,41,59,0.85); border:1px solid #38bdf8; border-radius:20px; padding:4px 12px; font-size:0.72rem; color:#bae6fd;">
+        <i class="fa-solid fa-user-shield" style="color:#38bdf8;"></i>
+        <span id="headerUserLabel" style="font-weight:700;">Đang đăng nhập...</span>
+        <button onclick="logoutRTM()" title="Đăng xuất" style="background:transparent; border:none; color:#f87171; cursor:pointer; padding:2px 4px; font-size:0.8rem; display:flex; align-items:center;">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </div>
       <button class="btn-nav" onclick="exportFilteredCSV()"><i class="fa-solid fa-file-excel"></i> Xuất Excel</button>
       <a href="rtm_dashboard_mien_tay.html" class="btn-nav"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
     </div>
@@ -2945,11 +2995,8 @@
 
     // Initial Setup
     document.addEventListener('DOMContentLoaded', () => {
-      populateVungOptions();
-      populateTinhOptions();
+      initRTMAuth();
       loadPlannedFlagsFromStorage();
-
-      applyFilters();
 
       // Ẩn ngay loadingIndicator vì bản đồ & 391 NPP đã hoàn tất sẵn sàng lập tức trong 0.1s
       const initialLoader = document.getElementById('loadingIndicator');
@@ -2967,10 +3014,21 @@
     });
 
     function populateVungOptions() {
-      const mienVal = document.getElementById('filterMien').value;
+      const mienVal = document.getElementById('filterMien') ? document.getElementById('filterMien').value : 'ALL';
       const vungSelect = document.getElementById('filterVung');
-      vungSelect.innerHTML = '<option value="ALL">Tất cả Vùng</option>';
+      if (!vungSelect) return;
 
+      // NẾU TÀI KHOẢN BỊ GIỚI HẠN VÙNG (VD: RSMMK CHỈ XEM CẦN THƠ)
+      if (currentUser && currentUser.area && currentUser.area !== 'ALL') {
+        const a = currentUser.area;
+        const count = ALL_NPPS.filter(n => n.area === a).length;
+        vungSelect.innerHTML = `<option value="${a}">${a} (${count} NPP)</option>`;
+        vungSelect.value = a;
+        vungSelect.disabled = true;
+        return;
+      }
+
+      vungSelect.innerHTML = '<option value="ALL">Tất cả Vùng</option>';
       let areas = new Set();
       ALL_NPPS.forEach(n => {
         if (mienVal === 'ALL' || n.region === mienVal) {
@@ -3000,7 +3058,15 @@
         const matchMien = (mienVal === 'ALL' || n.region === mienVal);
         const matchVung = (vungVal === 'ALL' || n.area === vungVal);
         if (matchMien && matchVung && n.province) {
-          provinces.add(n.province);
+          // Kiểm tra quyền hạn tài khoản theo tỉnh
+          if (currentUser && currentUser.provinces !== 'ALL') {
+            const pNorm = cleanProvName(n.province);
+            if (currentUser.provinces.includes(pNorm)) {
+              provinces.add(n.province);
+            }
+          } else {
+            provinces.add(n.province);
+          }
         }
       });
 
@@ -3166,6 +3232,151 @@
     // ==========================================
     // PHIÊN BẢN DỮ LIỆU ĐỂ TRÌNH DUYỆT TỰ ĐỘNG LƯU CACHE (LOAD TỨC THÌ TRONG 0.05S)
     const RTM_DATA_VERSION = '20261123_v1';
+
+    // ==========================================
+    // ROLE-BASED ACCESS CONTROL (RBAC) & AUTH
+    // ==========================================
+    const USER_ACCOUNTS = {
+      'RSMMK': {
+        password: '123',
+        username: 'RSMMK',
+        name: 'RSM Mekong (Vùng Cần Thơ)',
+        role: 'RSM',
+        region: 'MIỀN NAM',
+        area: 'Cần Thơ',
+        provinces: [
+          'cần thơ', 'tiền giang', 'long an', 'bến tre', 'trà vinh',
+          'vĩnh long', 'đồng tháp', 'an giang', 'kiên giang', 'hậu giang',
+          'sóc trăng', 'bạc liêu', 'cà mau'
+        ],
+        defaultCenter: [9.95, 105.65],
+        defaultZoom: 8.5
+      },
+      'admin': {
+        password: 'admin',
+        username: 'admin',
+        name: 'Quản Trị Toàn Quốc',
+        role: 'ADMIN',
+        region: 'ALL',
+        area: 'ALL',
+        provinces: 'ALL',
+        defaultCenter: [16.0, 107.5],
+        defaultZoom: 6
+      }
+    };
+
+    let currentUser = null;
+
+    function initRTMAuth() {
+      const stored = localStorage.getItem('rtm_current_user');
+      if (stored && USER_ACCOUNTS[stored]) {
+        applyUserSession(USER_ACCOUNTS[stored]);
+      } else {
+        // Mặc định hiển thị màn hình đăng nhập
+        showLoginModal();
+      }
+    }
+
+    function showLoginModal() {
+      const overlay = document.getElementById('rtmLoginOverlay');
+      if (overlay) {
+        overlay.style.display = 'flex';
+        document.getElementById('rtmAuthError').style.display = 'none';
+        setTimeout(() => {
+          const userInp = document.getElementById('rtmAuthUser');
+          if (userInp) userInp.focus();
+        }, 150);
+      }
+    }
+
+    function handleRTMAuth(e) {
+      if (e) e.preventDefault();
+      const userVal = (document.getElementById('rtmAuthUser').value || '').trim();
+      const passVal = (document.getElementById('rtmAuthPass').value || '').trim();
+      const errEl = document.getElementById('rtmAuthError');
+
+      // Tìm user không phân biệt hoa thường
+      let matchedKey = Object.keys(USER_ACCOUNTS).find(k => k.toLowerCase() === userVal.toLowerCase());
+      if (matchedKey && USER_ACCOUNTS[matchedKey].password === passVal) {
+        const userObj = USER_ACCOUNTS[matchedKey];
+        localStorage.setItem('rtm_current_user', matchedKey);
+        applyUserSession(userObj);
+        document.getElementById('rtmLoginOverlay').style.display = 'none';
+        showToastNotification(`👋 Chào mừng ${userObj.name} đăng nhập thành công!`);
+      } else {
+        errEl.textContent = '❌ Sai tên đăng nhập hoặc mật khẩu! (Gợi ý: RSMMK / 123 hoặc admin / admin)';
+        errEl.style.display = 'block';
+      }
+    }
+
+    function logoutRTM() {
+      if (confirm('Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?')) {
+        localStorage.removeItem('rtm_current_user');
+        currentUser = null;
+        location.reload();
+      }
+    }
+
+    function applyUserSession(userObj) {
+      currentUser = userObj;
+      const lbl = document.getElementById('headerUserLabel');
+      if (lbl) {
+        lbl.textContent = userObj.role === 'RSM' ? `👤 ${userObj.username} (Mekong)` : `👑 ${userObj.username} (Admin)`;
+        lbl.title = `${userObj.name} | Quyền: ${userObj.role}`;
+      }
+
+      // 1. Phân quyền lọc Miền
+      const mienSelect = document.getElementById('filterMien');
+      if (mienSelect) {
+        if (userObj.region !== 'ALL') {
+          mienSelect.value = userObj.region;
+          mienSelect.disabled = true;
+          mienSelect.style.opacity = '0.75';
+          mienSelect.title = `Tài khoản ${userObj.username} chỉ có quyền truy cập ${userObj.region}`;
+        } else {
+          mienSelect.disabled = false;
+          mienSelect.style.opacity = '1';
+        }
+      }
+
+      // 2. Phân quyền lọc Vùng
+      populateVungOptions();
+      const vungSelect = document.getElementById('filterVung');
+      if (vungSelect) {
+        if (userObj.area !== 'ALL') {
+          vungSelect.value = userObj.area;
+          vungSelect.disabled = true;
+          vungSelect.style.opacity = '0.75';
+          vungSelect.title = `Tài khoản ${userObj.username} được phân quyền riêng Vùng ${userObj.area}`;
+        } else {
+          vungSelect.disabled = false;
+          vungSelect.style.opacity = '1';
+        }
+      }
+
+      // 3. Phân quyền Tỉnh/Thành
+      populateTinhOptions();
+
+      // 4. Định vị bản đồ theo quyền hạn
+      if (map) {
+        if (userObj.defaultCenter) {
+          map.setView(userObj.defaultCenter, userObj.defaultZoom);
+        }
+        if (userObj.role === 'RSM') {
+          // Giới hạn phạm vi di chuyển trong Miền Tây
+          map.setMaxBounds([[8.1, 103.5], [11.2, 107.2]]);
+        } else {
+          map.setMaxBounds(null);
+        }
+      }
+
+      applyFilters();
+      updateGoldenScopeUI();
+      if (typeof renderC1RecommendationsForActiveFilter === 'function') {
+        renderC1RecommendationsForActiveFilter();
+      }
+    }
+
     let outletsLoaded = (typeof ALL_OUTLETS !== 'undefined' && ALL_OUTLETS && ALL_OUTLETS.length > 0);
     let outletsLoading = false;
 
