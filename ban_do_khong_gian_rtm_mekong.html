@@ -1965,6 +1965,7 @@
 
       <div style="margin-top:18px; padding-top:14px; border-top:1px solid #334155; font-size:0.7rem; color:#94a3b8; line-height:1.5;">
         <div style="font-weight:700; color:#cbd5e1; margin-bottom:4px;">🔑 Tài khoản truy cập:</div>
+        <div>• <b>hailp</b> / <b>datnt</b> (Pass: <b>123456</b>): Quản trị viên Toàn Quốc</div>
         <div>• <b>RSMMK</b> (Pass: <b>123</b>): Phân quyền riêng <b>Vùng Cần Thơ (ĐBSCL)</b></div>
         <div>• <b>admin</b> (Pass: <b>admin</b>): Toàn quyền xem <b>Toàn Quốc</b></div>
       </div>
@@ -3237,6 +3238,28 @@
     // ROLE-BASED ACCESS CONTROL (RBAC) & AUTH
     // ==========================================
     const USER_ACCOUNTS = {
+      'hailp': {
+        password: '123456',
+        username: 'hailp',
+        name: 'Hải Lê (Admin Toàn Quốc)',
+        role: 'ADMIN',
+        region: 'ALL',
+        area: 'ALL',
+        provinces: 'ALL',
+        defaultCenter: [16.0, 107.5],
+        defaultZoom: 6
+      },
+      'datnt': {
+        password: '123456',
+        username: 'datnt',
+        name: 'Đạt Nguyễn (Admin Toàn Quốc)',
+        role: 'ADMIN',
+        region: 'ALL',
+        area: 'ALL',
+        provinces: 'ALL',
+        defaultCenter: [16.0, 107.5],
+        defaultZoom: 6
+      },
       'RSMMK': {
         password: '123',
         username: 'RSMMK',
