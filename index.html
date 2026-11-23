@@ -3228,11 +3228,12 @@
     const RTM_DATA_VERSION = '20261123_v1';
 
     // ==========================================
-    // ROLE-BASED ACCESS CONTROL (RBAC) & AUTH
+    // ROLE-BASED ACCESS CONTROL (RBAC) & CRYPTO AUTH
     // ==========================================
+    // MẬT KHẨU ĐÃ ĐƯỢC MÃ HÓA MỘT CHIỀU BẰNG SHA-256 (KHÔNG CÒN LỘ TEXT TRONG SOURCE CODE)
     const USER_ACCOUNTS = {
       'hailp': {
-        password: '123456',
+        passwordHash: '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92',
         username: 'hailp',
         name: 'Hải Lê (Admin Toàn Quốc)',
         role: 'ADMIN',
@@ -3243,7 +3244,7 @@
         defaultZoom: 6
       },
       'datnt': {
-        password: '123456',
+        passwordHash: '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92',
         username: 'datnt',
         name: 'Đạt Nguyễn (Admin Toàn Quốc)',
         role: 'ADMIN',
@@ -3254,7 +3255,7 @@
         defaultZoom: 6
       },
       'RSMMK': {
-        password: '123',
+        passwordHash: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
         username: 'RSMMK',
         name: 'RSM Mekong (Vùng Cần Thơ)',
         role: 'RSM',
@@ -3269,7 +3270,7 @@
         defaultZoom: 8.5
       },
       'admin': {
-        password: 'admin',
+        passwordHash: '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
         username: 'admin',
         name: 'Quản Trị Toàn Quốc',
         role: 'ADMIN',
@@ -3280,6 +3281,15 @@
         defaultZoom: 6
       }
     };
+
+    async function sha256Hash(text) {
+      if (window.crypto && crypto.subtle) {
+        const msgBuffer = new TextEncoder().encode(text);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+      return text;
+    }
 
     let currentUser = null;
 
@@ -3305,15 +3315,17 @@
       }
     }
 
-    function handleRTMAuth(e) {
+    async function handleRTMAuth(e) {
       if (e) e.preventDefault();
       const userVal = (document.getElementById('rtmAuthUser').value || '').trim();
       const passVal = (document.getElementById('rtmAuthPass').value || '').trim();
       const errEl = document.getElementById('rtmAuthError');
 
+      const passHash = await sha256Hash(passVal);
+
       // Tìm user không phân biệt hoa thường
       let matchedKey = Object.keys(USER_ACCOUNTS).find(k => k.toLowerCase() === userVal.toLowerCase());
-      if (matchedKey && USER_ACCOUNTS[matchedKey].password === passVal) {
+      if (matchedKey && USER_ACCOUNTS[matchedKey].passwordHash === passHash) {
         const userObj = USER_ACCOUNTS[matchedKey];
         localStorage.setItem('rtm_current_user', matchedKey);
         applyUserSession(userObj);
