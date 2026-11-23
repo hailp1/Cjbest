@@ -1521,6 +1521,19 @@
       animation: radar-pulse-flag 2.2s infinite ease-out;
       pointer-events: none;
     }
+    .planned-flag-pulse.cold {
+      background: rgba(56, 189, 248, 0.45);
+      border-color: #38bdf8;
+    }
+    .planned-flag-pulse.dry {
+      background: rgba(16, 185, 129, 0.45);
+      border-color: #10b981;
+    }
+    .active-cold-btn {
+      background: rgba(2, 132, 199, 0.3) !important;
+      border-color: #38bdf8 !important;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.6) !important;
+    }
     .planned-flag-icon {
       position: relative;
       z-index: 2;
@@ -2069,10 +2082,15 @@
         <span id="btnSpatialSelectText">📐 Khoanh Vùng Doanh Số</span>
       </button>
 
-      <!-- NÚT BẬT TẮT NHANH C1 KHUYẾN NGHỊ -->
-      <button class="island-btn" id="btnQuickC1Recommend" onclick="toggleC1Recommendations()" title="Bật/Tắt hiển thị các trạm C1 khuyến nghị của hệ thống (Cai Lậy, Đức Hòa, Trà Vinh, Ba Tri...)" style="border-color:#f59e0b; color:#fef08a;">
+      <!-- CỤM NÚT KHUYẾN NGHỊ C1 VỚI 2 KỊCH BẢN: TINH GỌN (14) & CHUỖI LẠNH (24) -->
+      <button class="island-btn" id="btnQuickC1Recommend" onclick="toggleC1Scenario('CORE')" title="Kịch bản 1: C1 Tinh Gọn (14 Core Hubs trọng điểm đa năng)" style="border-color:#f59e0b; color:#fef08a;">
         <i class="fa-solid fa-flag" style="color:#f59e0b;"></i>
-        <span id="btnQuickC1Text">🚩 C1 Khuyến Nghị</span>
+        <span id="btnQuickC1Text">🚩 C1 Tinh Gọn (14)</span>
+      </button>
+
+      <button class="island-btn" id="btnColdC1Recommend" onclick="toggleC1Scenario('COLD')" title="Kịch bản 2: C1 Chuỗi Lạnh Toàn Diện (24 Cold & Core Hubs)" style="border-color:#38bdf8; color:#bae6fd;">
+        <i class="fa-solid fa-snowflake" style="color:#38bdf8;"></i>
+        <span id="btnColdC1Text">❄️ C1 Chuỗi Lạnh (24)</span>
       </button>
 
       <!-- MENU CÔNG CỤ MỞ RỘNG -->
@@ -3088,7 +3106,7 @@
       populateTinhOptions();
       applyFilters();
       zoomToSelectedArea();
-      if (typeof isC1RecommendationsActive !== 'undefined' && isC1RecommendationsActive) {
+      if (typeof currentC1Scenario !== 'undefined' && currentC1Scenario !== 'NONE') {
         renderC1RecommendationsForActiveFilter();
       }
     }
@@ -3097,7 +3115,7 @@
       populateTinhOptions();
       applyFilters();
       zoomToSelectedArea();
-      if (typeof isC1RecommendationsActive !== 'undefined' && isC1RecommendationsActive) {
+      if (typeof currentC1Scenario !== 'undefined' && currentC1Scenario !== 'NONE') {
         renderC1RecommendationsForActiveFilter();
       }
     }
@@ -3863,11 +3881,11 @@
       });
       updateMultiTinhUI();
       applyFilters();
-      if (typeof isC1RecommendationsActive !== 'undefined' && isC1RecommendationsActive) {
+      if (typeof currentC1Scenario !== 'undefined' && currentC1Scenario !== 'NONE') {
         renderC1RecommendationsForActiveFilter();
       }
       closeAllDropdowns();
-      if (typeof isC1RecommendationsActive !== 'undefined' && isC1RecommendationsActive) {
+      if (typeof currentC1Scenario !== 'undefined' && currentC1Scenario !== 'NONE') {
         renderC1RecommendationsForActiveFilter();
       }
 
@@ -3898,11 +3916,11 @@
       });
       updateMultiTinhUI();
       applyFilters();
-      if (typeof isC1RecommendationsActive !== 'undefined' && isC1RecommendationsActive) {
+      if (typeof currentC1Scenario !== 'undefined' && currentC1Scenario !== 'NONE') {
         renderC1RecommendationsForActiveFilter();
       }
       zoomToSelectedArea();
-      if (typeof isC1RecommendationsActive !== 'undefined' && isC1RecommendationsActive) {
+      if (typeof currentC1Scenario !== 'undefined' && currentC1Scenario !== 'NONE') {
         renderC1RecommendationsForActiveFilter();
       }
     }
@@ -3915,7 +3933,7 @@
       }
       updateMultiTinhUI();
       applyFilters();
-      if (typeof isC1RecommendationsActive !== 'undefined' && isC1RecommendationsActive) {
+      if (typeof currentC1Scenario !== 'undefined' && currentC1Scenario !== 'NONE') {
         renderC1RecommendationsForActiveFilter();
       }
 
@@ -5308,14 +5326,45 @@ function toggleUnifiedNppLayer() {
       flagData.coveredOutlets = coveredOutlets;
       flagData.coldOutlets = coldOutlets;
 
-      // 3. Tạo DivIcon cờ siêu nổi bật với radar phát sóng
+      // 3. Xác định màu sắc và biểu tượng theo danh mục (COLD, HYBRID, DRY)
+      const cat = flagData.category || 'HYBRID';
+      let themeColor = '#f59e0b'; // Vàng cam cho HYBRID
+      let themeIcon = 'fa-solid fa-bolt';
+      let themePulseClass = '';
+      let tagLabel = '⚡ C1 HỖN HỢP (Khô + Đông)';
+      let tagBg = '#fef3c7';
+      let tagColor = '#92400e';
+      let circleColor = '#f59e0b';
+      let flagPrefix = '⚡';
+
+      if (cat === 'COLD') {
+        themeColor = '#38bdf8'; // Xanh băng cho COLD
+        themeIcon = 'fa-solid fa-snowflake';
+        themePulseClass = 'cold';
+        tagLabel = '❄️ C1 CHUYÊN ĐÔNG LẠNH (Cold Hub)';
+        tagBg = '#e0f2fe';
+        tagColor = '#0369a1';
+        circleColor = '#38bdf8';
+        flagPrefix = '❄️';
+      } else if (cat === 'DRY') {
+        themeColor = '#10b981'; // Xanh lá cho DRY
+        themeIcon = 'fa-solid fa-box';
+        themePulseClass = 'dry';
+        tagLabel = '📦 C1 CHUYÊN HÀNG KHÔ (Dry Hub)';
+        tagBg = '#dcfce7';
+        tagColor = '#15803d';
+        circleColor = '#10b981';
+        flagPrefix = '📦';
+      }
+
+      // 4. Tạo DivIcon cờ siêu nổi bật với radar phát sóng theo chủ đề
       const flagIcon = L.divIcon({
         className: 'custom-planned-flag-wrapper',
         html: `
           <div class="planned-flag-container">
-            <div class="planned-flag-pulse"></div>
-            <i class="fa-solid fa-flag planned-flag-icon"></i>
-            <div class="planned-flag-label">🚩 ${flagData.name}</div>
+            <div class="planned-flag-pulse ${themePulseClass}"></div>
+            <i class="${themeIcon} planned-flag-icon" style="color:${themeColor}; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.85)) drop-shadow(0 0 12px ${themeColor});"></i>
+            <div class="planned-flag-label" style="border-color:${themeColor};">${flagPrefix} ${flagData.name}</div>
           </div>
         `,
         iconSize: [46, 52],
@@ -5325,41 +5374,55 @@ function toggleUnifiedNppLayer() {
 
       const marker = L.marker([flagData.lat, flagData.lng], { icon: flagIcon, zIndexOffset: 3000 });
 
-      // 4. Vòng tròn bán kính phục vụ dự kiến (Dashed Gold)
+      // 5. Vòng tròn bán kính phục vụ dự kiến
       const circle = L.circle([flagData.lat, flagData.lng], {
         radius: flagData.radiusKm * 1000,
-        color: '#f59e0b',
+        color: circleColor,
         weight: 2,
         dashArray: '6, 6',
-        fillColor: '#f59e0b',
+        fillColor: circleColor,
         fillOpacity: 0.12,
         interactive: false
       });
 
-      // 5. Popup hiển thị đầy đủ thông số
+      // 6. Popup hiển thị đầy đủ thông số chuyên sâu về chuỗi lạnh và kịch bản
+      const scenarioText = (flagData.scenario === 'COLD_ONLY') ? '❄️ Kịch bản 2: Chuỗi Lạnh Mở Rộng' : '🎯 Kịch bản 1 & 2: Hub Cốt Lõi';
       const popupHtml = `
-        <div class="popup-card" style="border-top: 3px solid #f59e0b; width: 300px;">
+        <div class="popup-card" style="border-top: 3px solid ${themeColor}; width: 320px;">
           <div class="popup-header">
-            <span class="popup-tag" style="background:#fef3c7; color:#92400e; font-weight:800;">🚩 NPP / C1 DỰ KIẾN MỞ 2027</span>
-            <div class="popup-title" style="font-size:0.9rem; color:#fef08a;">${flagData.name}</div>
-            <div style="font-size:0.68rem; color:#94a3b8; margin-top:2px;">Mô hình: <b style="color:#38bdf8;">${flagData.type}</b></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span class="popup-tag" style="background:${tagBg}; color:${tagColor}; font-weight:800; font-size:0.62rem;">${tagLabel}</span>
+              <span style="font-size:0.62rem; color:#94a3b8;">${scenarioText}</span>
+            </div>
+            <div class="popup-title" style="font-size:0.92rem; color:#fef08a;">${flagData.name}</div>
+            <div style="font-size:0.68rem; color:#94a3b8; margin-top:2px;">Loại trạm: <b style="color:${themeColor};">${flagData.type || 'C1 Partner'}</b> | Bán kính: <b style="color:#f1f5f9;">${flagData.radiusKm} km</b></div>
           </div>
           <div class="popup-body">
             <div class="popup-row">
-              <i class="fa-solid fa-circle-notch" style="color:#f59e0b;"></i>
-              <div>Bán kính phục vụ: <b style="color:#f1f5f9;">${flagData.radiusKm} km</b></div>
+              <i class="fa-solid fa-snowflake" style="color:#38bdf8;"></i>
+              <div>Tỷ lệ hàng lạnh khu vực: <b style="color:#38bdf8;">${flagData.frozenPct || '30%'}</b> (${flagData.coldOutlets} điểm lạnh CJ)</div>
             </div>
             <div class="popup-row">
               <i class="fa-solid fa-store" style="color:#34d399;"></i>
-              <div>Điểm bán CJ trong vùng: <b style="color:#34d399;">${flagData.coveredOutlets} điểm</b> (${flagData.coldOutlets} điểm đông lạnh)</div>
+              <div>Tổng điểm bán CJ bao quát: <b style="color:#34d399;">${flagData.coveredOutlets} điểm</b></div>
             </div>
             <div class="popup-row">
               <i class="fa-solid fa-route" style="color:#60a5fa;"></i>
               <div>NPP Active gần nhất: <b style="color:#e2e8f0;">${closestNPP ? closestNPP.short_name : 'Không'}</b> (<span style="color:#f87171; font-weight:800;">${flagData.minDistanceKm} km</span>)</div>
             </div>
+            ${flagData.distSaved ? `
+            <div class="popup-row">
+              <i class="fa-solid fa-shield-halved" style="color:#a855f7;"></i>
+              <div>Tiết kiệm cự ly chuỗi lạnh: <b style="color:#c084fc;">${flagData.distSaved}</b></div>
+            </div>` : ''}
+            ${flagData.equipment ? `
+            <div class="popup-row">
+              <i class="fa-solid fa-box-archive" style="color:#f59e0b;"></i>
+              <div>Thiết bị đề xuất: <b style="color:#fef08a; font-size:0.68rem;">${flagData.equipment}</b></div>
+            </div>` : ''}
             ${flagData.note ? `
-            <div style="background:#1e293b; border-left:2px solid #f59e0b; padding:4px 6px; border-radius:3px; margin-top:4px; font-size:0.68rem; color:#cbd5e1;">
-              <b>Mục tiêu:</b> ${flagData.note}
+            <div style="background:#1e293b; border-left:3px solid ${themeColor}; padding:5px 8px; border-radius:3px; margin-top:6px; font-size:0.68rem; color:#cbd5e1; line-height:1.35;">
+              <b>Insight:</b> ${flagData.note}
             </div>` : ''}
           </div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:6px; border-top:1px solid #334155;">
@@ -5568,36 +5631,174 @@ function toggleUnifiedNppLayer() {
     }
 
     // BIẾN QUẢN LÝ TRẠNG THÁI HIỂN THỊ C1 KHUYẾN NGHỊ THEO BỘ LỌC ĐỊA BÀN
-    let isC1RecommendationsActive = false;
+        // BIẾN QUẢN LÝ TRẠNG THÁI HIỂN THỊ KỊCH BẢN C1: 'NONE' | 'CORE' | 'COLD'
+    let currentC1Scenario = 'NONE';
 
-    // DANH SÁCH TOÀN BỘ CÁC TRẠM C1 KHUYẾN NGHỊ (ĐÍNH KÈM TỈNH, VÙNG, MIỀN ĐỂ ĐỒNG BỘ BỘ LỌC)
+    // DANH SÁCH 24 TRẠM C1 KHUYẾN NGHỊ (HỖ TRỢ 2 KỊCH BẢN: CORE 14 TRẠM & FULL CHUỖI LẠNH 24 TRẠM)
     const ALL_C1_RECOMMENDATIONS = [
-      // 1. Vùng Cần Thơ (ĐBSCL)
-      { id: 'c1_cailay', name: 'C1 TT. Cai Lậy (Tiền Giang)', province: 'Tiền Giang', area: 'Cần Thơ', region: 'MIỀN NAM', type: 'C1 Partner', lat: 10.4087, lng: 106.1158, radiusKm: 25, note: 'Cắt giảm 60km từ TP. Mỹ Tho sang Cái Bè/Cai Lậy. Tiếp quản 50 Golden Outlets + 233 tiệm Nhóm C.' },
-      { id: 'c1_duchoa', name: 'C1 TT. Hậu Nghĩa / Đức Hòa (Long An)', province: 'Long An', area: 'Cần Thơ', region: 'MIỀN NAM', type: 'C1 Partner', lat: 10.8872, lng: 106.4485, radiusKm: 25, note: 'Cắt giảm 40km từ TP. Tân An lên Bắc Long An. Tiếp quản 17 Golden Outlets + 266 tiệm Nhóm C.' },
-      { id: 'c1_travinh', name: 'C1 TP. Trà Vinh (Trà Vinh)', province: 'Trà Vinh', area: 'Cần Thơ', region: 'MIỀN NAM', type: 'C1 Partner', lat: 9.9348, lng: 106.3456, radiusKm: 30, note: 'Cắt giảm 42km vượt sông Cổ Chiên từ NPP Vĩnh Long. Tiếp quản 87 Golden Outlets + 400 tiệm Nhóm C.' },
-      { id: 'c1_batri', name: 'C1 TT. Ba Tri (Bến Tre)', province: 'Bến Tre', area: 'Cần Thơ', region: 'MIỀN NAM', type: 'C1 Partner', lat: 10.0381, lng: 106.5986, radiusKm: 25, note: 'Cắt giảm 42km-65km vượt đảo từ TP. Bến Tre. Tiếp quản 80 Golden Outlets Ba Tri & Bình Đại.' },
+      // === 1. VÙNG CẦN THƠ (ĐBSCL) ===
+      {
+        id: 'c1_cailay', name: 'C1 TT. Cai Lậy (Tiền Giang)', province: 'Tiền Giang', area: 'Cần Thơ', region: 'MIỀN NAM',
+        type: 'C1 Partner', scenario: 'CORE', category: 'HYBRID', lat: 10.4087, lng: 106.1158, radiusKm: 25,
+        frozenPct: '32.5%', distSaved: '60 km', equipment: '02 Tủ đông bảo ôn 1.000L + Kho khô',
+        note: 'Cắt giảm 60km từ TP. Mỹ Tho sang Cái Bè/Cai Lậy. Tiếp quản 50 Golden Outlets + 1.457 tiệm Census.'
+      },
+      {
+        id: 'c1_duchoa', name: 'C1 TT. Hậu Nghĩa / Đức Hòa (Long An)', province: 'Long An', area: 'Cần Thơ', region: 'MIỀN NAM',
+        type: 'C1 Partner', scenario: 'CORE', category: 'HYBRID', lat: 10.8872, lng: 106.4485, radiusKm: 25,
+        frozenPct: '36.8%', distSaved: '45 km', equipment: '02 Tủ đông 1.000L phục vụ KCN',
+        note: 'Cắt giảm 45km từ TP. Tân An lên Bắc Long An. Phục vụ công nhân các KCN lúc tan ca (17h-19h).'
+      },
+      {
+        id: 'c1_travinh', name: 'C1 TP. Trà Vinh (Trà Vinh)', province: 'Trà Vinh', area: 'Cần Thơ', region: 'MIỀN NAM',
+        type: 'C1 Partner', scenario: 'CORE', category: 'HYBRID', lat: 9.9348, lng: 106.3456, radiusKm: 30,
+        frozenPct: '28.4%', distSaved: '42 km', equipment: '03 Tủ đông 1.000L + Kho tổng tỉnh',
+        note: 'Cắt giảm 42km vượt sông Cổ Chiên từ NPP Vĩnh Long. Cắm cờ phủ kín 87 Shop A/B và 2.005 tiệm toàn tỉnh.'
+      },
+      {
+        id: 'c1_batri', name: 'C1 TT. Ba Tri (Bến Tre)', province: 'Bến Tre', area: 'Cần Thơ', region: 'MIỀN NAM',
+        type: 'C1 Partner', scenario: 'CORE', category: 'DRY', lat: 10.0381, lng: 106.5986, radiusKm: 25,
+        frozenPct: '16.2%', distSaved: '50 km', equipment: 'Kho khô pallet + 01 Tủ đông 500L thăm dò',
+        note: 'Cắt giảm 50km vượt đảo sông rạch từ TP. Bến Tre. Tiếp quản 80 Golden Outlets Ba Tri & Bình Đại.'
+      },
+      // C1 Mở rộng chuỗi lạnh Mekong (Scenario: COLD_ONLY)
+      {
+        id: 'c1_camau', name: 'C1 TP. Cà Mau (Cà Mau)', province: 'Cà Mau', area: 'Cần Thơ', region: 'MIỀN NAM',
+        type: 'C1 Cold Hub', scenario: 'COLD_ONLY', category: 'COLD', lat: 9.1768, lng: 105.1524, radiusKm: 35,
+        frozenPct: '35.0%', distSaved: '110 km', equipment: 'Kho lạnh 20m2 hoặc 04 Tủ đông 1.000L',
+        note: 'Tái kích hoạt 1 NPP cũ tại Cà Mau. Xóa bỏ tuyến chạy 110km từ Sóc Trăng. Phủ hàng đông cho 1.606 tiệm Cà Mau.'
+      },
+      {
+        id: 'c1_giarai', name: 'C1 TX. Giá Rai (Bạc Liêu)', province: 'Bạc Liêu', area: 'Cần Thơ', region: 'MIỀN NAM',
+        type: 'C1 Cold Hub', scenario: 'COLD_ONLY', category: 'COLD', lat: 9.2241, lng: 105.3312, radiusKm: 25,
+        frozenPct: '31.2%', distSaved: '65 km', equipment: '02 Tủ đông bảo ôn 1.000L',
+        note: 'Trạm lạnh ngã ba Giá Rai - Phước Long - Đông Hải. Giảm 65km từ Sóc Trăng, bảo vệ chuỗi lạnh cực Nam.'
+      },
+      {
+        id: 'c1_kienluong', name: 'C1 Kiên Lương & Hà Tiên (Kiên Giang)', province: 'Kiên Giang', area: 'Cần Thơ', region: 'MIỀN NAM',
+        type: 'C1 Cold Hub', scenario: 'COLD_ONLY', category: 'COLD', lat: 10.2514, lng: 104.6035, radiusKm: 30,
+        frozenPct: '38.0%', distSaved: '85 km', equipment: '02 Tủ đông 1.000L phục vụ du lịch biển',
+        note: 'Trạm tiếp vận duyên hải Hà Tiên - Kiên Lương. Cắt đứt tuyến 85km đường ven biển từ TP. Rạch Giá.'
+      },
 
-      // 2. Vùng Hải Phòng & Duyên Hải Bắc Bộ
-      { id: 'c1_lucngan', name: 'C1 TT. Chũ / Lục Ngạn (Bắc Giang)', province: 'Bắc Giang', area: 'Hải Phòng', region: 'MIỀN BẮC', type: 'C1 Partner', lat: 21.3653, lng: 106.5654, radiusKm: 30, note: 'Tiếp nhận 36 shop A/B, giải tỏa tuyến 56.6km cho NPP Thái Đạt.' },
-      { id: 'c1_nghiahung', name: 'C1 Nghĩa Hưng / Nam Trực (Nam Định)', province: 'Nam Định', area: 'Hải Phòng', region: 'MIỀN BẮC', type: 'C1 Partner', lat: 20.2185, lng: 106.1512, radiusKm: 25, note: 'Tiếp nhận 69 shop A/B, giải tỏa tuyến 60km vượt tỉnh cho NPP Hà Hải.' },
-      { id: 'c1_diemdien', name: 'C1 TT. Diêm Điền / Thái Thụy (Thái Bình)', province: 'Thái Bình', area: 'Hải Phòng', region: 'MIỀN BẮC', type: 'C1 Partner', lat: 20.5701, lng: 106.5824, radiusKm: 25, note: 'Tiếp nhận 42 shop A/B dải ven biển Thái Thụy - Tiền Hải.' },
-      { id: 'c1_nghison', name: 'C1 TX. Nghi Sơn / Tĩnh Gia (Thanh Hóa Nam)', province: 'Thanh Hóa', area: 'Hải Phòng', region: 'MIỀN BẮC', type: 'C1 Partner', lat: 19.3321, lng: 105.7892, radiusKm: 30, note: 'Tiếp nhận 48 shop A/B, giảm cự ly từ 48.7km xuống 10km.' },
+      // === 2. VÙNG HẢI PHÒNG & DUYÊN HẢI BẮC BỘ ===
+      {
+        id: 'c1_lucngan', name: 'C1 TT. Chũ / Lục Ngạn (Bắc Giang)', province: 'Bắc Giang', area: 'Hải Phòng', region: 'MIỀN BẮC',
+        type: 'C1 Partner', scenario: 'CORE', category: 'HYBRID', lat: 21.3653, lng: 106.5654, radiusKm: 30,
+        frozenPct: '29.5%', distSaved: '56.6 km', equipment: '02 Tủ đông 1.000L + Kho khô',
+        note: 'Tiếp nhận 78 shop A/B, giải tỏa tuyến đường đồi 56.6km cho NPP Thái Đạt. Phục vụ 996 tiệm vùng vải thiều.'
+      },
+      {
+        id: 'c1_nghiahung', name: 'C1 Nghĩa Hưng / Nam Trực (Nam Định)', province: 'Nam Định', area: 'Hải Phòng', region: 'MIỀN BẮC',
+        type: 'C1 Cold Hub', scenario: 'CORE', category: 'COLD', lat: 20.2185, lng: 106.1512, radiusKm: 25,
+        frozenPct: '38.2%', distSaved: '78.3 km', equipment: 'Kho lạnh 15m2 hoặc 03 Tủ đông 1.000L',
+        note: 'Chấm dứt tuyến giao 78.3km vượt tỉnh của NPP Hà Hải từ Hải Phòng sang. Tiếp quản 69 shop A/B và 1.850 tiệm.'
+      },
+      {
+        id: 'c1_diemdien', name: 'C1 TT. Diêm Điền / Thái Thụy (Thái Bình)', province: 'Thái Bình', area: 'Hải Phòng', region: 'MIỀN BẮC',
+        type: 'C1 Partner', scenario: 'CORE', category: 'DRY', lat: 20.5701, lng: 106.5824, radiusKm: 25,
+        frozenPct: '18.4%', distSaved: '50 km', equipment: 'Kho khô pallet + 01 Tủ đông 800L',
+        note: 'Tiếp nhận 42 shop A/B và 1.420 tiệm dải ven biển Thái Thụy - Tiền Hải. Giảm cự ly từ 50km về dưới 8km.'
+      },
+      {
+        id: 'c1_nghison', name: 'C1 TX. Nghi Sơn / Tĩnh Gia (Thanh Hóa Nam)', province: 'Thanh Hóa', area: 'Hải Phòng', region: 'MIỀN BẮC',
+        type: 'C1 Cold Hub', scenario: 'CORE', category: 'COLD', lat: 19.3321, lng: 105.7892, radiusKm: 30,
+        frozenPct: '41.5%', distSaved: '48.7 km', equipment: '03 Tủ đông 1.000L phục vụ KKT Lọc Hóa Dầu',
+        note: 'Tiếp nhận 48 shop A/B và 1.940 tiệm KKT Nghi Sơn. Giảm cự ly từ 48.7km xuống 10km, tránh nắng 40°C miền Trung.'
+      },
+      // C1 Mở rộng chuỗi lạnh Hải Phòng / Bắc Trung Bộ (Scenario: COLD_ONLY)
+      {
+        id: 'c1_dienchau', name: 'C1 Diễn Châu & Quỳnh Lưu (Nghệ An)', province: 'Nghệ An', area: 'Hải Phòng', region: 'MIỀN BẮC',
+        type: 'C1 Cold Hub', scenario: 'COLD_ONLY', category: 'COLD', lat: 18.9834, lng: 105.5901, radiusKm: 30,
+        frozenPct: '34.0%', distSaved: '55 km', equipment: '02 Tủ đông bảo ôn 1.000L',
+        note: 'Kho lạnh Bắc Nghệ An phục vụ Diễn Châu, Quỳnh Lưu, TX. Hoàng Mai. Giảm 55km từ TP. Vinh.'
+      },
+      {
+        id: 'c1_bimson', name: 'C1 TX. Bỉm Sơn / Hà Trung (Thanh Hóa Bắc)', province: 'Thanh Hóa', area: 'Hải Phòng', region: 'MIỀN BẮC',
+        type: 'C1 Cold Hub', scenario: 'COLD_ONLY', category: 'COLD', lat: 20.0652, lng: 105.8672, radiusKm: 25,
+        frozenPct: '33.0%', distSaved: '38 km', equipment: '02 Tủ đông 1.000L',
+        note: 'Kho lạnh cửa ngõ Bắc Thanh Hóa và giáp ranh Ninh Bình (Tam Điệp). Giảm cự ly 38km từ TP. Thanh Hóa.'
+      },
 
-      // 3. Vùng Hà Nội & Trung Du Phía Bắc
-      { id: 'c1_sontay', name: 'C1 TX. Sơn Tây & Ba Vì (Hà Nội Tây)', province: 'Hà Nội', area: 'Hà Nội', region: 'MIỀN BẮC', type: 'C1 Partner', lat: 21.1384, lng: 105.5061, radiusKm: 25, note: 'Tiếp nhận 62 shop A/B bán sơn địa Ba Vì & Sơn Tây, bảo vệ chuỗi lạnh.' },
-      { id: 'c1_hoabinh', name: 'C1 TP. Hòa Bình & Lương Sơn (Hòa Bình)', province: 'Hòa Bình', area: 'Hà Nội', region: 'MIỀN BẮC', type: 'C1 Partner', lat: 20.8172, lng: 105.3384, radiusKm: 25, note: 'Tiếp nhận 28 shop A/B, giải tỏa tuyến đèo dốc Hòa Bình.' },
-      { id: 'c1_phutho', name: 'C1 TX. Phú Thọ & Đoan Hùng (Phú Thọ)', province: 'Phú Thọ', area: 'Hà Nội', region: 'MIỀN BẮC', type: 'C1 Partner', lat: 21.4012, lng: 105.2183, radiusKm: 30, note: 'Tiếp nhận 45 shop A/B khu vực trung du Phú Thọ.' },
+      // === 3. VÙNG HÀ NỘI & TRUNG DU PHÍA BẮC ===
+      {
+        id: 'c1_sontay', name: 'C1 TX. Sơn Tây & Ba Vì (Hà Nội Tây)', province: 'Hà Nội', area: 'Hà Nội', region: 'MIỀN BẮC',
+        type: 'C1 Cold Hub', scenario: 'CORE', category: 'COLD', lat: 21.1384, lng: 105.5061, radiusKm: 25,
+        frozenPct: '42.0%', distSaved: '45 km', equipment: '03 Tủ đông 1.000L phục vụ du lịch sinh thái',
+        note: 'Bảo vệ chuỗi lạnh tuyệt đối cho 62 shop A/B và khu nghỉ dưỡng Ba Vì. Giải phóng xe nội thành kẹt QL32.'
+      },
+      {
+        id: 'c1_hoabinh', name: 'C1 TP. Hòa Bình & Lương Sơn (Hòa Bình)', province: 'Hòa Bình', area: 'Hà Nội', region: 'MIỀN BẮC',
+        type: 'C1 Partner', scenario: 'CORE', category: 'HYBRID', lat: 20.8172, lng: 105.3384, radiusKm: 25,
+        frozenPct: '31.0%', distSaved: '55 km', equipment: '02 Tủ đông 1.000L + Kho khô',
+        note: 'Tiếp nhận 28 shop A/B, giải phóng xe Hà Nội khỏi cung đường đèo dốc Dốc Kẽm và QL6 nguy hiểm.'
+      },
+      {
+        id: 'c1_phutho', name: 'C1 TX. Phú Thọ & Đoan Hùng (Phú Thọ)', province: 'Phú Thọ', area: 'Hà Nội', region: 'MIỀN BẮC',
+        type: 'C1 Partner', scenario: 'CORE', category: 'HYBRID', lat: 21.4012, lng: 105.2183, radiusKm: 30,
+        frozenPct: '30.5%', distSaved: '42 km', equipment: '02 Tủ đông 1.000L + Kho khô trung du',
+        note: 'Tiếp nhận 45 shop A/B và 1.100 tiệm vùng trung du Phú Thọ. Giảm cự ly từ 42km xuống dưới 10km.'
+      },
+      // C1 Mở rộng chuỗi lạnh Tây Bắc (Scenario: COLD_ONLY)
+      {
+        id: 'c1_camkhe', name: 'C1 Cẩm Khê & Thanh Ba (Phú Thọ Tây Bắc)', province: 'Phú Thọ', area: 'Hà Nội', region: 'MIỀN BẮC',
+        type: 'C1 Cold Hub', scenario: 'COLD_ONLY', category: 'COLD', lat: 21.4162, lng: 105.1121, radiusKm: 25,
+        frozenPct: '32.0%', distSaved: '50 km', equipment: '02 Tủ đông 1.000L',
+        note: 'Kho lạnh đồi gò trung du phía Tây Bắc Phú Thọ (Cẩm Khê, Thanh Ba, Hạ Hòa). Giảm 50km từ Việt Trì.'
+      },
+      {
+        id: 'c1_laocai', name: 'C1 Cửa Khẩu TP. Lào Cai (Lào Cai)', province: 'Lào Cai', area: 'Hà Nội', region: 'MIỀN BẮC',
+        type: 'C1 Cold Hub', scenario: 'COLD_ONLY', category: 'COLD', lat: 22.4856, lng: 103.9707, radiusKm: 30,
+        frozenPct: '39.0%', distSaved: '86 km', equipment: 'Kho lạnh 20m2 hoặc 03 Tủ đông 1.000L',
+        note: 'Kho lạnh biên giới Tây Bắc. Giải quyết khoảng cách cô lập 86km so với NPP Yên Bái / Phú Thọ.'
+      },
 
-      // 4. Vùng Nha Trang & Tây Nguyên
-      { id: 'c1_eahleo', name: 'C1 TT. Ea Drăng / Ea H\'leo (Bắc Đắk Lắk)', province: 'Đắk Lắk', area: 'Nha Trang', region: 'MIỀN NAM', type: 'C1 Partner', lat: 13.2005, lng: 108.2052, radiusKm: 35, note: 'Tiếp nhận 42 shop A/B phía Bắc Đắk Lắk, cắt giảm 60km từ TP. Buôn Ma Thuột.' },
-      { id: 'c1_ayunpa', name: 'C1 TX. Ayun Pa & Phú Thiện (Gia Lai Nam)', province: 'Gia Lai', area: 'Nha Trang', region: 'MIỀN NAM', type: 'C1 Partner', lat: 13.4033, lng: 108.4452, radiusKm: 30, note: 'Tiếp nhận 31 shop A/B tiểu vùng Nam Gia Lai.' },
+      // === 4. VÙNG NHA TRANG & TÂY NGUYÊN ===
+      {
+        id: 'c1_eahleo', name: "C1 TT. Ea Drăng / Ea H'leo (Bắc Đắk Lắk)", province: 'Đắk Lắk', area: 'Nha Trang', region: 'MIỀN NAM',
+        type: 'C1 Cold Hub', scenario: 'CORE', category: 'COLD', lat: 13.2005, lng: 108.2052, radiusKm: 35,
+        frozenPct: '36.0%', distSaved: '82 km', equipment: '03 Tủ đông 1.000L',
+        note: 'Tái kích hoạt 1 NPP cũ Đắk Lắk. Giảm 82km dọc QL14 từ Buôn Ma Thuột. Cung ứng hàng đông tuần 2-3 lần.'
+      },
+      {
+        id: 'c1_ayunpa', name: 'C1 TX. Ayun Pa & Phú Thiện (Gia Lai Nam)', province: 'Gia Lai', area: 'Nha Trang', region: 'MIỀN NAM',
+        type: 'C1 Cold Hub', scenario: 'CORE', category: 'COLD', lat: 13.4033, lng: 108.4452, radiusKm: 30,
+        frozenPct: '33.5%', distSaved: '70.4 km', equipment: '02 Tủ đông 1.000L',
+        note: 'Tái kích hoạt 1 NPP cũ Gia Lai. Chấm dứt sự cô lập thung lũng sông Ba qua đèo Chư Sê cách Pleiku 70km.'
+      },
+      // C1 Mở rộng chuỗi lạnh Nam Trung Bộ & ĐNB (Scenario: COLD_ONLY)
+      {
+        id: 'c1_phuoclong', name: 'C1 TX. Phước Long & Bù Gia Mập (Bình Phước)', province: 'Bình Phước', area: 'Nha Trang', region: 'MIỀN NAM',
+        type: 'C1 Cold Hub', scenario: 'COLD_ONLY', category: 'COLD', lat: 11.8284, lng: 106.9931, radiusKm: 30,
+        frozenPct: '35.0%', distSaved: '55 km', equipment: '02 Tủ đông 1.000L',
+        note: 'Kho lạnh vùng cao su Đông Nam Bộ. Tiếp nhận 48 shop A/B, giảm 55km từ TP. Đồng Xoài.'
+      },
+      {
+        id: 'c1_phanri', name: 'C1 Phan Rí Cửa / Tuy Phong (Bình Thuận)', province: 'Bình Thuận', area: 'Nha Trang', region: 'MIỀN NAM',
+        type: 'C1 Cold Hub', scenario: 'COLD_ONLY', category: 'COLD', lat: 11.1892, lng: 108.5721, radiusKm: 30,
+        frozenPct: '37.0%', distSaved: '75 km', equipment: '02 Tủ đông 1.000L',
+        note: 'Kho lạnh dải ven biển nắng nóng Bắc Bình Thuận. Cắt giảm 75km chạy xe máy dưới nắng 38°C từ TP. Phan Thiết.'
+      },
 
-      // 5. Vùng Đà Nẵng & Miền Trung
-      { id: 'c1_lethuy', name: 'C1 TT. Kiến Giang / Lệ Thủy (Quảng Bình)', province: 'Quảng Bình', area: 'Đà Nẵng', region: 'MIỀN BẮC', type: 'C1 Partner', lat: 17.2182, lng: 106.7824, radiusKm: 30, note: 'Tiếp nhận 13 shop A/B, giải tỏa tuyến vượt đèo cho NPP Duy Thúy.' }
+      // === 5. VÙNG ĐÀ NẴNG & MIỀN TRUNG ===
+      {
+        id: 'c1_lethuy', name: 'C1 TT. Kiến Giang / Lệ Thủy (Quảng Bình)', province: 'Quảng Bình', area: 'Đà Nẵng', region: 'MIỀN BẮC',
+        type: 'C1 Partner', scenario: 'CORE', category: 'DRY', lat: 17.2182, lng: 106.7824, radiusKm: 30,
+        frozenPct: '19.5%', distSaved: '55 km', equipment: 'Kho khô pallet + 01 Tủ đông 800L',
+        note: 'Trạm tiếp vận dặm cuối Nam Quảng Bình. Giải tỏa tuyến vượt đèo cho NPP Duy Thúy.'
+      },
+      // C1 Mở rộng chuỗi lạnh Miền Trung (Scenario: COLD_ONLY)
+      {
+        id: 'c1_badon', name: 'C1 TX. Ba Đồn & Quảng Trạch (Quảng Bình Bắc)', province: 'Quảng Bình', area: 'Đà Nẵng', region: 'MIỀN BẮC',
+        type: 'C1 Cold Hub', scenario: 'COLD_ONLY', category: 'COLD', lat: 17.7532, lng: 106.4251, radiusKm: 25,
+        frozenPct: '34.0%', distSaved: '52 km', equipment: '02 Tủ đông 1.000L',
+        note: 'Kho lạnh Bắc Quảng Bình quanh lưu vực sông Gianh. Cắt giảm 52km từ TP. Đồng Hới.'
+      }
     ];
 
     function getFilteredC1Recommendations() {
+      if (currentC1Scenario === 'NONE') return [];
+
       const mienVal = document.getElementById('filterMien') ? document.getElementById('filterMien').value : 'ALL';
       const vungVal = document.getElementById('filterVung') ? document.getElementById('filterVung').value : 'ALL';
       const vungNorm = (vungVal || '').normalize('NFC').toLowerCase().trim();
@@ -5606,16 +5807,20 @@ function toggleUnifiedNppLayer() {
       const hasProvinceFilter = (selectedProvinces && selectedProvinces.size > 0 && selectedProvinces.size < allTinhCount);
 
       return ALL_C1_RECOMMENDATIONS.filter(c1 => {
-        // 1. Lọc theo Miền
+        // 1. Lọc theo Kịch bản
+        if (currentC1Scenario === 'CORE' && c1.scenario !== 'CORE') return false;
+        // Nếu là 'COLD', hiển thị toàn bộ 24 trạm (cả CORE và COLD_ONLY)
+
+        // 2. Lọc theo Miền
         if (mienVal !== 'ALL' && c1.region !== mienVal) return false;
 
-        // 2. Lọc theo Vùng
+        // 3. Lọc theo Vùng
         if (vungVal !== 'ALL') {
           const areaNorm = (c1.area || '').normalize('NFC').toLowerCase().trim();
           if (areaNorm !== vungNorm) return false;
         }
 
-        // 3. Lọc theo Tỉnh/Thành đã chọn (nếu có)
+        // 4. Lọc theo Tỉnh/Thành đã chọn (nếu có)
         if (hasProvinceFilter) {
           const provNorm = cleanProvName(c1.province);
           let matched = false;
@@ -5629,20 +5834,43 @@ function toggleUnifiedNppLayer() {
       });
     }
 
+    function updateC1ButtonsUI() {
+      const btnCore = document.getElementById('btnQuickC1Recommend');
+      const textCore = document.getElementById('btnQuickC1Text');
+      const btnCold = document.getElementById('btnColdC1Recommend');
+      const textCold = document.getElementById('btnColdC1Text');
+
+      if (btnCore) {
+        if (currentC1Scenario === 'CORE') {
+          btnCore.classList.add('active-c1-btn');
+        } else {
+          btnCore.classList.remove('active-c1-btn');
+        }
+      }
+
+      if (btnCold) {
+        if (currentC1Scenario === 'COLD') {
+          btnCold.classList.add('active-cold-btn');
+        } else {
+          btnCold.classList.remove('active-cold-btn');
+        }
+      }
+    }
+
     function renderC1RecommendationsForActiveFilter() {
-      if (!isC1RecommendationsActive) return;
+      updateC1ButtonsUI();
 
-      const btn = document.getElementById('btnQuickC1Recommend');
-      const text = document.getElementById('btnQuickC1Text');
+      if (currentC1Scenario === 'NONE') {
+        clearC1Recommendations();
+        return;
+      }
+
       const targets = getFilteredC1Recommendations();
-
-      // Xóa các cờ C1 khuyến nghị cũ (giữ lại cờ do người dùng tự cắm thủ công nếu có)
       clearC1Recommendations();
 
+      const vungVal = document.getElementById('filterVung') ? document.getElementById('filterVung').value : 'ALL';
+
       if (targets.length === 0) {
-        if (btn) btn.classList.add('active-c1-btn');
-        if (text) text.textContent = '🚩 C1 Khuyến Nghị (0)';
-        const vungVal = document.getElementById('filterVung') ? document.getElementById('filterVung').value : 'ALL';
         if (vungVal === 'HCM') {
           showToastNotification('📍 Vùng TP.HCM: Bán kính 6.2km tối ưu. Khuyến nghị KHÔNG mở thêm C1 để tránh chồng chéo tuyến.');
         } else {
@@ -5659,25 +5887,21 @@ function toggleUnifiedNppLayer() {
       savePlannedFlagsToStorage();
       updatePlannedFlagsUI();
 
-      if (btn) btn.classList.add('active-c1-btn');
-      if (text) text.textContent = `🚩 Đang Hiện C1 (${targets.length})`;
-
-      showToastNotification(`🚩 Đang hiển thị ${targets.length} trạm C1 khuyến nghị theo bộ lọc địa bàn!`);
+      const scenarioLabel = (currentC1Scenario === 'CORE') ? 'Kịch bản 1: C1 Tinh Gọn' : 'Kịch bản 2: C1 Chuỗi Lạnh Toàn Diện';
+      showToastNotification(`🚩 [${scenarioLabel}] Đang hiển thị ${targets.length} trạm khuyến nghị!`);
     }
 
-    function toggleC1Recommendations() {
-      isC1RecommendationsActive = !isC1RecommendationsActive;
-      const btn = document.getElementById('btnQuickC1Recommend');
-      const text = document.getElementById('btnQuickC1Text');
-
-      if (!isC1RecommendationsActive) {
+    function toggleC1Scenario(scenario) {
+      if (currentC1Scenario === scenario) {
+        // Toggle off
+        currentC1Scenario = 'NONE';
         clearC1Recommendations();
-        if (btn) btn.classList.remove('active-c1-btn');
-        if (text) text.textContent = '🚩 C1 Khuyến Nghị';
-        showToastNotification('Đã ẩn các trạm C1 đề xuất.');
+        updateC1ButtonsUI();
+        showToastNotification('Đã ẩn các trạm C1 khuyến nghị.');
         return;
       }
 
+      currentC1Scenario = scenario;
       renderC1RecommendationsForActiveFilter();
 
       // Zoom tới tâm điểm các trạm C1 vừa nạp
@@ -5690,6 +5914,11 @@ function toggleUnifiedNppLayer() {
           map.fitBounds(bounds, { padding: [50, 50], maxZoom: 10, animate: true, duration: 1.2 });
         }
       }
+    }
+
+    // Giữ tương thích ngược với toggleC1Recommendations cũ nếu có chỗ nào gọi
+    function toggleC1Recommendations() {
+      toggleC1Scenario('CORE');
     }
 
     // Nạp nhanh 4 Vùng Trắng Trọng Điểm Mekong (Cai Lậy, Đức Hòa, Trà Vinh, Ba Tri)
