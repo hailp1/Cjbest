@@ -136,18 +136,22 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      background: rgba(15, 23, 42, 0.7);
+      background: rgba(15, 23, 42, 0.75);
       border: 1px solid rgba(51, 65, 85, 0.8);
       padding: 3px 6px;
       border-radius: 8px;
       backdrop-filter: blur(8px);
       flex-shrink: 0;
+      height: 38px;
+      box-sizing: border-box;
     }
     .toolbar-item {
       display: inline-flex;
       align-items: center;
       gap: 4px;
       position: relative;
+      height: 30px;
+      box-sizing: border-box;
     }
     .island-select {
       background: #0f172a;
@@ -155,16 +159,28 @@
       color: #f1f5f9;
       font-size: 0.72rem;
       font-weight: 600;
-      padding: 4px 7px;
+      height: 30px;
+      line-height: 28px;
+      padding: 0 24px 0 8px;
       border-radius: 6px;
       outline: none;
       cursor: pointer;
       transition: all 0.2s;
       max-width: 175px;
+      box-sizing: border-box;
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 7px center;
     }
     .island-select:hover, .island-select:focus {
       border-color: #38bdf8;
-      background: #1e293b;
+      background-color: #1e293b;
     }
     .island-search {
       background: #0f172a;
@@ -172,16 +188,22 @@
       color: #f1f5f9;
       font-size: 0.72rem;
       font-weight: 500;
-      padding: 4px 8px 4px 24px;
+      height: 30px;
+      line-height: 28px;
+      padding: 0 8px 0 24px;
       border-radius: 6px;
       outline: none;
       width: 135px;
       transition: all 0.2s;
+      box-sizing: border-box;
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
     }
     .island-search:focus {
       width: 185px;
       border-color: #10b981;
-      background: #1e293b;
+      background-color: #1e293b;
     }
     .search-icon {
       position: absolute;
@@ -195,17 +217,23 @@
       background: #1e293b;
       border: 1px solid #334155;
       color: #e2e8f0;
-      padding: 4px 9px;
+      height: 30px;
+      line-height: 28px;
+      padding: 0 9px;
       border-radius: 6px;
       font-size: 0.72rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
+      vertical-align: middle;
       gap: 5px;
       transition: all 0.2s;
       white-space: nowrap;
       user-select: none;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
     .island-btn:hover {
       background: #334155;
@@ -241,17 +269,23 @@
       background: linear-gradient(135deg, #059669 0%, #10b981 100%);
       color: #ffffff !important;
       border: 1px solid #34d399;
-      padding: 4px 11px;
+      height: 30px;
+      line-height: 28px;
+      padding: 0 11px;
       border-radius: 6px;
       font-size: 0.73rem;
       font-weight: 800;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
+      vertical-align: middle;
       gap: 5px;
       box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
       transition: all 0.2s;
       white-space: nowrap;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
     .island-btn-hero:hover {
       background: linear-gradient(135deg, #047857 0%, #059669 100%);
@@ -282,6 +316,8 @@
       padding: 2px 4px;
       border-radius: 9999px;
       border: 1px solid rgba(255, 255, 255, 0.12);
+      height: 30px;
+      box-sizing: border-box;
     }
     .btn-time-scope {
       background: transparent;
@@ -290,14 +326,19 @@
       border-radius: 9999px;
       font-size: 0.72rem;
       font-weight: 700;
-      padding: 3px 9px;
+      height: 24px;
+      line-height: 22px;
+      padding: 0 8px;
       cursor: pointer;
       transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 4px;
       user-select: none;
       position: relative;
+      box-sizing: border-box;
+      white-space: nowrap;
     }
     .btn-time-scope:hover:not(.active) {
       background: rgba(56, 189, 248, 0.15);
@@ -312,7 +353,7 @@
       border: 1.5px solid #38bdf8 !important;
       font-weight: 800 !important;
       box-shadow: 0 0 14px rgba(56, 189, 248, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.4) !important;
-      transform: scale(1.06);
+      transform: none !important;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
       z-index: 2;
     }
@@ -1096,6 +1137,62 @@
     }
     .btn-action.btn-outlet { background: #f59e0b; color: #0f172a; font-weight: 800; }
     .btn-action:hover { filter: brightness(1.15); }
+
+    
+    /* B2B Icon Style & Floating Button on Mobile */
+    .custom-npp-icon.npp-icon-b2b,
+    .npp-icon-b2b {
+      background: linear-gradient(135deg, #6366f1, #9333ea) !important;
+      border: 2px solid #fbbf24 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 14px rgba(147, 51, 234, 0.75), 0 0 10px rgba(251, 191, 36, 0.6) !important;
+      border-radius: 8px !important;
+      z-index: 1000 !important;
+    }
+    .btn-mobile-b2b {
+      display: none;
+    }
+    @media (max-width: 768px) {
+      .btn-mobile-b2b {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        position: absolute;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 950;
+        background: linear-gradient(135deg, #6366f1, #9333ea);
+        border: 1.5px solid #fbbf24;
+        color: #ffffff;
+        padding: 6px 13px;
+        border-radius: 24px;
+        font-size: 0.73rem;
+        font-weight: 800;
+        box-shadow: 0 4px 16px rgba(147, 51, 234, 0.5), 0 0 10px rgba(251, 191, 36, 0.4);
+        cursor: pointer;
+        white-space: nowrap;
+        -webkit-tap-highlight-color: transparent;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .btn-mobile-b2b:active {
+        transform: translateX(-50%) scale(0.95);
+      }
+      .filter-bar-content .time-cluster {
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        flex-wrap: nowrap !important;
+        justify-content: flex-start !important;
+      }
+      .filter-bar-content .time-cluster::-webkit-scrollbar {
+        display: none;
+      }
+      .filter-bar-content .time-scope-pill-group {
+        flex-shrink: 0;
+      }
+    }
 
     /* Mobile toggle drawer button */
     .btn-mobile-drawer {
@@ -2223,18 +2320,24 @@
       overflow: visible !important;
     }
     .multi-select-trigger {
-      display: flex;
+      display: inline-flex;
       align-items: center;
+      justify-content: space-between;
+      vertical-align: middle;
       gap: 6px;
       cursor: pointer;
       text-align: left;
       white-space: nowrap;
       max-width: 200px;
+      height: 30px;
+      line-height: 28px;
+      padding: 0 8px;
       overflow: hidden;
       text-overflow: ellipsis;
       font-size: 0.72rem;
       border: 1px solid #38bdf8;
       background: #0f172a;
+      box-sizing: border-box;
     }
     .multi-select-trigger:hover {
       border-color: #0284c7;
@@ -2510,13 +2613,14 @@
     <div class="toolbar-cluster npp-cluster">
       <button id="btnUnifiedNppToggle" class="island-btn active-npp" onclick="toggleUnifiedNppLayer()" title="Bật/Tắt hiển thị lớp Nhà Phân Phối trên bản đồ">
         <i class="fa-solid fa-warehouse" style="color:#10b981;"></i>
-        <span>NPP: <strong id="chkNppCount" style="color:#a7f3d0;">391</strong></span>
+        <span>NPP: <strong id="chkNppCount" style="color:#a7f3d0;">393</strong></span>
       </button>
 
       <div class="toolbar-item">
         <select id="filterUnifiedNppStatus" class="island-select" onchange="onUnifiedNppStatusChange(this.value)" title="Lọc trạng thái hoạt động & nhân sự giám sát SM">
-          <option value="ALL">🏢 Tất cả Trạng Thái (391)</option>
-          <option value="ACTIVE_ALL">🟢 Tất cả Đang Hoạt Động (215)</option>
+          <option value="ALL">🏢 Tất cả Trạng Thái (393)</option>
+          <option value="ACTIVE_ALL">🟢 Tất cả Đang Hoạt Động (217)</option>
+          <option value="B2B">🏢 Đối Tác B2B / HORECA (2)</option>
           <option value="ACTIVE_SM">👤 Đang Hoạt Động & Có NV / SM (119)</option>
           <option value="ACTIVE_KSM">⚠️ Đang Hoạt Động & Chưa Có NV / SM (96)</option>
           <option value="INACTIVE">🔴 Ngưng Hoạt Động (176)</option>
@@ -3762,6 +3866,7 @@
     }
 
     function onMienChange() {
+      selectedNPP = null;
       populateVungOptions();
       populateTinhOptions();
       applyFilters();
@@ -3772,6 +3877,7 @@
     }
 
     function onVungChange() {
+      selectedNPP = null;
       populateTinhOptions();
       applyFilters();
       zoomToSelectedArea();
@@ -4963,6 +5069,11 @@ function toggleUnifiedNppLayer() {
         if (chkHideInactive) chkHideInactive.checked = false;
         if (filterSM) filterSM.value = 'ALL';
         if (chkHideKhongSM) chkHideKhongSM.checked = false;
+      } else if (val === 'B2B') {
+        if (filterStatus) filterStatus.value = 'ALL';
+        if (chkHideInactive) chkHideInactive.checked = false;
+        if (filterSM) filterSM.value = 'ALL';
+        if (chkHideKhongSM) chkHideKhongSM.checked = false;
       } else if (val === 'ACTIVE_ALL') {
         if (filterStatus) filterStatus.value = 'ACTIVE';
         if (chkHideInactive) chkHideInactive.checked = true;
@@ -4986,6 +5097,19 @@ function toggleUnifiedNppLayer() {
       }
 
       applyFilters();
+    }
+
+    function quickFilterB2B() {
+      const selectEl = document.getElementById('filterUnifiedNppStatus');
+      if (selectEl) {
+        selectEl.value = 'B2B';
+        onUnifiedNppStatusChange('B2B');
+      }
+      if (map) {
+        map.setView([10.2384, 103.9542], 12);
+      }
+      toggleMobileSidebar(true);
+      showToastNotification('🏢 Đang hiển thị 2 Đối Tác B2B Phú Quốc (Deli Yours & Thành Tín Food)');
     }
 
     function toggleOutletMenu(e) {
@@ -5134,7 +5258,16 @@ function toggleUnifiedNppLayer() {
       const hasProvinceFilter = (selectedProvinces.size > 0 && selectedProvinces.size < allTinhCount);
 
       // 1. Filter NPPs
+      const nppStatusFilterVal = document.getElementById('filterUnifiedNppStatus') ? document.getElementById('filterUnifiedNppStatus').value : 'ALL';
+
       filteredNPPs = ALL_NPPS.filter(n => {
+        const isB2B = (n.is_b2b || (n.code && String(n.code).startsWith('B2B_')) || (n.channel && String(n.channel).includes('B2B')));
+        
+        // Nếu chọn riêng nhóm B2B thì chỉ hiển thị các đối tác B2B
+        if (nppStatusFilterVal === 'B2B') {
+          return isB2B;
+        }
+
         const matchMien = (mienVal === 'ALL' || n.region === mienVal);
         const matchVung = (vungVal === 'ALL' || n.area === vungVal);
         const matchTinh = !hasProvinceFilter || selectedProvinces.has(n.province);
@@ -5142,10 +5275,10 @@ function toggleUnifiedNppLayer() {
         // Bỏ NPP ngưng hoạt động khi nút tích Bỏ NPP Ngưng được chọn
         if (hideInactive && !n.status.includes('Đang')) return false;
 
-        // Ẩn hoàn toàn NPP không có SM nếu chọn Bỏ NPP Không SM hoặc lọc Chỉ Có SM
-        if (hideKhongSM && n.is_khong_sm) return false;
-        if (smVal === 'CO_SM' && n.is_khong_sm) return false;
-        if (smVal === 'KHONG_SM' && !n.is_khong_sm) return false;
+        // Ẩn hoàn toàn NPP không có SM nếu chọn Bỏ NPP Không SM hoặc lọc Chỉ Có SM (bỏ qua nếu là B2B)
+        if (hideKhongSM && n.is_khong_sm && !isB2B) return false;
+        if (smVal === 'CO_SM' && n.is_khong_sm && !isB2B) return false;
+        if (smVal === 'KHONG_SM' && (!n.is_khong_sm || isB2B)) return false;
 
         const matchStatus = (statusVal === 'ALL') || 
                             (statusVal === 'ACTIVE' && n.status.includes('Đang')) || 
@@ -5975,12 +6108,265 @@ function toggleUnifiedNppLayer() {
       });
     }
 
-    // Render Sidebar List
+// QUAY LẠI DANH SÁCH NPP
+    function clearSelectedNPP() {
+      selectedNPP = null;
+      updateSidebarHeaderUI();
+      renderSidebarList();
+      spiderLayer.clearLayers();
+      const container = document.getElementById('sidebarList');
+      if (container) container.scrollTop = 0;
+    }
+
+    function updateSidebarHeaderUI() {
+      const titleSpan = document.querySelector('.sidebar-title');
+      if (!titleSpan) return;
+      if (selectedNPP) {
+        const npp = ALL_NPPS.find(n => String(n.code) === String(selectedNPP));
+        const codeDisplay = npp ? npp.code : selectedNPP;
+        titleSpan.innerHTML = `<i class="fa-solid fa-store" style="color:#10b981;"></i> <span>Điểm Bán NPP #${codeDisplay} (<span id="sidebarCount">--</span>)</span>`;
+      } else {
+        titleSpan.innerHTML = `<i class="fa-solid fa-warehouse" style="color:#2563eb;"></i> <span>Danh Sách NPP (<span id="sidebarCount">${filteredNPPs.length}</span>)</span>`;
+      }
+    }
+
+    // Render Sidebar List (Hỗ trợ 2 chế độ: Xem NPP theo vùng & Drill-down xem Outlets của NPP đang chọn)
     function renderSidebarList() {
       const container = document.getElementById('sidebarList');
+      if (!container) return;
       container.innerHTML = '';
 
-      const toShow = filteredNPPs.slice(0, 150);
+      updateSidebarHeaderUI();
+
+      // =========================================================================
+      // CHẾ ĐỘ 1: ĐANG CHỌN 1 NPP CỤ THỂ -> HIỂN THỊ CÁC OUTLET CỦA NPP ĐÓ
+      // VÀ SORT THEO DOANH SỐ CAO NHẤT TRƯỚC (Doanh số T10 / MTD giảm dần)
+      // =========================================================================
+      if (selectedNPP) {
+        const npp = ALL_NPPS.find(n => String(n.code) === String(selectedNPP));
+        if (!npp) {
+          selectedNPP = null;
+          renderSidebarList();
+          return;
+        }
+
+        // Đảm bảo dữ liệu outlets đã sẵn sàng
+        if (!outletsLoaded) {
+          container.innerHTML = `
+            <div style="padding:24px 16px; text-align:center; color:#94a3b8;">
+              <i class="fa-solid fa-spinner fa-spin" style="font-size:1.6rem; color:#38bdf8; margin-bottom:10px;"></i>
+              <div style="font-size:0.8rem; font-weight:700; color:#e2e8f0;">Đang nạp dữ liệu điểm bán...</div>
+              <div style="font-size:0.7rem; color:#64748b; margin-top:4px;">Vui lòng đợi giây lát</div>
+            </div>
+          `;
+          ensureOutletsLoaded(() => renderSidebarList());
+          return;
+        }
+
+        // Lọc tất cả outlets thuộc NPP này
+        const nppOutlets = (ALL_OUTLETS || []).filter(o => String(o[4]) === String(npp.code));
+
+        // SORT THEO DOANH SỐ CAO NHẤT TRƯỚC (Doanh số T10 giảm dần)
+        nppOutlets.sort((a, b) => (b[12] || 0) - (a[12] || 0));
+
+        const totalNppOutletSales = nppOutlets.reduce((acc, o) => acc + (o[12] || 0), 0);
+        const activeOutletCount = nppOutlets.filter(o => (o[12] || 0) > 0).length;
+
+        const countEl = document.getElementById('sidebarCount');
+        if (countEl) countEl.textContent = nppOutlets.length;
+
+        // 1. NÚT QUAY LẠI DANH SÁCH NPP
+        const backBtnBox = document.createElement('div');
+        backBtnBox.style.cssText = 'position:sticky; top:0; z-index:10; background:rgba(15,23,42,0.95); backdrop-filter:blur(8px); padding:4px 0 8px 0; border-bottom:1px solid rgba(51,65,85,0.7); margin-bottom:10px;';
+        backBtnBox.innerHTML = `
+          <button type="button" class="btn-back-npp" onclick="clearSelectedNPP()" style="width:100%; display:flex; align-items:center; justify-content:center; gap:7px; background:linear-gradient(135deg, #1e293b 0%, #334155 100%); border:1px solid #64748b; color:#ffffff; padding:7px 12px; border-radius:6px; font-size:0.75rem; font-weight:800; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.3); transition:all 0.2s;">
+            <i class="fa-solid fa-arrow-left" style="color:#38bdf8;"></i> Quay lại danh sách NPP (${filteredNPPs.length})
+          </button>
+        `;
+        container.appendChild(backBtnBox);
+
+        // 2. KHỐI THÔNG TIN TỔNG QUAN NPP
+        const nppSummaryCard = document.createElement('div');
+        nppSummaryCard.style.cssText = 'background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border:1.5px solid #38bdf8; border-radius:8px; padding:10px 12px; margin-bottom:12px; box-shadow:0 4px 14px rgba(0,0,0,0.4);';
+        nppSummaryCard.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">
+            <span style="background:#0284c7; color:#fff; font-size:0.68rem; font-weight:800; padding:2px 6px; border-radius:4px;">#${npp.code}</span>
+            <span style="font-size:0.68rem; color:#94a3b8;">${npp.province} &bull; ${npp.area}</span>
+          </div>
+          <div style="font-weight:800; font-size:0.86rem; color:#ffffff; margin-bottom:6px; line-height:1.35;">${npp.name}</div>
+          
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; background:rgba(15,23,42,0.7); padding:6px 8px; border-radius:6px; margin-bottom:8px; border:1px solid rgba(255,255,255,0.06);">
+            <div>
+              <div style="font-size:0.62rem; color:#94a3b8;">Tổng Điểm Bán:</div>
+              <b style="color:#38bdf8; font-size:0.82rem;">${nppOutlets.length} KH</b>
+              <span style="font-size:0.62rem; color:#6ee7b7; margin-left:3px;">(${activeOutletCount} có DS)</span>
+            </div>
+            <div>
+              <div style="font-size:0.62rem; color:#94a3b8;">Doanh Số ĐB (T10):</div>
+              <b style="color:#10b981; font-size:0.82rem;">${formatMoneyVND(totalNppOutletSales)}</b>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:6px;">
+            <button type="button" onclick="focusNPPAndSpider('${npp.code}')" style="flex:1; background:#8b5cf6; color:#fff; border:none; padding:5px 8px; border-radius:4px; font-size:0.68rem; font-weight:700; cursor:pointer;" title="Vẽ tia nối liên kết tới tất cả điểm bán">
+              <i class="fa-solid fa-share-nodes"></i> Tia nối
+            </button>
+            <button type="button" onclick="zoomToNPP('${npp.code}')" style="flex:1; background:#2563eb; color:#fff; border:none; padding:5px 8px; border-radius:4px; font-size:0.68rem; font-weight:700; cursor:pointer;" title="Phóng to vị trí kho NPP trên bản đồ">
+              <i class="fa-solid fa-crosshairs"></i> Vị trí
+            </button>
+            <a href="https://www.google.com/maps/dir/?api=1&destination=${npp.lat},${npp.lng}" target="_blank" rel="noopener noreferrer" style="flex:1; text-align:center; background:#059669; color:#fff; text-decoration:none; padding:5px 8px; border-radius:4px; font-size:0.68rem; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:3px;" title="Mở Google Maps chỉ đường tới NPP">
+              <i class="fa-solid fa-diamond-turn-right"></i> Maps
+            </a>
+          </div>
+        `;
+        container.appendChild(nppSummaryCard);
+
+        // 3. TIÊU ĐỀ SẮP XẾP DOANH SỐ
+        const sortTitleBox = document.createElement('div');
+        sortTitleBox.style.cssText = 'display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding:0 2px;';
+        sortTitleBox.innerHTML = `
+          <span style="font-size:0.72rem; font-weight:800; color:#cbd5e1;">
+            <i class="fa-solid fa-arrow-down-wide-short" style="color:#f59e0b;"></i> Xếp theo Doanh số cao nhất:
+          </span>
+          <span style="font-size:0.65rem; color:#94a3b8;">${nppOutlets.length} điểm bán</span>
+        `;
+        container.appendChild(sortTitleBox);
+
+        if (nppOutlets.length === 0) {
+          const emptyBox = document.createElement('div');
+          emptyBox.style.cssText = 'text-align:center; padding:30px 16px; color:#94a3b8; font-size:0.75rem;';
+          emptyBox.innerHTML = `<i class="fa-solid fa-store-slash" style="font-size:2rem; color:#475569; margin-bottom:8px; display:block;"></i>Chưa có dữ liệu điểm bán trực thuộc NPP này.`;
+          container.appendChild(emptyBox);
+          return;
+        }
+
+        // 4. DANH SÁCH OUTLETS CỦA NPP ĐƯỢC SORT GIẢM DẦN THEO DOANH SỐ
+        nppOutlets.forEach((o, idx) => {
+          const storeName = o[2];
+          const storeCode = o[3];
+          const address = o[9] || '';
+          const dist = o[10];
+          const ptype = o[11];
+          const salesT10 = o[12] || 0;
+          const equip = o[13] || '';
+          const salesT9 = o[17] || 0;
+          const isRemote = dist >= 45;
+          const isEquipZero = (equip && equip.length > 0 && salesT10 <= 0);
+
+          const rank = idx + 1;
+          let rankBadge = `<span style="font-size:0.65rem; font-weight:800; color:#94a3b8; background:#1e293b; padding:1px 5px; border-radius:4px;">#${rank}</span>`;
+          if (rank === 1) rankBadge = `<span style="font-size:0.7rem; font-weight:800; color:#fde047; background:rgba(234,179,8,0.25); border:1px solid #eab308; padding:1px 6px; border-radius:4px;">🥇 #1</span>`;
+          else if (rank === 2) rankBadge = `<span style="font-size:0.7rem; font-weight:800; color:#e2e8f0; background:rgba(148,163,184,0.25); border:1px solid #94a3b8; padding:1px 6px; border-radius:4px;">🥈 #2</span>`;
+          else if (rank === 3) rankBadge = `<span style="font-size:0.7rem; font-weight:800; color:#fdba74; background:rgba(249,115,22,0.25); border:1px solid #f97316; padding:1px 6px; border-radius:4px;">🥉 #3</span>`;
+
+          const card = document.createElement('div');
+          card.className = 'outlet-sidebar-card';
+          card.style.cssText = 'background:rgba(15,23,42,0.85); border:1px solid rgba(51,65,85,0.7); border-radius:6px; padding:8px 10px; margin-bottom:8px; cursor:pointer; transition:all 0.2s;';
+          
+          card.onmouseenter = () => { card.style.borderColor = '#38bdf8'; card.style.background = 'rgba(30,41,59,0.95)'; };
+          card.onmouseleave = () => { card.style.borderColor = 'rgba(51,65,85,0.7)'; card.style.background = 'rgba(15,23,42,0.85)'; };
+          
+          card.onclick = (e) => {
+            if (e.target.closest('a')) return;
+            if (o[0] && o[1]) {
+              map.flyTo([o[0], o[1]], 16, { duration: 1.0 });
+              // Bật layer Outlets nếu chưa bật
+              if (!showOutlets) {
+                showOutlets = true;
+                const chk = document.getElementById('chkToggleOutlet');
+                if (chk) chk.checked = true;
+                outletsLayer.addTo(map);
+              }
+              // Tìm và mở popup của điểm bán
+              let foundMarker = false;
+              outletsLayer.eachLayer(layer => {
+                if (layer.getLatLng && Math.abs(layer.getLatLng().lat - o[0]) < 0.0001 && Math.abs(layer.getLatLng().lng - o[1]) < 0.0001) {
+                  layer.openPopup();
+                  foundMarker = true;
+                }
+              });
+              if (!foundMarker) {
+                L.popup().setLatLng([o[0], o[1]]).setContent(getOutletPopupHtml(o)).openOn(map);
+              }
+            }
+          };
+
+          card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <div style="display:flex; align-items:center; gap:5px;">
+                ${rankBadge}
+                <span style="font-size:0.68rem; color:#64748b; font-weight:600;">#${storeCode}</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:4px;">
+                ${ptype === 'DONG' ? '<span style="font-size:0.62rem; color:#38bdf8; background:rgba(2,132,199,0.2); padding:1px 4px; border-radius:3px;">❄️ Đông</span>' : (ptype === 'BOTH' ? '<span style="font-size:0.62rem; color:#c084fc; background:rgba(147,51,234,0.2); padding:1px 4px; border-radius:3px;">❄️🌾 Cả 2</span>' : '<span style="font-size:0.62rem; color:#fbbf24; background:rgba(245,158,11,0.2); padding:1px 4px; border-radius:3px;">🌾 Khô</span>')}
+                ${isRemote ? '<span style="font-size:0.6rem; color:#f87171; background:rgba(220,38,38,0.25); border:1px solid #ef4444; padding:0 3px; border-radius:3px;">>45km</span>' : ''}
+              </div>
+            </div>
+            
+            <div style="font-weight:700; font-size:0.8rem; color:#f8fafc; margin-bottom:4px; line-height:1.3;">
+              ${storeName}
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#1e293b; padding:4px 6px; border-radius:4px; margin-bottom:4px;">
+              <div>
+                <span style="font-size:0.62rem; color:#94a3b8;">DS T10 (MTD):</span>
+                <b style="color:${salesT10 > 0 ? '#10b981' : '#64748b'}; font-size:0.78rem; display:block;">
+                  ${salesT10 > 0 ? formatMoneyVND(salesT10) : '0 đ (Chưa có đơn)'}
+                </b>
+              </div>
+              <div style="text-align:right;">
+                <span style="font-size:0.62rem; color:#94a3b8;">T9 (M-1):</span>
+                <span style="color:#cbd5e1; font-size:0.72rem; font-weight:600; display:block;">
+                  ${salesT9 > 0 ? formatMoneyVND(salesT9) : '0 đ'}
+                </span>
+              </div>
+            </div>
+
+            ${isEquipZero ? `
+              <div style="font-size:0.64rem; color:#f87171; background:rgba(239,68,68,0.15); border:1px solid #ef4444; border-radius:3px; padding:2px 4px; margin-bottom:4px;">
+                ⚠️ Có tủ (${equip}) nhưng Zero Sales
+              </div>
+            ` : (equip ? `
+              <div style="font-size:0.64rem; color:#60a5fa; margin-bottom:3px;">
+                <i class="fa-solid fa-snowflake"></i> Thiết bị: <b>${equip}</b>
+              </div>
+            ` : '')}
+
+            <div style="display:flex; justify-content:space-between; font-size:0.66rem; color:#94a3b8; margin-bottom:4px;">
+              <span><i class="fa-solid fa-arrows-left-right"></i> Cự ly: <b style="color:${isRemote ? '#ef4444' : '#e2e8f0'};">${dist} km</b></span>
+            </div>
+
+            <div style="font-size:0.65rem; color:#64748b; line-height:1.3; margin-bottom:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${address}">
+              <i class="fa-solid fa-location-dot"></i> ${address}
+            </div>
+
+            <div style="display:flex; justify-content:flex-end;">
+              <a href="https://www.google.com/maps/dir/?api=1&destination=${o[0]},${o[1]}" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:4px; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; text-decoration:none; font-size:0.65rem; font-weight:700; padding:3px 7px; border-radius:4px;" title="Mở Google Maps tìm đường đến tiệm này">
+                <i class="fa-solid fa-diamond-turn-right" style="color:#38bdf8;"></i> Visit / Tìm đường
+              </a>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+        return;
+      }
+
+      // =========================================================================
+      // CHẾ ĐỘ 2: CHƯA CHỌN NPP CỤ THỂ -> HIỂN THỊ DANH SÁCH CÁC NPP (THEO VÙNG)
+      // ƯU TIÊN HIỂN THỊ: ĐỐI TÁC B2B LÊN ĐẦU & SORT THEO DOANH SỐ KỲ CHỌN GIẢM DẦN
+      // =========================================================================
+      filteredNPPs.sort((a, b) => {
+        const isB2B_a = (a.is_b2b || (a.code && String(a.code).startsWith('B2B_'))) ? 1 : 0;
+        const isB2B_b = (b.is_b2b || (b.code && String(b.code).startsWith('B2B_'))) ? 1 : 0;
+        if (isB2B_a !== isB2B_b) return isB2B_b - isB2B_a; // B2B luôn ghim trên cùng
+
+        const salesA = (a.monthly_sales && a.monthly_sales[currentSalesPeriod] !== undefined) ? a.monthly_sales[currentSalesPeriod] : (a.sales_total || 0);
+        const salesB = (b.monthly_sales && b.monthly_sales[currentSalesPeriod] !== undefined) ? b.monthly_sales[currentSalesPeriod] : (b.sales_total || 0);
+        return salesB - salesA;
+      });
+
+      const toShow = filteredNPPs.slice(0, 250);
       toShow.forEach(n => {
         const isActive = n.status.includes('Đang');
         const card = document.createElement('div');
@@ -6068,8 +6454,8 @@ function toggleUnifiedNppLayer() {
             <button class="btn-nav" style="padding:2px 6px; font-size:0.65rem; background:#2563eb; color:white; border:none; border-radius:4px;" onclick="event.stopPropagation(); focusNPPAndSpider('${n.code}')">
               <i class="fa-solid fa-share-nodes"></i> Tia Nối
             </button>
-            <button class="btn-nav" style="padding:2px 6px; font-size:0.65rem; background:#d97706; color:white; border:none; border-radius:4px;" onclick="event.stopPropagation(); showNPPOutlets('${n.code}')">
-              <i class="fa-solid fa-store"></i> Hiện Điểm Bán (${getNPPOutletsForPeriod(n)})
+            <button class="btn-nav" style="padding:2px 6px; font-size:0.65rem; background:#d97706; color:white; border:none; border-radius:4px;" onclick="event.stopPropagation(); selectNPP('${n.code}', true)">
+              <i class="fa-solid fa-store"></i> Xem Điểm Bán (${getNPPOutletsForPeriod(n)})
             </button>
             <a href="https://www.google.com/maps/dir/?api=1&destination=${n.lat},${n.lng}" target="_blank" rel="noopener noreferrer" class="btn-nav" style="padding:2px 6px; font-size:0.65rem; background:#059669; color:white; text-decoration:none; border-radius:4px; display:inline-flex; align-items:center; gap:3px;" onclick="event.stopPropagation();" title="Mở Google Maps tìm đường viếng thăm NPP này">
               <i class="fa-solid fa-diamond-turn-right" style="color:#a7f3d0;"></i> Visit / Maps
@@ -6091,22 +6477,24 @@ function toggleUnifiedNppLayer() {
     }
 
     function selectNPP(code, zoom = false) {
-      selectedNPP = code;
-      const npp = ALL_NPPS.find(n => n.code === code);
+      if (!code) {
+        clearSelectedNPP();
+        return;
+      }
+      selectedNPP = String(code);
+      const npp = ALL_NPPS.find(n => String(n.code) === String(code));
       if (npp && zoom && npp.lat && npp.lng) {
         map.flyTo([npp.lat, npp.lng], 13, { duration: 1.2, easeLinearity: 0.25 });
       }
-      document.querySelectorAll('.npp-card').forEach(el => {
-        const isMatch = (el.dataset.nppCode === String(code) || (el.querySelector('.npp-code') && el.querySelector('.npp-code').textContent === code));
-        el.classList.toggle('selected', isMatch);
-        el.classList.toggle('highlight-active', isMatch);
-        if (isMatch && !zoom) {
-          // Khi bấm từ bản đồ, tự động cuộn danh sách đưa thẻ NPP vào giữa khung nhìn
-          el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-      });
-      if (window.innerWidth <= 768 && zoom) {
-        toggleMobileSidebar(false);
+
+      // Khi chọn 1 NPP -> Cập nhật sidebar hiển thị toàn bộ outlets của NPP đó xếp theo doanh số
+      renderSidebarList();
+
+      const container = document.getElementById('sidebarList');
+      if (container) container.scrollTop = 0;
+
+      if (window.innerWidth <= 768 && !zoom) {
+        toggleMobileSidebar(true);
       }
     }
 
