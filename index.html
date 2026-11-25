@@ -1083,6 +1083,17 @@
     }
     .btn-action.btn-primary { background: #2563eb; color: white; }
     .btn-action.btn-spider { background: #8b5cf6; color: white; }
+    
+    .btn-action.btn-visit {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+      color: #ffffff !important;
+      text-decoration: none !important;
+      box-shadow: 0 1px 4px rgba(5, 150, 105, 0.4);
+    }
+    .btn-action.btn-visit:hover {
+      background: linear-gradient(135deg, #047857 0%, #065f46 100%) !important;
+      transform: translateY(-1px);
+    }
     .btn-action.btn-outlet { background: #f59e0b; color: #0f172a; font-weight: 800; }
     .btn-action:hover { filter: brightness(1.15); }
 
@@ -4046,7 +4057,7 @@
         return;
       }
       outletsLoading = true;
-      showToastNotification('⏳ Đang nạp 59.4k điểm bán & Doanh số T9...');
+      showToastNotification('⏳ Đang nạp 59.4k điểm bán & Doanh số T10 (Mới)...');
 
       const existingScript = document.getElementById('rtmOutletsScript');
       if (existingScript) {
@@ -4113,7 +4124,7 @@
         ensureOutletsLoaded(() => {
           renderOutlets();
           outletsLayer.addTo(map);
-          showToastNotification('💰 Đang lọc 34,171 điểm bán có Doanh số T9 (38.3 Tỷ)!');
+          showToastNotification('💰 Đang lọc 35,216 điểm bán có Doanh số T10 (40.5 Tỷ)!');
         });
       } else {
         renderOutlets();
@@ -4475,6 +4486,11 @@
                 <span>Tuyến: <b style="color:#cbd5e1;">${route || '-'}</b></span>
               </div>
             ` : ''}
+            <div style="margin-top:8px; padding-top:6px; border-top:1px solid #334155; display:flex; gap:6px;">
+              <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}" target="_blank" rel="noopener noreferrer" style="flex:1; display:inline-flex; align-items:center; justify-content:center; gap:5px; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-size:0.72rem; font-weight:700; text-decoration:none; padding:6px 10px; border-radius:5px; box-shadow:0 2px 6px rgba(2,132,199,0.35); transition:all 0.2s;" title="Mở Google Maps tìm đường viếng thăm điểm thị trường này">
+                <i class="fa-solid fa-diamond-turn-right" style="color:#38bdf8;"></i> Visit / Tìm Đường Đi (Google Maps)
+              </a>
+            </div>
           </div>
         </div>
       `;
@@ -5521,6 +5537,9 @@ function toggleUnifiedNppLayer() {
             <button class="btn-action btn-outlet" onclick="showNPPOutlets('${n.code}')">
               <i class="fa-solid fa-store"></i> Hiện Điểm Bán (${outletCnt})
             </button>
+            <a href="https://www.google.com/maps/dir/?api=1&destination=${n.lat},${n.lng}" target="_blank" rel="noopener noreferrer" class="btn-action btn-visit" title="Mở Google Maps tìm đường viếng thăm NPP này">
+              <i class="fa-solid fa-diamond-turn-right" style="color:#a7f3d0;"></i> Visit / Tìm Đường
+            </a>
           </div>
         </div>
       `;
@@ -5880,12 +5899,12 @@ function toggleUnifiedNppLayer() {
 
             <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:5px; padding:4px 6px; margin-bottom:5px;">
               <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
-                <span style="color:#64748b;">Doanh số T9 (MTD):</span>
+                <span style="color:#64748b;">Doanh số T10 (MTD):</span>
                 <b style="color:${salesMtd > 0 ? '#10b981' : '#64748b'};">${salesMtd > 0 ? formatMoneyVND(salesMtd) : '0 đ (Chưa có đơn)'}</b>
               </div>
               ${salesM1 > 0 ? `
                 <div style="display:flex; justify-content:space-between; font-size:0.68rem;">
-                  <span style="color:#94a3b8;">Doanh số T8 (M-1):</span>
+                  <span style="color:#94a3b8;">Doanh số T9 (M-1):</span>
                   <span style="color:#475569; font-weight:600;">${formatMoneyVND(salesM1)}</span>
                 </div>
               ` : ''}
@@ -5919,6 +5938,11 @@ function toggleUnifiedNppLayer() {
 
             <div style="color:#475569; font-size:0.7rem; line-height:1.3; margin-top:3px; padding-top:3px; border-top:1px dashed #e2e8f0;">
               <i class="fa-solid fa-location-dot" style="color:#94a3b8;"></i> ${address}
+            </div>
+            <div style="margin-top:8px; padding-top:6px; border-top:1px solid #e2e8f0; display:flex; gap:6px;">
+              <a href="https://www.google.com/maps/dir/?api=1&destination=${o[0]},${o[1]}" target="_blank" rel="noopener noreferrer" style="flex:1; display:inline-flex; align-items:center; justify-content:center; gap:5px; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-size:0.72rem; font-weight:700; text-decoration:none; padding:6px 10px; border-radius:5px; box-shadow:0 2px 6px rgba(2,132,199,0.35); transition:all 0.2s;" title="Mở Google Maps tìm đường viếng thăm tiệm này">
+                <i class="fa-solid fa-diamond-turn-right" style="color:#38bdf8;"></i> Visit / Tìm Đường Đi (Google Maps)
+              </a>
             </div>
           </div>
         `);
@@ -6047,6 +6071,9 @@ function toggleUnifiedNppLayer() {
             <button class="btn-nav" style="padding:2px 6px; font-size:0.65rem; background:#d97706; color:white; border:none; border-radius:4px;" onclick="event.stopPropagation(); showNPPOutlets('${n.code}')">
               <i class="fa-solid fa-store"></i> Hiện Điểm Bán (${getNPPOutletsForPeriod(n)})
             </button>
+            <a href="https://www.google.com/maps/dir/?api=1&destination=${n.lat},${n.lng}" target="_blank" rel="noopener noreferrer" class="btn-nav" style="padding:2px 6px; font-size:0.65rem; background:#059669; color:white; text-decoration:none; border-radius:4px; display:inline-flex; align-items:center; gap:3px;" onclick="event.stopPropagation();" title="Mở Google Maps tìm đường viếng thăm NPP này">
+              <i class="fa-solid fa-diamond-turn-right" style="color:#a7f3d0;"></i> Visit / Maps
+            </a>
           </div>
         `;
         container.appendChild(card);
@@ -8255,7 +8282,7 @@ Các cờ được hiển thị nổi bật với hiệu ứng radar phát sóng
               </div>
               <div style="font-size:0.72rem; color:#475569; margin-bottom:3px;">📍 ${o[9] || ''}</div>
               <div style="font-size:0.75rem; color:#0369a1; font-weight:700;">❄️ Thiết bị: ${equip || 'Chưa cấp'}</div>
-              <div style="font-size:0.75rem; color:#047857; font-weight:800;">💰 Doanh số T9: ${formatMoneyVND(salesMtd)}</div>
+              <div style="font-size:0.75rem; color:#047857; font-weight:800;">💰 Doanh số T10: ${formatMoneyVND(salesMtd)}</div>
             </div>
           `;
           L.popup().setLatLng([lat, lng]).setContent(content).openOn(map);
